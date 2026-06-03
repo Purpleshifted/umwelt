@@ -2221,7 +2221,7 @@ class AI_Seq extends UINode {
     label.style.color = "#888";
     label.style.padding = "4px";
     label.style.textAlign = "center";
-    this.div.appendChild(label);
+    this.centerDiv.appendChild(label);
   }
 }
 
