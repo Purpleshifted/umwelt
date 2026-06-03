@@ -1,4 +1,6 @@
-import * as mm from '@magenta/music';
+import { MusicRNN } from '@magenta/music/es6/music_rnn';
+import { sequences } from '@magenta/music/es6/core';
+import { INoteSequence } from '@magenta/music/es6/protobuf';
 import { useMusicStore, MusicModule } from '@/store/musicStore';
 import { useAudioMapStore } from '@/store/audioMapStore';
 import { NoiseCraftBridge } from './NoiseCraftBridge';
@@ -6,9 +8,9 @@ import { NoiseCraftBridge } from './NoiseCraftBridge';
 class MusicEngine {
   private static instance: MusicEngine;
   private isRunning = false;
-  private rnn: mm.MusicRNN | null = null;
+  private rnn: MusicRNN | null = null;
   private initialized = false;
-  private currentSequence: mm.INoteSequence | null = null;
+  private currentSequence: INoteSequence | null = null;
   private playCursor = 0; // index in currentSequence.notes
   private lastNoteTime = 0;
   private qpm = 120; // Quarter notes per minute
@@ -28,7 +30,7 @@ class MusicEngine {
     if (this.initialized) return;
     try {
       // Use the standard basic_rnn checkpoint hosted by Google
-      this.rnn = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
+      this.rnn = new MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
       await this.rnn.initialize();
       this.initialized = true;
       console.log('[MusicEngine] Magenta MusicRNN initialized!');
@@ -51,7 +53,7 @@ class MusicEngine {
     if (!this.rnn || !this.initialized) return;
 
     // A seed sequence to give the RNN some context
-    const seed: mm.INoteSequence = {
+    const seed: INoteSequence = {
       ticksPerQuarter: 220,
       totalTime: 1.0,
       timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
@@ -61,7 +63,7 @@ class MusicEngine {
       ]
     };
 
-    const qns = mm.sequences.quantizeNoteSequence(seed, 4);
+    const qns = sequences.quantizeNoteSequence(seed, 4);
     
     // Get parameters from the UI state
     // We can also override these with the virtual stream if it's connected, 
@@ -71,7 +73,7 @@ class MusicEngine {
     try {
       // Generate 16 steps (1 bar)
       const result = await this.rnn.continueSequence(qns, 16, temp);
-      this.currentSequence = mm.sequences.unquantizeSequence(result, this.qpm);
+      this.currentSequence = sequences.unquantizeSequence(result, this.qpm);
       this.playCursor = 0;
       this.lastNoteTime = performance.now();
     } catch (e) {
