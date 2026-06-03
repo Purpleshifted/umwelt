@@ -152,6 +152,7 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
             <Handle type="source" position={Position.Right} id="gate" style={{ top: 'auto', bottom: '15px' }} className={styles.handle} />
           </>
         )}
+      </div>
     </div>
   );
 }

@@ -32917,3 +32917,74 @@ Import trace:
     ./src/components/MusicLibraryScene.tsx [Client Component Browser]
     ./src/app/music/page.tsx [Client Component Browser]
     ./src/app/music/page.tsx [Server Component] 
+ GET /audio 500 in 83ms (next.js: 45ms, application-code: 39ms)
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] Uncaught Error: ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/MusicModuleNode.tsx:157:1)
+    at <unknown> (Error: (./src/components/MusicModuleNode.tsx:157:1)
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+✓ Compiled in 189ms
+ GET /audio 200 in 284ms (next.js: 86ms, application-code: 198ms)
