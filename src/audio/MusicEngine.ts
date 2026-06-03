@@ -49,92 +49,6 @@ class MusicEngine {
     this.isRunning = false;
   }
 
-    if (!this.currentSequence || this.playCursor >= (this.currentSequence.notes?.length || 0)) {
-      if (!this.currentSequence) {
-        this.currentSequence = { notes: [] };
-        this.generateNextSequence(module);
-      } else if (this.playCursor >= (this.currentSequence.notes?.length || 0) && this.currentSequence.notes!.length > 0) {
-        this.currentSequence = { notes: [] };
-        this.generateNextSequence(module);
-      }
-      return;
-    }
-
-    const notes = this.currentSequence.notes!;
-    const currentNote = notes[this.playCursor];
-    
-    if (!currentNote) return;
-
-    const noteDurationMs = (currentNote.endTime - currentNote.startTime) * 1000;
-    
-    if (now - this.lastNoteTime >= noteDurationMs) {
-      // Play note!
-      const hz = this.midiToHz(currentNote.pitch);
-      const bridge = NoiseCraftBridge.getInstance();
-      
-      bridge.setParams([
-        { nodeId: 'AI_Pitch', paramName: 'value', value: hz },
-        { nodeId: 'AI_Gate', paramName: 'value', value: 1 } // Note ON
-      ]);
-
-      setTimeout(() => {
-        bridge.setParams([
-          { nodeId: 'AI_Gate', paramName: 'value', value: 0 } // Note OFF
-        ]);
-      }, noteDurationMs * 0.8);
-
-      this.playCursor++;
-      this.lastNoteTime = now;
-    }
-  }
-
-  private async generateNextSequence(module: MusicModule) {
-    const temp = module.magentaConfig?.temperatureMax ?? 1.0;
-
-    if (!this.rnn || !this.initialized) {
-      // FALLBACK: If Magenta failed to load (CORS/Network), use a mock generative algorithm
-      const scale = [60, 62, 64, 65, 67, 69, 71, 72]; // C major
-      const mockNotes = [];
-      let currentTime = 0;
-      
-      for (let i = 0; i < 16; i++) {
-        // Temperature determines randomness and leaps
-        const leap = Math.random() < (temp - 0.5) ? Math.floor(Math.random() * 4) : 0;
-        const pitch = scale[Math.floor(Math.random() * scale.length)] + (leap * 12);
-        const duration = Math.random() > 0.5 ? 0.25 : 0.5; // 16th or 8th notes
-        
-        mockNotes.push({ pitch, startTime: currentTime, endTime: currentTime + duration, velocity: 80 });
-        currentTime += duration;
-      }
-      
-      this.currentSequence = { notes: mockNotes };
-      this.playCursor = 0;
-      this.lastNoteTime = performance.now();
-      return;
-    }
-
-    const seed: INoteSequence = {
-      ticksPerQuarter: 220,
-      totalTime: 1.0,
-      timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
-      tempos: [{ time: 0, qpm: this.qpm }],
-      notes: [
-        { pitch: 60, startTime: 0.0, endTime: 0.5, velocity: 80 }
-      ]
-    };
-
-    const qns = sequences.quantizeNoteSequence(seed, 4);
-    
-    try {
-      const result = await this.rnn.continueSequence(qns, 16, temp);
-      this.currentSequence = sequences.unquantizeSequence(result, this.qpm);
-      this.playCursor = 0;
-      this.lastNoteTime = performance.now();
-    } catch (e) {
-      console.error('[MusicEngine] Generation failed:', e);
-    }
-  }
-
   private loop = () => {
     if (!this.isRunning) return;
     requestAnimationFrame(this.loop);
@@ -196,6 +110,53 @@ class MusicEngine {
 
       this.playCursor++;
       this.lastNoteTime = now;
+    }
+  }
+
+  private async generateNextSequence(module: MusicModule) {
+    const temp = module.magentaConfig?.temperatureMax ?? 1.0;
+
+    if (!this.rnn || !this.initialized) {
+      // FALLBACK: If Magenta failed to load (CORS/Network), use a mock generative algorithm
+      const scale = [60, 62, 64, 65, 67, 69, 71, 72]; // C major
+      const mockNotes = [];
+      let currentTime = 0;
+      
+      for (let i = 0; i < 16; i++) {
+        // Temperature determines randomness and leaps
+        const leap = Math.random() < (temp - 0.5) ? Math.floor(Math.random() * 4) : 0;
+        const pitch = scale[Math.floor(Math.random() * scale.length)] + (leap * 12);
+        const duration = Math.random() > 0.5 ? 0.25 : 0.5; // 16th or 8th notes
+        
+        mockNotes.push({ pitch, startTime: currentTime, endTime: currentTime + duration, velocity: 80 });
+        currentTime += duration;
+      }
+      
+      this.currentSequence = { notes: mockNotes };
+      this.playCursor = 0;
+      this.lastNoteTime = performance.now();
+      return;
+    }
+
+    const seed: INoteSequence = {
+      ticksPerQuarter: 220,
+      totalTime: 1.0,
+      timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
+      tempos: [{ time: 0, qpm: this.qpm }],
+      notes: [
+        { pitch: 60, startTime: 0.0, endTime: 0.5, velocity: 80 }
+      ]
+    };
+
+    const qns = sequences.quantizeNoteSequence(seed, 4);
+    
+    try {
+      const result = await this.rnn.continueSequence(qns, 16, temp);
+      this.currentSequence = sequences.unquantizeSequence(result, this.qpm);
+      this.playCursor = 0;
+      this.lastNoteTime = performance.now();
+    } catch (e) {
+      console.error('[MusicEngine] Generation failed:', e);
     }
   }
 
