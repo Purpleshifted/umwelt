@@ -32758,3 +32758,162 @@ Import trace:
 ✓ Compiled in 62ms
  GET /audio 200 in 56ms (next.js: 22ms, application-code: 34ms)
 ✓ Saved 1.ncft to /Users/exhibition/umwelt/noisecraft/examples/1.ncft (318 bytes)
+ GET /music 200 in 53ms (next.js: 23ms, application-code: 30ms)
+ GET /audio 200 in 50ms (next.js: 15ms, application-code: 34ms)
+ GET /streams 200 in 160ms (next.js: 84ms, application-code: 76ms)
+ GET /music 200 in 39ms (next.js: 13ms, application-code: 26ms)
+ GET /audio 200 in 52ms (next.js: 11ms, application-code: 41ms)
+✓ Compiled in 239ms
+✓ Compiled in 272ms
+✓ Compiled in 80ms
+✓ Compiled in 665ms
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+✓ Compiled in 38ms
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+ GET /audio 500 in 106ms (next.js: 58ms, application-code: 49ms)
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] Uncaught Error: ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/MusicModuleNode.tsx:157:1)
+    at <unknown> (Error: (./src/components/MusicModuleNode.tsx:157:1)
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./src/components/MusicModuleNode.tsx:157:1
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+  155 |     </div>
+  156 |   );
+> 157 | }
+      | ^
+  158 |
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 

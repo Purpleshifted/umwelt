@@ -41,10 +41,22 @@ class MusicEngine {
 
   private sendSequenceToAI(module: MusicModule, seq: { pitches: number[]; gates: number[] }) {
     const bridge = getNoiseCraftBridge();
+    const state = useMusicStore.getState();
     
-    // Broadcast the sequence to the NoiseCraft iframe.
-    // The embedded.html script will route it to all AI_Seq nodes that have selected this module.id.
-    bridge.setSequence(module.id, seq.pitches, seq.gates);
+    // Find outputs connected to this module
+    const connectedOutputs = state.edges
+      .filter(e => e.source === module.id)
+      .map(e => state.modules.find(m => m.id === e.target))
+      .filter(m => m && m.type === 'output');
+      
+    // Broadcast the sequence to the NoiseCraft iframe, using the output module's ID
+    if (connectedOutputs.length > 0) {
+      connectedOutputs.forEach(outMod => {
+        if (outMod) {
+          bridge.setSequence(outMod.id, seq.pitches, seq.gates);
+        }
+      });
+    }
   }
 
   start() {
@@ -57,8 +69,8 @@ class MusicEngine {
     // Send available modules to NoiseCraft immediately and subscribe to updates
     const syncModules = () => {
       const state = useMusicStore.getState();
-      const aiModules = state.modules.filter(m => m.type === 'magenta_ai').map(m => ({ id: m.id, name: m.name }));
-      bridge.postMessage({ type: 'noiseCraft:updateModules', modules: aiModules });
+      const outModules = state.modules.filter(m => m.type === 'output').map(m => ({ id: m.id, name: m.name }));
+      bridge.postMessage({ type: 'noiseCraft:updateModules', modules: outModules });
     };
     syncModules();
     useMusicStore.subscribe(syncModules);

@@ -134,7 +134,7 @@ export default function NodeMappingPanel({ activeContext = 'macro' }: Props) {
                 className={styles.streamSelect}
               >
                 <option value="">Select Stream...</option>
-                {streams.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                {streams.filter(s => s.type === 'out').map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
             </div>
           </div>

@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { Edge } from '@xyflow/react';
 
-export type MusicModuleType = 'harmonic_array' | 'magenta_ai';
+export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'input' | 'output';
 
 export interface HarmonicArrayConfig {
   scaleType: 'major' | 'minor' | 'dorian' | 'altered';
@@ -13,7 +14,6 @@ export interface MagentaConfig {
   temperatureMin: number;
   temperatureMax: number;
   density: number; // 0 to 1
-  targetNodeId?: string; // NoiseCraft AI_Seq node ID
 }
 
 export interface MusicModule {
@@ -28,16 +28,19 @@ export interface MusicModule {
 
 interface MusicState {
   modules: MusicModule[];
+  edges: Edge[];
   addModule: (module: MusicModule) => void;
   updateModule: (id: string, updates: Partial<MusicModule>) => void;
   updateMultipleModules: (updates: {id: string, changes: Partial<MusicModule>}[]) => void;
   removeModule: (id: string) => void;
+  setEdges: (edges: Edge[] | ((eds: Edge[]) => Edge[])) => void;
 }
 
 export const useMusicStore = create<MusicState>()(
   persist(
     (set) => ({
       modules: [],
+      edges: [],
       addModule: (module) =>
         set((state) => ({ modules: [...state.modules, module] })),
       updateModule: (id, updates) =>
@@ -58,6 +61,10 @@ export const useMusicStore = create<MusicState>()(
       removeModule: (id) =>
         set((state) => ({
           modules: state.modules.filter((m) => m.id !== id),
+        })),
+      setEdges: (edgesOrUpdater) =>
+        set((state) => ({
+          edges: typeof edgesOrUpdater === 'function' ? edgesOrUpdater(state.edges) : edgesOrUpdater
         })),
     }),
     {

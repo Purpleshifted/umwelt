@@ -2238,7 +2238,7 @@ class AI_Seq extends UINode {
       select.innerHTML = '';
       let defaultOpt = document.createElement("option");
       defaultOpt.value = "";
-      defaultOpt.innerText = "-- Select AI Module --";
+      defaultOpt.innerText = "-- Select Output Channel --";
       select.appendChild(defaultOpt);
 
       if (window._musicModules) {

@@ -31,7 +31,8 @@ function Flow() {
   const { streams } = useAudioMapStore();
   
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<Node>([]);
-  const [edges, setEdges] = useEdgesState<Edge>([]);
+  // We don't use useEdgesState directly anymore, we rely on the store
+  const { edges, setEdges } = useMusicStore();
 
   // Initialize and start MusicEngine
   React.useEffect(() => {
@@ -46,7 +47,7 @@ function Flow() {
     };
   }, []);
 
-  // Sync store modules to React Flow nodes/edges
+  // Sync store modules to React Flow nodes
   React.useEffect(() => {
     setNodes((nds) => {
       return modules.map((mod, i) => {
@@ -60,11 +61,24 @@ function Flow() {
         };
       });
     });
+  }, [modules, setNodes]);
 
-    // We can also draw logical edges from virtual streams if we want to represent them as nodes
-    // but for now, virtual streams are just dropdowns inside the MusicModuleNode.
-    setEdges([]);
-  }, [modules, setNodes, setEdges]);
+  const onConnect = useCallback((params: any) => {
+    setEdges((eds) => {
+      const newEdge = { ...params, id: `e_${params.source}_${params.target}` };
+      return [...eds, newEdge];
+    });
+  }, [setEdges]);
+
+  const onEdgesChange = useCallback((changes: any[]) => {
+    setEdges((eds) => {
+      const remainingEdges = eds.filter((e) => {
+        const removeChange = changes.find((c) => c.type === 'remove' && c.id === e.id);
+        return !removeChange;
+      });
+      return remainingEdges;
+    });
+  }, [setEdges]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) => {
@@ -110,6 +124,8 @@ function Flow() {
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
         nodeTypes={nodeTypes}
         fitView
         attributionPosition="bottom-right"
@@ -128,11 +144,17 @@ function Flow() {
         
         <Panel position="top-left" className={styles.toolbar}>
           <div className={styles.title}>Music Library Graph</div>
-          <button className={styles.btn} onClick={() => handleAddModule('harmonic_array')}>
-            + Harmonic Array
+          <button className={styles.btn} onClick={() => handleAddModule('input')}>
+            + Stream Input
           </button>
           <button className={styles.btn} onClick={() => handleAddModule('magenta_ai')}>
             + Magenta AI
+          </button>
+          <button className={styles.btn} onClick={() => handleAddModule('harmonic_array')}>
+            + Harmonic Array
+          </button>
+          <button className={styles.btn} onClick={() => handleAddModule('output')}>
+            + NoiseCraft Target
           </button>
         </Panel>
       </ReactFlow>
