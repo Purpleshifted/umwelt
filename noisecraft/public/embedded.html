@@ -1440,30 +1440,23 @@
           }, 10);
         } else if (data.type === "noiseCraft:setSequence") {
           if (app.model && app.audioView) {
-            const { nodeId, pitches, gates } = data;
+            const { nodeId, pitches, gates } = data; // Here nodeId is actually the moduleId
             
-            if (nodeId === '*') {
-              // Find all AI_Seq nodes in the current patch
-              for (const [id, nodeState] of Object.entries(app.model.state.nodes)) {
-                if (nodeState.type === "AI_Seq") {
-                  app.audioView.send({
-                    type: "SET_SEQUENCE",
-                    nodeId: id,
-                    pitches: pitches,
-                    gates: gates
-                  });
-                }
+            // Find all AI_Seq nodes that have this moduleId selected
+            for (const [id, nodeState] of Object.entries(app.model.state.nodes)) {
+              if (nodeState.type === "AI_Seq" && nodeState.params.moduleId === nodeId) {
+                app.audioView.send({
+                  type: "SET_SEQUENCE",
+                  nodeId: id,
+                  pitches: pitches,
+                  gates: gates
+                });
               }
-            } else {
-              // Send to specific node
-              app.audioView.send({
-                type: "SET_SEQUENCE",
-                nodeId: nodeId,
-                pitches: pitches,
-                gates: gates
-              });
             }
           }
+        } else if (data.type === "noiseCraft:updateModules") {
+          window._musicModules = data.modules;
+          window.dispatchEvent(new Event('musicModulesUpdated'));
         } else if (data.type === "noiseCraft:redraw") {
           // Force redraw edges and SVG
           if (app.editor) {

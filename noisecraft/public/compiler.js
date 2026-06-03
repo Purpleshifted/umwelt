@@ -490,6 +490,18 @@ export function compile(graph)
             continue;
         }
 
+        if (node.type == 'AI_Seq')
+        {
+            audioNodes[nodeId] = node;
+
+            addLine(
+                `let [${outName(nodeId, 0)}, ${outName(nodeId, 1)}] = ` +
+                `nodes[${nodeId}].update(time, ${inVal(node, 0)})`
+            );
+
+            continue;
+        }
+
         // Temporary so the compiler doesn't error when it sees a module
         if (node.type == 'Module')
         {

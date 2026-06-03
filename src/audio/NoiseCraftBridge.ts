@@ -292,6 +292,15 @@ export class NoiseCraftBridge {
   }
 
   /**
+   * Send a generic postMessage to the iframe
+   */
+  postMessage(message: any): void {
+    if (this.iframe?.contentWindow) {
+      this.iframe.contentWindow.postMessage(message, '*');
+    }
+  }
+
+  /**
    * Start NoiseCraft audio playback via postMessage.
    */
   startAudio(): void {

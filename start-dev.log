@@ -32744,3 +32744,17 @@ Import trace:
  GET /audio 200 in 137ms (next.js: 35ms, application-code: 102ms)
  GET /audio 200 in 78ms (next.js: 13ms, application-code: 65ms)
  GET /audio 200 in 140ms (next.js: 39ms, application-code: 102ms)
+ GET /audio 200 in 263ms (next.js: 97ms, application-code: 166ms)
+ GET /music 200 in 63ms (next.js: 33ms, application-code: 30ms)
+✓ Compiled in 217ms
+✓ Compiled in 38ms
+✓ Compiled in 192ms
+ GET /streams 200 in 112ms (next.js: 36ms, application-code: 76ms)
+ GET /music 200 in 1011ms (next.js: 303ms, application-code: 708ms)
+ GET /audio 200 in 41ms (next.js: 9ms, application-code: 32ms)
+ GET /music 200 in 59ms (next.js: 20ms, application-code: 39ms)
+✓ Compiled in 199ms
+[browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
+✓ Compiled in 62ms
+ GET /audio 200 in 56ms (next.js: 22ms, application-code: 34ms)
+✓ Saved 1.ncft to /Users/exhibition/umwelt/noisecraft/examples/1.ncft (318 bytes)

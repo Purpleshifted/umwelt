@@ -2216,12 +2216,53 @@ class AI_Seq extends UINode {
     super(id, state, editor);
     // Visual label
     let label = document.createElement("div");
-    label.innerText = "(Receives sequences from Umwelt MusicEngine)";
+    label.innerText = "(Receives sequences from Umwelt)";
     label.style.fontSize = "10px";
     label.style.color = "#888";
     label.style.padding = "4px";
     label.style.textAlign = "center";
     this.centerDiv.appendChild(label);
+
+    // Dropdown for selecting the AI Module
+    let select = document.createElement("select");
+    select.className = "nodrag";
+    select.style.margin = "4px";
+    select.style.width = "90%";
+    select.style.backgroundColor = "#222";
+    select.style.color = "#FFF";
+    select.style.border = "1px solid #444";
+    this.centerDiv.appendChild(select);
+
+    // Function to update options
+    const updateOptions = () => {
+      select.innerHTML = '';
+      let defaultOpt = document.createElement("option");
+      defaultOpt.value = "";
+      defaultOpt.innerText = "-- Select AI Module --";
+      select.appendChild(defaultOpt);
+
+      if (window._musicModules) {
+        window._musicModules.forEach(mod => {
+          let opt = document.createElement("option");
+          opt.value = mod.id;
+          opt.innerText = mod.name;
+          select.appendChild(opt);
+        });
+      }
+      select.value = state.params.moduleId || "";
+    };
+
+    updateOptions();
+
+    // Re-render options when window gets new modules
+    window.addEventListener('musicModulesUpdated', updateOptions);
+
+    select.onchange = (evt) => {
+      this.send(new model.SetParam(this.nodeId, "moduleId", select.value));
+    };
+    
+    // Stop event propagation so clicking the select doesn't drag the node
+    select.onpointerdown = (evt) => evt.stopPropagation();
   }
 }
 

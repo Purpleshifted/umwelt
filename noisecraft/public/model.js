@@ -48,7 +48,9 @@ export const NODE_SCHEMA =
             { name: 'clock', default: 0 }
         ],
         outs: ['freq', 'gate'],
-        params: [],
+        params: [
+            { name: 'moduleId', default: '' }
+        ],
         state: [],
         description: 'AI Sequence Receiver (Unlimited Steps)',
     },

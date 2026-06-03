@@ -42,13 +42,9 @@ class MusicEngine {
   private sendSequenceToAI(module: MusicModule, seq: { pitches: number[]; gates: number[] }) {
     const bridge = getNoiseCraftBridge();
     
-    // If the module specifies a target node, send it specifically to that node
-    if (module.type === 'magenta_ai' && module.magentaConfig?.targetNodeId) {
-      bridge.setSequence(module.magentaConfig.targetNodeId, seq.pitches, seq.gates);
-    } else {
-      // Fallback: broadcast to all AI_Seq nodes if no target is specified
-      bridge.setSequence('*', seq.pitches, seq.gates);
-    }
+    // Broadcast the sequence to the NoiseCraft iframe.
+    // The embedded.html script will route it to all AI_Seq nodes that have selected this module.id.
+    bridge.setSequence(module.id, seq.pitches, seq.gates);
   }
 
   start() {
@@ -57,6 +53,16 @@ class MusicEngine {
     
     // Bind to NoiseCraft clock pulses
     const bridge = getNoiseCraftBridge();
+
+    // Send available modules to NoiseCraft immediately and subscribe to updates
+    const syncModules = () => {
+      const state = useMusicStore.getState();
+      const aiModules = state.modules.filter(m => m.type === 'magenta_ai').map(m => ({ id: m.id, name: m.name }));
+      bridge.postMessage({ type: 'noiseCraft:updateModules', modules: aiModules });
+    };
+    syncModules();
+    useMusicStore.subscribe(syncModules);
+
     bridge.onClockPulse = (nodeId: string, pulseTime: number, sendTime: number) => {
       if (!this.isRunning) return;
       const musicState = useMusicStore.getState();

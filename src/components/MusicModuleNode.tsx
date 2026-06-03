@@ -100,32 +100,6 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
                 })}
               />
             </div>
-            <div className={styles.field}>
-              <label>Target AI_Seq Node ID</label>
-              <input 
-                type="text"
-                className="nodrag"
-                placeholder="e.g. n12 (Click node in patch)"
-                value={module.magentaConfig.targetNodeId || ''}
-                onFocus={() => {
-                  // Temporary hack: when this is focused, listen for noiseCraft:nodeClicked
-                  const listener = (e: MessageEvent) => {
-                    if (e.data?.type === 'noiseCraft:nodeClicked' && e.data.nodeId !== undefined) {
-                      updateModule(module.id, {
-                        magentaConfig: { ...module.magentaConfig!, targetNodeId: String(e.data.nodeId) }
-                      });
-                      window.removeEventListener('message', listener);
-                    }
-                  };
-                  window.addEventListener('message', listener);
-                  // Clean up after 10 seconds if no click
-                  setTimeout(() => window.removeEventListener('message', listener), 10000);
-                }}
-                onChange={(e) => updateModule(module.id, { 
-                  magentaConfig: { ...module.magentaConfig!, targetNodeId: e.target.value } 
-                })}
-              />
-            </div>
           </div>
         )}
 
