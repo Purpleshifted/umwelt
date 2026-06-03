@@ -32720,3 +32720,14 @@ Import trace:
   44 |             ))}
   45 |           </select>
  GET /audio? 200 in 114ms (next.js: 21ms, application-code: 92ms)
+ GET /music 200 in 117ms (next.js: 51ms, application-code: 66ms)
+ GET /music 200 in 81ms (next.js: 16ms, application-code: 65ms)
+ GET /streams 200 in 123ms (next.js: 79ms, application-code: 43ms)
+ GET /music 200 in 26ms (next.js: 6ms, application-code: 21ms)
+ GET /audio 200 in 44ms (next.js: 9ms, application-code: 34ms)
+ GET /music 200 in 77ms (next.js: 31ms, application-code: 46ms)
+ GET /audio 200 in 46ms (next.js: 10ms, application-code: 37ms)
+✓ Compiled in 460ms
+✓ Compiled in 60ms
+✓ Compiled in 40ms
+✓ Compiled in 28ms

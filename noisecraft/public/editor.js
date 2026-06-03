@@ -1274,6 +1274,14 @@ class ClockOut extends UINode {
     // Broadcast a clock pulse
     midi.broadcast([0xf8], sendTime);
 
+    // Forward to React parent frame
+    window.parent.postMessage({
+      type: 'noiseCraft:clockPulse',
+      nodeId: this.id,
+      pulseTime: pulseTime,
+      sendTime: sendTime
+    }, '*');
+
     this.lastTime = pulseTime;
     this.lastSent = sendTime;
   }

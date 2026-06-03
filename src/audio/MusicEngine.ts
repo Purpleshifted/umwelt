@@ -42,24 +42,26 @@ class MusicEngine {
   start() {
     if (this.isRunning) return;
     this.isRunning = true;
-    this.loop();
+    
+    // Bind to NoiseCraft clock pulses
+    const bridge = getNoiseCraftBridge();
+    bridge.onClockPulse = (nodeId: string, pulseTime: number, sendTime: number) => {
+      if (!this.isRunning) return;
+      const musicState = useMusicStore.getState();
+      const activeMagenta = musicState.modules.find(m => m.type === 'magenta_ai');
+      if (activeMagenta) {
+        this.processMagentaPlayback(activeMagenta);
+      }
+    };
   }
 
   stop() {
     this.isRunning = false;
-  }
-
-  private loop = () => {
-    if (!this.isRunning) return;
-    requestAnimationFrame(this.loop);
-
-    const musicState = useMusicStore.getState();
-    const activeMagenta = musicState.modules.find(m => m.type === 'magenta_ai');
-
-    if (activeMagenta) {
-      this.processMagentaPlayback(activeMagenta);
+    const bridge = getNoiseCraftBridge();
+    if (bridge.onClockPulse) {
+      bridge.onClockPulse = undefined;
     }
-  };
+  }
 
   private processMagentaPlayback(module: MusicModule) {
     const now = performance.now();
@@ -82,35 +84,26 @@ class MusicEngine {
     
     if (!currentNote) return;
 
-    // In a real scheduler, we would use AudioContext.currentTime.
-    // For this prototype, we'll use performance.now() and a simple elapsed check.
-    const noteDurationMs = (currentNote.endTime - currentNote.startTime) * 1000;
+    // Play note immediately! (We are now driven perfectly by the external NoiseCraft clock pulse)
+    const hz = this.midiToHz(currentNote.pitch);
+    const bridge = getNoiseCraftBridge();
     
-    if (now - this.lastNoteTime >= noteDurationMs) {
-      // Play note!
-      const hz = this.midiToHz(currentNote.pitch);
-      
-      // Send to NoiseCraft!
-      const bridge = getNoiseCraftBridge();
-      
-      // We assume the user has mapped these node names in their NoiseCraft patch:
-      // - A Knob named "AI_Pitch"
-      // - A Knob named "AI_Gate"
+    // Send Pitch and Gate ON
+    bridge.setParams([
+      { nodeId: 'AI_Pitch', paramName: 'value', value: hz },
+      { nodeId: 'AI_Gate', paramName: 'value', value: 1 } 
+    ]);
+
+    // Turn off gate rapidly (like a short modular trigger)
+    // In a real modular setup, the clock pulse width or a separate envelope would control this.
+    // For now, we simulate a 50ms trigger pulse.
+    setTimeout(() => {
       bridge.setParams([
-        { nodeId: 'AI_Pitch', paramName: 'value', value: hz },
-        { nodeId: 'AI_Gate', paramName: 'value', value: 1 } // Note ON
+        { nodeId: 'AI_Gate', paramName: 'value', value: 0 } 
       ]);
+    }, 50);
 
-      // Turn off gate after a short time (simulate trigger)
-      setTimeout(() => {
-        bridge.setParams([
-          { nodeId: 'AI_Gate', paramName: 'value', value: 0 } // Note OFF
-        ]);
-      }, noteDurationMs * 0.8);
-
-      this.playCursor++;
-      this.lastNoteTime = now;
-    }
+    this.playCursor++;
   }
 
   private async generateNextSequence(module: MusicModule) {
