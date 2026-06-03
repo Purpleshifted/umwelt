@@ -14,7 +14,7 @@ interface MusicModuleNodeProps {
 export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
   const { module, selected } = data;
   const { updateModule, removeModule } = useMusicStore();
-  const { virtualStreams } = useAudioMapStore();
+  const { streams } = useAudioMapStore();
 
   const handleInputStreamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateModule(module.id, { inputStreamId: e.target.value || null });
@@ -39,7 +39,7 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
             onChange={handleInputStreamChange}
           >
             <option value="">-- No Stream --</option>
-            {virtualStreams.map(vs => (
+            {streams.map(vs => (
               <option key={vs.id} value={vs.id}>{vs.name}</option>
             ))}
           </select>

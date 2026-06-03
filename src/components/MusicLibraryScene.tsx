@@ -28,7 +28,7 @@ const nodeTypes = {
 
 function Flow() {
   const { modules, addModule, updateMultipleModules } = useMusicStore();
-  const { virtualStreams } = useAudioMapStore();
+  const { streams } = useAudioMapStore();
   
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<Node>([]);
   const [edges, setEdges] = useEdgesState<Edge>([]);
