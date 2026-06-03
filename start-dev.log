@@ -32988,3 +32988,31 @@ Import trace:
     ./src/app/music/page.tsx [Server Component] 
 ✓ Compiled in 189ms
  GET /audio 200 in 284ms (next.js: 86ms, application-code: 198ms)
+ GET /music 200 in 106ms (next.js: 57ms, application-code: 49ms)
+[browser] Encountered two children with the same key, `e_music_mod_1780483055515_music_mod_1780486749675`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+✓ Compiled in 108ms
+✓ Compiled in 120ms
+[browser] ./src/components/MusicModuleNode.tsx:126:13
+Expression expected
+  124 |             <Handle type="source" position={Position.Right} id="pitch" style={{ top: 'aut...
+  125 |             <Handle type="source" position={Position.Right} id="gate" style={{ top: 'auto...
+> 126 |           </>
+      |             ^
+  127 |         )}
+  128 |       </div>
+  129 |     </div>
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+✓ Compiled in 147ms
+ GET /music 200 in 108ms (next.js: 31ms, application-code: 77ms)
+✓ Compiled in 30ms
+[browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
+✓ Compiled in 67ms
+✓ Compiled in 43ms

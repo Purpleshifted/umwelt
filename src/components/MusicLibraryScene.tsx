@@ -31,8 +31,6 @@ function Flow() {
   const { streams } = useAudioMapStore();
   
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<Node>([]);
-  // We don't use useEdgesState directly anymore, we rely on the store
-  const { edges, setEdges } = useMusicStore();
 
   // Initialize and start MusicEngine
   React.useEffect(() => {
@@ -62,23 +60,6 @@ function Flow() {
       });
     });
   }, [modules, setNodes]);
-
-  const onConnect = useCallback((params: any) => {
-    setEdges((eds) => {
-      const newEdge = { ...params, id: `e_${params.source}_${params.target}` };
-      return [...eds, newEdge];
-    });
-  }, [setEdges]);
-
-  const onEdgesChange = useCallback((changes: any[]) => {
-    setEdges((eds) => {
-      const remainingEdges = eds.filter((e) => {
-        const removeChange = changes.find((c) => c.type === 'remove' && c.id === e.id);
-        return !removeChange;
-      });
-      return remainingEdges;
-    });
-  }, [setEdges]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) => {
@@ -122,10 +103,7 @@ function Flow() {
     <div className={styles.flowWrapper}>
       <ReactFlow
         nodes={nodes}
-        edges={edges}
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         nodeTypes={nodeTypes}
         fitView
         attributionPosition="bottom-right"
@@ -144,17 +122,11 @@ function Flow() {
         
         <Panel position="top-left" className={styles.toolbar}>
           <div className={styles.title}>Music Library Graph</div>
-          <button className={styles.btn} onClick={() => handleAddModule('input')}>
-            + Stream Input
-          </button>
-          <button className={styles.btn} onClick={() => handleAddModule('magenta_ai')}>
-            + Magenta AI
-          </button>
           <button className={styles.btn} onClick={() => handleAddModule('harmonic_array')}>
             + Harmonic Array
           </button>
-          <button className={styles.btn} onClick={() => handleAddModule('output')}>
-            + NoiseCraft Target
+          <button className={styles.btn} onClick={() => handleAddModule('magenta_ai')}>
+            + Magenta AI
           </button>
         </Panel>
       </ReactFlow>
