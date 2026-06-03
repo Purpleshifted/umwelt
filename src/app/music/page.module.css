@@ -1,0 +1,149 @@
+.container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #e0e0e0;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 32px;
+  margin: 0 0 10px 0;
+  color: #fff;
+}
+
+.header p {
+  color: #999;
+  font-size: 16px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.btn {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background: #444;
+  border-color: #666;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  background: #151515;
+  border: 1px dashed #333;
+  border-radius: 8px;
+  color: #666;
+}
+
+.moduleCard {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+}
+
+.deleteBtn {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.deleteBtn:hover {
+  color: #ff4444;
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.field select, .field input[type="text"] {
+  width: 100%;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.configArea {
+  background: #111;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+
+.outputs {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #333;
+}
+
+.outputs p {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #999;
+}
+
+.outputs ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #ccc;
+  font-size: 13px;
+}
+
+.outputs code {
+  background: #222;
+  padding: 2px 4px;
+  border-radius: 3px;
+  color: #4CAF50;
+}

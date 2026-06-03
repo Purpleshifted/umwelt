@@ -49,6 +49,7 @@ export default function NavBar() {
     { href: '/physical', label: 'PHYSICAL VIEW' },
     { href: '/mirror', label: 'MIRROR SPACE' },
     { href: '/streams', label: 'STREAM MANAGER' },
+    { href: '/music', label: 'MUSIC LIBRARY' },
     { href: '/audio', label: 'AUDIO EDITOR' },
     { href: '/experience', label: 'EXPERIENCE' },
     { href: '/collective', label: 'COLLECTIVE' },
