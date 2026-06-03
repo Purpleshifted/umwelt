@@ -3,7 +3,7 @@ import { sequences } from '@magenta/music/es6/core';
 import { INoteSequence } from '@magenta/music/es6/protobuf';
 import { useMusicStore, MusicModule } from '@/store/musicStore';
 import { useAudioMapStore } from '@/store/audioMapStore';
-import { NoiseCraftBridge } from './NoiseCraftBridge';
+import { getNoiseCraftBridge } from './NoiseCraftBridge';
 
 class MusicEngine {
   private static instance: MusicEngine;
@@ -91,7 +91,7 @@ class MusicEngine {
       const hz = this.midiToHz(currentNote.pitch);
       
       // Send to NoiseCraft!
-      const bridge = NoiseCraftBridge.getInstance();
+      const bridge = getNoiseCraftBridge();
       
       // We assume the user has mapped these node names in their NoiseCraft patch:
       // - A Knob named "AI_Pitch"
