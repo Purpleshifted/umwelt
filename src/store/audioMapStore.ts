@@ -37,6 +37,8 @@ export interface NodeMapping {
   nodeId: string;
   streamId: string;
   targetSystem?: 'noisecraft' | 'macro';
+  outputMin?: number;
+  outputMax?: number;
 }
 
 interface AudioMapState {

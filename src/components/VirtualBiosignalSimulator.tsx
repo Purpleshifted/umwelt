@@ -98,7 +98,9 @@ export default function VirtualBiosignalSimulator() {
           }, cache);
           
         const normalizedValue = Math.max(0, Math.min(1, rawValue));
-        const scaledValue = m.outputMin + normalizedValue * (m.outputMax - m.outputMin);
+        const outMin = m.outputMin ?? 0;
+        const outMax = m.outputMax ?? 1;
+        const scaledValue = outMin + normalizedValue * (outMax - outMin);
         
         // Is it a MacroPatcher node? (e.g., "gain-123.gain" or just "gain-123")
         let targetNodeId = m.nodeId;

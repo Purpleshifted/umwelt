@@ -2,7 +2,8 @@ import { MusicRNN } from '@magenta/music/es6/music_rnn';
 import { sequences } from '@magenta/music/es6/core';
 import { INoteSequence } from '@magenta/music/es6/protobuf';
 import { useMusicStore, MusicModule } from '@/store/musicStore';
-import { useAudioMapStore } from '@/store/audioMapStore';
+import { useAudioMapStore, evaluateStreamValue } from '@/store/audioMapStore';
+import { useSensorStore } from '@/store/sensorStore';
 import { getNoiseCraftBridge } from './NoiseCraftBridge';
 
 class MusicEngine {
@@ -67,8 +68,48 @@ class MusicEngine {
     bridge.onClockPulse = (nodeId: string, pulseTime: number, sendTime: number) => {
       if (!this.isRunning) return;
       const musicState = useMusicStore.getState();
+      const audioState = useAudioMapStore.getState();
       const activeMagenta = musicState.modules.find(m => m.type === 'magenta_ai');
       if (activeMagenta) {
+        // Evaluate the driving input for this module
+        let driveValue = 0;
+        const inputEdge = musicState.edges.find(e => e.target === activeMagenta.id);
+        if (inputEdge) {
+          const inputModule = musicState.modules.find(m => m.id === inputEdge.source);
+          if (inputModule) {
+            if (inputModule.type === 'virtual_stream' && inputModule.inputStreamId) {
+              const sensors = useSensorStore.getState();
+              const sensorValues = { ppg: sensors.ppg, emg: sensors.emg, ecg: sensors.ecg, gsr: sensors.gsr, mouseX: sensors.mouseX, mouseY: sensors.mouseY };
+              driveValue = evaluateStreamValue(inputModule.inputStreamId, audioState.streams, sensorValues);
+            } else if (inputModule.type === 'noise' && inputModule.noiseConfig) {
+              // Simple random noise scaled by speed
+              driveValue = Math.random() * inputModule.noiseConfig.speed;
+            } else if (inputModule.type === 'sine' && inputModule.sineConfig) {
+              // Sine wave based on performance.now()
+              const t = performance.now() / 1000;
+              driveValue = (Math.sin(t * Math.PI * 2 * inputModule.sineConfig.frequency) + 1) / 2;
+            }
+          }
+        } else {
+          // Fallback for legacy mode: check if module itself has inputStreamId directly (though UI hides it)
+          if (activeMagenta.inputStreamId) {
+            const sensors = useSensorStore.getState();
+            const sensorValues = { ppg: sensors.ppg, emg: sensors.emg, ecg: sensors.ecg, gsr: sensors.gsr, mouseX: sensors.mouseX, mouseY: sensors.mouseY };
+            driveValue = evaluateStreamValue(activeMagenta.inputStreamId, audioState.streams, sensorValues);
+          }
+        }
+
+        // Determine density threshold
+        const density = activeMagenta.magentaConfig?.density ?? 0.8;
+        // Map driveValue [0, 1] to a chance.
+        // If driveValue > (1 - density), play a note. (e.g. if density is 0.9, it plays if drive > 0.1)
+        const shouldPlay = driveValue > (1 - density);
+
+        if (!shouldPlay) {
+          this.playCursor++;
+          return;
+        }
+
         // If we have a stored sequence, ensure it's sent to AI nodes once
         if ((activeMagenta as any).sequenceData) {
           const { pitches, gates } = (activeMagenta as any).sequenceData;
@@ -111,7 +152,7 @@ class MusicEngine {
     if (!currentNote) return;
 
     // Play note immediately! (We are now driven perfectly by the external NoiseCraft clock pulse)
-    const hz = this.midiToHz(currentNote.pitch);
+    const hz = this.midiToHz(currentNote.pitch ?? 60);
     const bridge = getNoiseCraftBridge();
     
     // Send Pitch and Gate ON

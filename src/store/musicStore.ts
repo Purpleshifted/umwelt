@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { Edge } from '@xyflow/react';
 
-export type MusicModuleType = 'harmonic_array' | 'magenta_ai';
+export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'noise' | 'sine' | 'virtual_stream';
 
 export interface HarmonicArrayConfig {
   scaleType: 'major' | 'minor' | 'dorian' | 'altered';
@@ -15,28 +16,41 @@ export interface MagentaConfig {
   density: number; // 0 to 1
 }
 
+export interface SineConfig {
+  frequency: number;
+}
+
+export interface NoiseConfig {
+  speed: number;
+}
+
 export interface MusicModule {
   id: string;
   name: string;
   type: MusicModuleType;
-  inputStreamId: string | null; // ID of the VirtualStream driving this module (e.g. Engagement)
+  inputStreamId: string | null; // ID of the VirtualStream for 'virtual_stream' node type
   harmonicConfig?: HarmonicArrayConfig;
   magentaConfig?: MagentaConfig;
+  sineConfig?: SineConfig;
+  noiseConfig?: NoiseConfig;
   position?: { x: number; y: number };
 }
 
 interface MusicState {
   modules: MusicModule[];
+  edges: Edge[];
   addModule: (module: MusicModule) => void;
   updateModule: (id: string, updates: Partial<MusicModule>) => void;
   updateMultipleModules: (updates: {id: string, changes: Partial<MusicModule>}[]) => void;
   removeModule: (id: string) => void;
+  setEdges: (edges: Edge[] | ((eds: Edge[]) => Edge[])) => void;
 }
 
 export const useMusicStore = create<MusicState>()(
   persist(
     (set) => ({
       modules: [],
+      edges: [],
       addModule: (module) =>
         set((state) => ({ modules: [...state.modules, module] })),
       updateModule: (id, updates) =>
@@ -57,6 +71,10 @@ export const useMusicStore = create<MusicState>()(
       removeModule: (id) =>
         set((state) => ({
           modules: state.modules.filter((m) => m.id !== id),
+        })),
+      setEdges: (edgesOrUpdater) =>
+        set((state) => ({
+          edges: typeof edgesOrUpdater === 'function' ? edgesOrUpdater(state.edges) : edgesOrUpdater
         })),
     }),
     {

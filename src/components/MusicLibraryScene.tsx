@@ -27,7 +27,7 @@ const nodeTypes = {
 };
 
 function Flow() {
-  const { modules, addModule, updateMultipleModules } = useMusicStore();
+  const { modules, addModule, updateMultipleModules, edges, setEdges } = useMusicStore();
   const { streams } = useAudioMapStore();
   
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<Node>([]);
@@ -61,6 +61,23 @@ function Flow() {
     });
   }, [modules, setNodes]);
 
+  const onConnect = useCallback((params: any) => {
+    setEdges((eds) => {
+      const newEdge = { ...params, id: `e_${params.source}_${params.target}` };
+      return [...eds, newEdge];
+    });
+  }, [setEdges]);
+
+  const onEdgesChange = useCallback((changes: any[]) => {
+    setEdges((eds) => {
+      const remainingEdges = eds.filter((e) => {
+        const removeChange = changes.find((c) => c.type === 'remove' && c.id === e.id);
+        return !removeChange;
+      });
+      return remainingEdges;
+    });
+  }, [setEdges]);
+
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) => {
       onNodesChangeBase(changes);
@@ -79,13 +96,27 @@ function Flow() {
     [onNodesChangeBase, updateMultipleModules]
   );
 
-  const handleAddModule = (type: MusicModuleType) => {
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean } | null>(null);
+
+  const handleContextMenu = useCallback((e: MouseEvent | React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, show: true });
+  }, []);
+
+  const closeContextMenu = useCallback(() => {
+    setContextMenu(null);
+  }, []);
+
+  const handleAddModule = (type: MusicModuleType, x?: number, y?: number) => {
+    const defaultX = window.innerWidth / 2 - 140;
+    const defaultY = window.innerHeight / 2 - 100;
+    
     addModule({
       id: `music_mod_${Date.now()}`,
-      name: type === 'magenta_ai' ? 'Magenta Composer' : 'Harmonic Array',
+      name: type === 'magenta_ai' ? 'Magenta Composer' : type === 'harmonic_array' ? 'Harmonic Array' : type.replace('_', ' ').toUpperCase(),
       type,
       inputStreamId: null,
-      position: { x: window.innerWidth / 2 - 140, y: window.innerHeight / 2 - 100 },
+      position: { x: x ?? defaultX, y: y ?? defaultY },
       harmonicConfig: type === 'harmonic_array' ? {
         scaleType: 'dorian',
         rootNote: 60,
@@ -95,15 +126,22 @@ function Flow() {
         temperatureMin: 0.1,
         temperatureMax: 1.5,
         density: 0.8
-      } : undefined
+      } : undefined,
+      sineConfig: type === 'sine' ? { frequency: 1.0 } : undefined,
+      noiseConfig: type === 'noise' ? { speed: 1.0 } : undefined
     });
+    closeContextMenu();
   };
 
   return (
-    <div className={styles.flowWrapper}>
+    <div className={styles.flowWrapper} onClick={closeContextMenu}>
       <ReactFlow
         nodes={nodes}
+        edges={edges}
         onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onPaneContextMenu={handleContextMenu}
         nodeTypes={nodeTypes}
         fitView
         attributionPosition="bottom-right"
@@ -121,7 +159,7 @@ function Flow() {
         />
         
         <Panel position="top-left" className={styles.toolbar}>
-          <div className={styles.title}>Music Library Graph</div>
+          <div className={styles.title}>Generators</div>
           <button className={styles.btn} onClick={() => handleAddModule('harmonic_array')}>
             + Harmonic Array
           </button>
@@ -129,6 +167,28 @@ function Flow() {
             + Magenta AI
           </button>
         </Panel>
+
+        {contextMenu?.show && (
+          <div 
+            className={styles.contextMenu} 
+            style={{ 
+              position: 'absolute', 
+              top: contextMenu.y, 
+              left: contextMenu.x, 
+              zIndex: 1000, 
+              background: '#222', 
+              border: '1px solid #444', 
+              borderRadius: '4px',
+              padding: '4px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+            }}
+          >
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px' }}>Add Input</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sine', contextMenu.x, contextMenu.y)}>Sine LFO</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('noise', contextMenu.x, contextMenu.y)}>Noise</button>
+          </div>
+        )}
       </ReactFlow>
     </div>
   );

@@ -33016,3 +33016,66 @@ Import trace:
 [browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
 ✓ Compiled in 67ms
 ✓ Compiled in 43ms
+✓ Compiled in 31ms
+[browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
+✓ Compiled in 128ms
+✓ Compiled in 134ms
+✓ Compiled in 219ms
+[browser] Uncaught ReferenceError: edges is not defined
+    at Flow (src/components/MusicLibraryScene.tsx:123:16)
+    at S.scheduleRefresh (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js:1:86461)
+    at Set.forEach (<anonymous>)
+    at MusicLibraryScene (src/components/MusicLibraryScene.tsx:162:27)
+    at MusicLibraryPage (src/app/music/page.tsx:13:7)
+  121 |       <ReactFlow
+  122 |         nodes={nodes}
+> 123 |         edges={edges}
+      |                ^
+  124 |         onNodesChange={onNodesChange}
+  125 |         onEdgesChange={onEdgesChange}
+  126 |         onConnect={onConnect}
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+✓ Compiled in 162ms
+[browser] Uncaught ReferenceError: setEdges is not defined
+    at Flow (src/components/MusicLibraryScene.tsx:69:7)
+    at S.scheduleRefresh (chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js:1:86461)
+    at Set.forEach (<anonymous>)
+    at MusicLibraryScene (src/components/MusicLibraryScene.tsx:201:9)
+    at MusicLibraryPage (src/app/music/page.tsx:13:7)
+  67 |       return [...eds, newEdge];
+  68 |     });
+> 69 |   }, [setEdges]);
+     |       ^
+  70 |
+  71 |   const onEdgesChange = useCallback((changes: any[]) => {
+  72 |     setEdges((eds) => {
+ GET /music 200 in 275ms (next.js: 99ms, application-code: 176ms)
+[browser] Uncaught ReferenceError: setEdges is not defined
+    at Flow (src/components/MusicLibraryScene.tsx:69:7)
+    at MusicLibraryScene (src/components/MusicLibraryScene.tsx:201:9)
+    at MusicLibraryPage (src/app/music/page.tsx:13:7)
+  67 |       return [...eds, newEdge];
+  68 |     });
+> 69 |   }, [setEdges]);
+     |       ^
+  70 |
+  71 |   const onEdgesChange = useCallback((changes: any[]) => {
+  72 |     setEdges((eds) => {
+✓ Compiled in 173ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /music 200 in 187ms (next.js: 36ms, application-code: 151ms)
+✓ Compiled in 352ms
+ GET /music 200 in 285ms (next.js: 161ms, application-code: 124ms)
+[browser] [React Flow]: It seems that you are trying to drag a node that is not initialized. Please use onNodesChange as explained in the docs. Help: https://reactflow.dev/error#015
+[browser] [React Flow]: It seems that you are trying to drag a node that is not initialized. Please use onNodesChange as explained in the docs. Help: https://reactflow.dev/error#015
+ GET /audio 200 in 85ms (next.js: 26ms, application-code: 59ms)
+ GET /streams 200 in 44ms (next.js: 14ms, application-code: 30ms)
+ GET /music 200 in 42ms (next.js: 19ms, application-code: 23ms)
+✓ Compiled in 170ms
+✓ Compiled in 957ms
+✓ Compiled in 100ms
+ GET /music 200 in 601ms (next.js: 139ms, application-code: 461ms)
+ GET /audio 200 in 628ms (next.js: 130ms, application-code: 498ms)
+✓ Compiled in 252ms
+ GET /music 200 in 386ms (next.js: 163ms, application-code: 223ms)
+ GET /audio 200 in 71ms (next.js: 33ms, application-code: 38ms)
