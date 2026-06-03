@@ -13,6 +13,7 @@ export interface MagentaConfig {
   temperatureMin: number;
   temperatureMax: number;
   density: number; // 0 to 1
+  targetNodeId?: string; // NoiseCraft AI_Seq node ID
 }
 
 export interface MusicModule {

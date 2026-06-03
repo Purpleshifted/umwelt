@@ -39,13 +39,16 @@ class MusicEngine {
     }
   }
 
-  private sendSequenceToAI(seq: { pitches: number[]; gates: number[] }) {
+  private sendSequenceToAI(module: MusicModule, seq: { pitches: number[]; gates: number[] }) {
     const bridge = getNoiseCraftBridge();
-    const mappings = useAudioMapStore.getState().mappings;
-    const aiNodeMappings = mappings.filter(m => m.targetSystem === 'noisecraft');
-    aiNodeMappings.forEach(m => {
-      bridge.setSequence(m.nodeId, seq.pitches, seq.gates);
-    });
+    
+    // If the module specifies a target node, send it specifically to that node
+    if (module.type === 'magenta_ai' && module.magentaConfig?.targetNodeId) {
+      bridge.setSequence(module.magentaConfig.targetNodeId, seq.pitches, seq.gates);
+    } else {
+      // Fallback: broadcast to all AI_Seq nodes if no target is specified
+      bridge.setSequence('*', seq.pitches, seq.gates);
+    }
   }
 
   start() {
@@ -62,7 +65,7 @@ class MusicEngine {
         // If we have a stored sequence, ensure it's sent to AI nodes once
         if ((activeMagenta as any).sequenceData) {
           const { pitches, gates } = (activeMagenta as any).sequenceData;
-          this.sendSequenceToAI({ pitches, gates });
+          this.sendSequenceToAI(activeMagenta, { pitches, gates });
           // Clear after sending to avoid repeated sending
           delete (activeMagenta as any).sequenceData;
         }
