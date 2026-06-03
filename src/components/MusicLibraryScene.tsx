@@ -8,7 +8,6 @@ import {
   Background,
   Node,
   Edge,
-  applyNodeChanges,
   NodeChange,
   ReactFlowProvider,
   useNodesState,
@@ -21,6 +20,7 @@ import { useMusicStore, MusicModuleType, MusicModule } from '@/store/musicStore'
 import { useAudioMapStore } from '@/store/audioMapStore';
 import MusicModuleNode from './MusicModuleNode';
 import styles from './MusicLibraryScene.module.css';
+import { musicEngine } from '@/audio/MusicEngine';
 
 const nodeTypes = {
   musicModule: MusicModuleNode,
@@ -32,6 +32,16 @@ function Flow() {
   
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<Node>([]);
   const [edges, setEdges] = useEdgesState<Edge>([]);
+
+  // Initialize and start MusicEngine
+  React.useEffect(() => {
+    musicEngine.initialize().then(() => {
+      musicEngine.start();
+    });
+    return () => {
+      musicEngine.stop();
+    };
+  }, []);
 
   // Sync store modules to React Flow nodes/edges
   React.useEffect(() => {

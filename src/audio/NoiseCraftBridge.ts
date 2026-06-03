@@ -307,6 +307,14 @@ export class NoiseCraftBridge {
   }
 
   /**
+   * Directly send parameter updates to specific nodes.
+   */
+  setParams(params: Array<{ nodeId: string; paramName: string; value: number }>): void {
+    if (!this.iframe?.contentWindow || !this._isPlaying) return;
+    this.iframe.contentWindow.postMessage({ type: 'noiseCraft:setParams', params }, '*');
+  }
+
+  /**
    * Update NoiseCraft knob parameters from sensor values.
    * Uses the noiseCraft:setParams batch protocol for efficiency.
    * All sensor inputs are 0-1 normalized.
