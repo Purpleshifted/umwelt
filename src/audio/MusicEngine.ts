@@ -39,6 +39,15 @@ class MusicEngine {
     }
   }
 
+  private sendSequenceToAI(seq: { pitches: number[]; gates: number[] }) {
+    const bridge = getNoiseCraftBridge();
+    const mappings = useAudioMapStore.getState().mappings;
+    const aiNodeMappings = mappings.filter(m => m.targetSystem === 'noisecraft');
+    aiNodeMappings.forEach(m => {
+      bridge.setSequence(m.nodeId, seq.pitches, seq.gates);
+    });
+  }
+
   start() {
     if (this.isRunning) return;
     this.isRunning = true;
@@ -50,6 +59,13 @@ class MusicEngine {
       const musicState = useMusicStore.getState();
       const activeMagenta = musicState.modules.find(m => m.type === 'magenta_ai');
       if (activeMagenta) {
+        // If we have a stored sequence, ensure it's sent to AI nodes once
+        if ((activeMagenta as any).sequenceData) {
+          const { pitches, gates } = (activeMagenta as any).sequenceData;
+          this.sendSequenceToAI({ pitches, gates });
+          // Clear after sending to avoid repeated sending
+          delete (activeMagenta as any).sequenceData;
+        }
         this.processMagentaPlayback(activeMagenta);
       }
     };

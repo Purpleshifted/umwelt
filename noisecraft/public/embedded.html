@@ -1440,14 +1440,19 @@
           }, 10);
         } else if (data.type === "noiseCraft:setSequence") {
           if (app.model && app.audioView) {
-            const { nodeId, pitches, gates } = data;
-            // Send directly to audio thread to avoid UI churn and history spam
-            app.audioView.send({
-              type: "SET_SEQUENCE",
-              nodeId: nodeId,
-              pitches: pitches,
-              gates: gates
-            });
+            const { pitches, gates } = data;
+            
+            // Find all AI_Seq nodes in the current patch
+            for (const [nodeId, nodeState] of Object.entries(app.model.state.nodes)) {
+              if (nodeState.type === "AI_Seq") {
+                app.audioView.send({
+                  type: "SET_SEQUENCE",
+                  nodeId: nodeId,
+                  pitches: pitches,
+                  gates: gates
+                });
+              }
+            }
           }
         } else if (data.type === "noiseCraft:redraw") {
           // Force redraw edges and SVG

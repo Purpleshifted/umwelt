@@ -32733,3 +32733,7 @@ Import trace:
 ✓ Compiled in 28ms
 ✓ Saved 1.ncft to /Users/exhibition/umwelt/noisecraft/examples/1.ncft (33 bytes)
 ✓ Compiled in 203ms
+ GET /music 200 in 211ms (next.js: 78ms, application-code: 133ms)
+✓ Compiled in 817ms
+ GET /audio 200 in 229ms (next.js: 113ms, application-code: 116ms)
+ GET /audio 200 in 69ms (next.js: 9ms, application-code: 60ms)

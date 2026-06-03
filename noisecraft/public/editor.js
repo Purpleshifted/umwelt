@@ -2211,7 +2211,7 @@ class Scope extends UINode {
   }
 }
 
-class AI_Seq extends UI_Node {
+class AI_Seq extends UINode {
   constructor(id, state, editor) {
     super(id, state, editor);
     // Visual label
