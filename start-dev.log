@@ -388,3 +388,1354 @@ Ecmascript file had an error
  GET /audio 200 in 601ms (next.js: 29ms, application-code: 571ms)
  GET /audio 200 in 472ms (next.js: 341ms, application-code: 131ms)
  GET /audio 200 in 63ms (next.js: 4ms, application-code: 59ms)
+ GET /music 200 in 125ms (next.js: 90ms, application-code: 36ms)
+[browser] Uncaught ReferenceError: module is not defined
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:46:19)
+    at Array.map (<anonymous>)
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:39:22)
+    at Flow (src/components/MusicLibraryScene.tsx:33:61)
+    at MusicLibraryScene (src/components/MusicLibraryScene.tsx:134:9)
+    at MusicLibraryPage (src/app/music/page.tsx:13:7)
+  44 |           position: existing ? existing.position : (mod.position || { x: 200 + (i % 3) * 3...
+  45 |           selected: existing ? existing.selected : false,
+> 46 |           data: { module, selected: existing ? existing.selected : false },
+     |                   ^
+  47 |         };
+  48 |       });
+  49 |     });
+ GET /audio 200 in 319ms (next.js: 14ms, application-code: 305ms)
+✓ Compiled in 802ms
+[browser] ./src/components/MusicLibraryScene.tsx:15:8
+Expected ',', got '{'
+  13 |   ReactFlowProvider,
+  14 |   useNodesState,
+> 15 | import { Panel } from '@xyflow/react';
+     |        ^
+  16 | import '@xyflow/react/dist/style.css';
+  17 |
+  18 | import { useMusicStore, MusicModuleType, MusicModule } from '@/store/musicStore';
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+✓ Compiled in 92ms
+ GET /audio 200 in 91ms (next.js: 28ms, application-code: 63ms)
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Compressor doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Compressor was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/model.js:3:1
+Export Context doesn't exist in target module
+  1 | import '@tensorflow/tfjs-backend-webgl';
+  2 | import * as tf from '@tensorflow/tfjs';
+> 3 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { resampleAndMakeMono } from '../core/audio_utils';
+  5 | import { upsample_f0 } from '../spice/pitch_utils';
+  6 | import { MODEL_SAMPLE_RATE } from '../spice/spice';
+
+The export Context was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Filter doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Filter was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export Loop doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export Loop was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export MembraneSynth doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export MembraneSynth was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export MembraneSynth doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export MembraneSynth was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Offline doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Offline was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Player doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Player was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Reverb doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Reverb was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export ToneAudioBuffers doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export ToneAudioBuffers was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export ToneBufferSource doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export ToneBufferSource was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export Transport doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export Transport was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export Transport doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export Transport was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export immediate doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export immediate was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export loaded doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export loaded was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export now doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export now was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export setContext doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export setContext was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+ GET /audio 500 in 87ms (next.js: 46ms, application-code: 41ms)
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Compressor doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Compressor was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/model.js:3:1
+Export Context doesn't exist in target module
+  1 | import '@tensorflow/tfjs-backend-webgl';
+  2 | import * as tf from '@tensorflow/tfjs';
+> 3 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { resampleAndMakeMono } from '../core/audio_utils';
+  5 | import { upsample_f0 } from '../spice/pitch_utils';
+  6 | import { MODEL_SAMPLE_RATE } from '../spice/spice';
+
+The export Context was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Filter doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Filter was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export Loop doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export Loop was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export MembraneSynth doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export MembraneSynth was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export MembraneSynth doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export MembraneSynth was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Offline doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Offline was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Player doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Player was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Reverb doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Reverb was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export ToneAudioBuffers doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export ToneAudioBuffers was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export ToneBufferSource doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export ToneBufferSource was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export Transport doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export Transport was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export Transport doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export Transport was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export immediate doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export immediate was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export loaded doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export loaded was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export now doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export now was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export setContext doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export setContext was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] Uncaught Error: ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Compressor doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Compressor was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+
+    at Error: ./node_modules/ (magenta/music/esm/ddsp/add_reverb.js:1:1)
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Compressor doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Compressor was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/model.js:3:1
+Export Context doesn't exist in target module
+  1 | import '@tensorflow/tfjs-backend-webgl';
+  2 | import * as tf from '@tensorflow/tfjs';
+> 3 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { resampleAndMakeMono } from '../core/audio_utils';
+  5 | import { upsample_f0 } from '../spice/pitch_utils';
+  6 | import { MODEL_SAMPLE_RATE } from '../spice/spice';
+
+The export Context was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Filter doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Filter was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export Loop doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export Loop was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export MembraneSynth doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export MembraneSynth was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export MembraneSynth doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export MembraneSynth was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Offline doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Offline was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Player doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Player was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export Reverb doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export Reverb was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export ToneAudioBuffers doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export ToneAudioBuffers was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export ToneBufferSource doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export ToneBufferSource was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export Transport doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export Transport was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/recorder.js:1:1
+Export Transport doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { performance } from '../core/compat/global';
+  3 | import { NoteSequence } from '../protobuf/index';
+  4 | import { DEFAULT_QUARTERS_PER_MINUTE } from './constants';
+
+The export Transport was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/recorder.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/metronome.js:1:1
+Export immediate doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | const QUARTERS_PER_BAR = 4;
+  3 | export class MetronomeCallbackObject {
+  4 | }
+
+The export immediate was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/metronome.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export loaded doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export loaded was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/core/soundfont.js:1:1
+Export now doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { fetch } from '../core/compat/global';
+  3 | import * as constants from './constants';
+  4 | import * as logging from './logging';
+
+The export now was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/core/soundfont.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/player.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/core.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./node_modules/@magenta/music/esm/ddsp/add_reverb.js:1:1
+Export setContext doesn't exist in target module
+> 1 | import * as Tone from 'tone';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { arrayBufferToAudioBuffer } from './buffer_utils';
+  3 | export async function addReverb({ audioCtx, arrayBuffer, sampleRate, }) {
+  4 |     Tone.setContext(audioCtx);
+
+The export setContext was not found in module [project]/node_modules/tone/build/Tone.js [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Client Component Browser:
+    ./node_modules/@magenta/music/esm/ddsp/add_reverb.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/model.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp/index.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/ddsp.js [Client Component Browser]
+    ./node_modules/@magenta/music/esm/index.js [Client Component Browser]
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+✓ Compiled in 405ms
+ GET /audio 200 in 231ms (next.js: 54ms, application-code: 177ms)
+ GET /audio 200 in 112ms (next.js: 16ms, application-code: 96ms)
+ GET /music 200 in 33ms (next.js: 15ms, application-code: 18ms)
+[browser] Uncaught ReferenceError: module is not defined
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:56:19)
+    at Array.map (<anonymous>)
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:49:22)
+    at Flow (src/components/MusicLibraryScene.tsx:33:61)
+    at MusicLibraryScene (src/components/MusicLibraryScene.tsx:144:9)
+    at MusicLibraryPage (src/app/music/page.tsx:13:7)
+  54 |           position: existing ? existing.position : (mod.position || { x: 200 + (i % 3) * 3...
+  55 |           selected: existing ? existing.selected : false,
+> 56 |           data: { module, selected: existing ? existing.selected : false },
+     |                   ^
+  57 |         };
+  58 |       });
+  59 |     });
+[browser] [MusicEngine] Failed to initialize Magenta: TypeError: Failed to fetch
+    at MusicEngine.initialize (src/audio/MusicEngine.ts:34:22)
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:38:17)
+  32 |       // Use the standard basic_rnn checkpoint hosted by Google
+  33 |       this.rnn = new MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/m...
+> 34 |       await this.rnn.initialize();
+     |                      ^
+  35 |       this.initialized = true;
+  36 |       console.log('[MusicEngine] Magenta MusicRNN initialized!');
+  37 |     } catch (e) { (src/audio/MusicEngine.ts:38:15)
+[browser] [MusicEngine] Failed to initialize Magenta: TypeError: Failed to fetch
+    at MusicEngine.initialize (src/audio/MusicEngine.ts:34:22)
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:38:17)
+  32 |       // Use the standard basic_rnn checkpoint hosted by Google
+  33 |       this.rnn = new MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/m...
+> 34 |       await this.rnn.initialize();
+     |                      ^
+  35 |       this.initialized = true;
+  36 |       console.log('[MusicEngine] Magenta MusicRNN initialized!');
+  37 |     } catch (e) { (src/audio/MusicEngine.ts:38:15)
+✓ Compiled in 768ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /music 200 in 228ms (next.js: 24ms, application-code: 204ms)
+[browser] [MusicEngine] Failed to initialize Magenta: TypeError: Failed to fetch
+    at MusicEngine.initialize (src/audio/MusicEngine.ts:34:22)
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:38:17)
+  32 |       // Use the standard basic_rnn checkpoint hosted by Google
+  33 |       this.rnn = new MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/m...
+> 34 |       await this.rnn.initialize();
+     |                      ^
+  35 |       this.initialized = true;
+  36 |       console.log('[MusicEngine] Magenta MusicRNN initialized!');
+  37 |     } catch (e) { (src/audio/MusicEngine.ts:38:15)
+[browser] Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at MusicModuleNode (src/components/MusicModuleNode.tsx:42:29)
+    at Array.map (<anonymous>)
+    at Flow (src/components/MusicLibraryScene.tsx:106:7)
+    at MusicLibraryScene (src/components/MusicLibraryScene.tsx:144:9)
+    at MusicLibraryPage (src/app/music/page.tsx:13:7)
+  40 |           >
+  41 |             <option value="">-- No Stream --</option>
+> 42 |             {virtualStreams.map(vs => (
+     |                             ^
+  43 |               <option key={vs.id} value={vs.id}>{vs.name}</option>
+  44 |             ))}
+  45 |           </select>
+[browser] [MusicEngine] Failed to initialize Magenta: TypeError: Failed to fetch
+    at MusicEngine.initialize (src/audio/MusicEngine.ts:34:22)
+    at Flow.useEffect (src/components/MusicLibraryScene.tsx:38:17)
+  32 |       // Use the standard basic_rnn checkpoint hosted by Google
+  33 |       this.rnn = new MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/m...
+> 34 |       await this.rnn.initialize();
+     |                      ^
+  35 |       this.initialized = true;
+  36 |       console.log('[MusicEngine] Magenta MusicRNN initialized!');
+  37 |     } catch (e) { (src/audio/MusicEngine.ts:38:15)
+✓ Compiled in 336ms
+[browser] ./src/audio/MusicEngine.ts:52:9
+Unexpected token `!`. Expected yield, an identifier, [ or {
+  50 |   }
+  51 |
+> 52 |     if (!this.currentSequence || this.playCursor >= (this.currentSequence.notes?.length ||...
+     |         ^
+  53 |       if (!this.currentSequence) {
+  54 |         this.currentSequence = { notes: [] };
+  55 |         this.generateNextSequence(module);
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+[browser] ./src/audio/MusicEngine.ts:52:9
+Unexpected token `!`. Expected yield, an identifier, [ or {
+  50 |   }
+  51 |
+> 52 |     if (!this.currentSequence || this.playCursor >= (this.currentSequence.notes?.length ||...
+     |         ^
+  53 |       if (!this.currentSequence) {
+  54 |         this.currentSequence = { notes: [] };
+  55 |         this.generateNextSequence(module);
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+✓ Compiled in 75ms
+[browser] ./src/audio/MusicEngine.ts:52:9
+Unexpected token `!`. Expected yield, an identifier, [ or {
+  50 |   }
+  51 |
+> 52 |     if (!this.currentSequence || this.playCursor >= (this.currentSequence.notes?.length ||...
+     |         ^
+  53 |       if (!this.currentSequence) {
+  54 |         this.currentSequence = { notes: [] };
+  55 |         this.generateNextSequence(module);
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/audio/MusicEngine.ts [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 

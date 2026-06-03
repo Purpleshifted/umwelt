@@ -37,6 +37,9 @@ function Flow() {
   React.useEffect(() => {
     musicEngine.initialize().then(() => {
       musicEngine.start();
+    }).catch(err => {
+      console.warn('[MusicEngine] Initialization error caught in UI:', err);
+      musicEngine.start(); // Start anyway to use the fallback generator
     });
     return () => {
       musicEngine.stop();
@@ -53,7 +56,7 @@ function Flow() {
           type: 'musicModule',
           position: existing ? existing.position : (mod.position || { x: 200 + (i % 3) * 320, y: 150 + Math.floor(i / 3) * 200 }),
           selected: existing ? existing.selected : false,
-          data: { module, selected: existing ? existing.selected : false },
+          data: { module: mod, selected: existing ? existing.selected : false },
         };
       });
     });

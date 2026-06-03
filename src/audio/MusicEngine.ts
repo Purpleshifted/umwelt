@@ -49,10 +49,70 @@ class MusicEngine {
     this.isRunning = false;
   }
 
-  private async generateNextSequence(module: MusicModule) {
-    if (!this.rnn || !this.initialized) return;
+    if (!this.currentSequence || this.playCursor >= (this.currentSequence.notes?.length || 0)) {
+      if (!this.currentSequence) {
+        this.currentSequence = { notes: [] };
+        this.generateNextSequence(module);
+      } else if (this.playCursor >= (this.currentSequence.notes?.length || 0) && this.currentSequence.notes!.length > 0) {
+        this.currentSequence = { notes: [] };
+        this.generateNextSequence(module);
+      }
+      return;
+    }
 
-    // A seed sequence to give the RNN some context
+    const notes = this.currentSequence.notes!;
+    const currentNote = notes[this.playCursor];
+    
+    if (!currentNote) return;
+
+    const noteDurationMs = (currentNote.endTime - currentNote.startTime) * 1000;
+    
+    if (now - this.lastNoteTime >= noteDurationMs) {
+      // Play note!
+      const hz = this.midiToHz(currentNote.pitch);
+      const bridge = NoiseCraftBridge.getInstance();
+      
+      bridge.setParams([
+        { nodeId: 'AI_Pitch', paramName: 'value', value: hz },
+        { nodeId: 'AI_Gate', paramName: 'value', value: 1 } // Note ON
+      ]);
+
+      setTimeout(() => {
+        bridge.setParams([
+          { nodeId: 'AI_Gate', paramName: 'value', value: 0 } // Note OFF
+        ]);
+      }, noteDurationMs * 0.8);
+
+      this.playCursor++;
+      this.lastNoteTime = now;
+    }
+  }
+
+  private async generateNextSequence(module: MusicModule) {
+    const temp = module.magentaConfig?.temperatureMax ?? 1.0;
+
+    if (!this.rnn || !this.initialized) {
+      // FALLBACK: If Magenta failed to load (CORS/Network), use a mock generative algorithm
+      const scale = [60, 62, 64, 65, 67, 69, 71, 72]; // C major
+      const mockNotes = [];
+      let currentTime = 0;
+      
+      for (let i = 0; i < 16; i++) {
+        // Temperature determines randomness and leaps
+        const leap = Math.random() < (temp - 0.5) ? Math.floor(Math.random() * 4) : 0;
+        const pitch = scale[Math.floor(Math.random() * scale.length)] + (leap * 12);
+        const duration = Math.random() > 0.5 ? 0.25 : 0.5; // 16th or 8th notes
+        
+        mockNotes.push({ pitch, startTime: currentTime, endTime: currentTime + duration, velocity: 80 });
+        currentTime += duration;
+      }
+      
+      this.currentSequence = { notes: mockNotes };
+      this.playCursor = 0;
+      this.lastNoteTime = performance.now();
+      return;
+    }
+
     const seed: INoteSequence = {
       ticksPerQuarter: 220,
       totalTime: 1.0,
@@ -65,13 +125,7 @@ class MusicEngine {
 
     const qns = sequences.quantizeNoteSequence(seed, 4);
     
-    // Get parameters from the UI state
-    // We can also override these with the virtual stream if it's connected, 
-    // but the user said "let's use the sliders for now"
-    const temp = module.magentaConfig?.temperatureMax ?? 1.0;
-    
     try {
-      // Generate 16 steps (1 bar)
       const result = await this.rnn.continueSequence(qns, 16, temp);
       this.currentSequence = sequences.unquantizeSequence(result, this.qpm);
       this.playCursor = 0;
