@@ -1,4 +1,5 @@
 import { VirtualStream, NodeMapping, evaluateStreamValue } from '@/store/audioMapStore';
+import { useMusicStore } from '@/store/musicStore';
 
 /**
  * Umwelt Audio Engine — NoiseCraft Bridge
@@ -209,6 +210,13 @@ export class NoiseCraftBridge {
         if (this.onClockPulse) {
           this.onClockPulse(e.data.nodeId, e.data.pulseTime, e.data.sendTime);
         }
+        break;
+
+      case 'noiseCraft:editorReady':
+        // The iframe is now fully loaded, send it the modules so dropdowns populate
+        const state = useMusicStore.getState();
+        const outModules = state.modules.map((m: any) => ({ id: m.id, name: m.name }));
+        this.postMessage({ type: 'noiseCraft:updateModules', modules: outModules });
         break;
     }
   }
