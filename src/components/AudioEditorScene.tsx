@@ -54,9 +54,9 @@ export default function AudioEditorScene() {
       setTimeout(() => {
         const iframe = document.getElementById('noisecraft-iframe') as HTMLIFrameElement;
         if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.dispatchEvent(new Event('resize'));
+          iframe.contentWindow.postMessage({ type: 'noiseCraft:redraw' }, '*');
         }
-      }, 50); // slight delay to ensure it's displayed
+      }, 200); // Wait enough time for display: flex to apply bounds
     }
   }, [showNoiseCraft, mounted]);
 

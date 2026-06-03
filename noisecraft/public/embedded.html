@@ -49,7 +49,6 @@
         flex: 1;
         position: relative;
         overflow: scroll;
-        background: #111;
       }
       #graph_div {
         position: absolute;
@@ -1439,6 +1438,12 @@
             syncButtonStates();
             notifyParent({ type: "noiseCraft:audioState", status: "stopped" });
           }, 10);
+        } else if (data.type === "noiseCraft:redraw") {
+          // Force redraw edges and SVG
+          if (app.editor) {
+            console.log("Forcing editor redraw");
+            app.editor.resize();
+          }
         }
       };
       window.addEventListener("message", handleExternalMessage);

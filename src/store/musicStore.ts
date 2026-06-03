@@ -22,12 +22,14 @@ export interface MusicModule {
   inputStreamId: string | null; // ID of the VirtualStream driving this module (e.g. Engagement)
   harmonicConfig?: HarmonicArrayConfig;
   magentaConfig?: MagentaConfig;
+  position?: { x: number; y: number };
 }
 
 interface MusicState {
   modules: MusicModule[];
   addModule: (module: MusicModule) => void;
   updateModule: (id: string, updates: Partial<MusicModule>) => void;
+  updateMultipleModules: (updates: {id: string, changes: Partial<MusicModule>}[]) => void;
   removeModule: (id: string) => void;
 }
 
@@ -43,6 +45,15 @@ export const useMusicStore = create<MusicState>()(
             m.id === id ? { ...m, ...updates } : m
           ),
         })),
+      updateMultipleModules: (updates) =>
+        set((state) => {
+          const updateMap = new Map(updates.map(u => [u.id, u.changes]));
+          return {
+            modules: state.modules.map(m => 
+              updateMap.has(m.id) ? { ...m, ...updateMap.get(m.id) } : m
+            )
+          };
+        }),
       removeModule: (id) =>
         set((state) => ({
           modules: state.modules.filter((m) => m.id !== id),
