@@ -112,6 +112,12 @@ export class AudioGraph
             node.noteOn(msg.noteNo, msg.velocity);
             break;
 
+            case 'SET_SEQUENCE':
+            if (node.setSequence) {
+                node.setSequence(msg.pitches, msg.gates);
+            }
+            break;
+
             default:
             throw new TypeError('unknown message type');
         }
@@ -1004,6 +1010,86 @@ class GateSeq extends Sequencer
 }
 
 /**
+ * AI Sequence Receiver (Unlimited Steps)
+ */
+class AI_Seq extends AudioNode
+{
+    constructor(id, state, sampleRate, send)
+    {
+        super(id, state, sampleRate, send);
+        this.clockSgn = false;
+        this.stepIdx = 0;
+        this.pitches = [];
+        this.gates = [];
+        this.freq = 0;
+        this.gateVal = 0;
+        this.gateState = 'off';
+        this.trigTime = 0;
+    }
+
+    /**
+     * Store sequence sent from main thread
+     */
+    setSequence(pitches, gates)
+    {
+        this.pitches = pitches || [];
+        this.gates = gates || [];
+        this.stepIdx = 0; // reset to start
+    }
+
+    update(time, clock)
+    {
+        // Rising edge of the clock
+        if (!this.clockSgn && clock > 0)
+        {
+            if (this.pitches.length > 0)
+            {
+                let idx = this.stepIdx % this.pitches.length;
+                let pitch = this.pitches[idx];
+                let gate = this.gates[idx];
+                
+                if (gate > 0) {
+                    // Convert MIDI to Hz
+                    this.freq = 440 * Math.pow(2, (pitch - 69) / 12);
+                    this.gateState = 'pretrig';
+                    this.trigTime = time;
+                } else {
+                    this.gateState = 'off';
+                }
+                
+                this.stepIdx++;
+            }
+        }
+
+        this.clockSgn = (clock > 0);
+
+        switch (this.gateState)
+        {
+            case 'off':
+                return [this.freq, 0];
+
+            case 'pretrig':
+                this.gateState = 'on';
+                return [0, 0]; // force gate to 0 for one cycle to retrigger envelopes
+
+            case 'on':
+                // For a simple trigger, we hold for a fixed short time (e.g. 50ms = 0.05s)
+                if (time - this.trigTime > 0.05)
+                {
+                    this.gateState = 'off';
+                    this.trigTime = 0;
+                }
+                return [this.freq, 1];
+
+            default:
+                assert (false);
+        }
+        
+        return [0, 0];
+    }
+}
+
+/**
  * Map of node types to classes
  */
 let NODE_CLASSES =
@@ -1027,4 +1113,5 @@ let NODE_CLASSES =
     MidiIn: MidiIn,
     MonoSeq: MonoSeq,
     GateSeq: GateSeq,
+    AI_Seq: AI_Seq,
 };

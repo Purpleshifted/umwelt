@@ -43,6 +43,16 @@ export const NODE_SCHEMA =
         description: 'ADSR envelope generator',
     },
 
+    'AI_Seq': {
+        ins: [
+            { name: 'clock', default: 0 }
+        ],
+        outs: ['freq', 'gate'],
+        params: [],
+        state: [],
+        description: 'AI Sequence Receiver (Unlimited Steps)',
+    },
+
     'AudioOut': {
         unique: true,
         ins: [

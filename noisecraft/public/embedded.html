@@ -1438,6 +1438,17 @@
             syncButtonStates();
             notifyParent({ type: "noiseCraft:audioState", status: "stopped" });
           }, 10);
+        } else if (data.type === "noiseCraft:setSequence") {
+          if (app.model && app.audioView) {
+            const { nodeId, pitches, gates } = data;
+            // Send directly to audio thread to avoid UI churn and history spam
+            app.audioView.send({
+              type: "SET_SEQUENCE",
+              nodeId: nodeId,
+              pitches: pitches,
+              gates: gates
+            });
+          }
         } else if (data.type === "noiseCraft:redraw") {
           // Force redraw edges and SVG
           if (app.editor) {

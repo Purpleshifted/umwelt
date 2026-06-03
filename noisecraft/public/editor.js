@@ -2211,6 +2211,20 @@ class Scope extends UINode {
   }
 }
 
+class AI_Seq extends UI_Node {
+  constructor(id, state, editor) {
+    super(id, state, editor);
+    // Visual label
+    let label = document.createElement("div");
+    label.innerText = "(Receives sequences from Umwelt MusicEngine)";
+    label.style.fontSize = "10px";
+    label.style.color = "#888";
+    label.style.padding = "4px";
+    label.style.textAlign = "center";
+    this.div.appendChild(label);
+  }
+}
+
 // Map of node types to specialized node classes
 const NODE_CLASSES = {
   Clock: ClockNode,
@@ -2223,4 +2237,5 @@ const NODE_CLASSES = {
   GateSeq: GateSeq,
   Notes: Notes,
   Scope: Scope,
+  AI_Seq: AI_Seq,
 };

@@ -322,6 +322,19 @@ export class NoiseCraftBridge {
   }
 
   /**
+   * Send a sequence of pitches and gates to an AI_Seq node
+   */
+  setSequence(nodeId: string, pitches: number[], gates: number[]): void {
+    if (!this.iframe?.contentWindow) return;
+    this.iframe.contentWindow.postMessage({
+      type: 'noiseCraft:setSequence',
+      nodeId: nodeId,
+      pitches: pitches,
+      gates: gates
+    }, '*');
+  }
+
+  /**
    * Update NoiseCraft knob parameters from sensor values.
    * Uses the noiseCraft:setParams batch protocol for efficiency.
    * All sensor inputs are 0-1 normalized.
