@@ -1,0 +1,70 @@
+.container {
+  width: 100vw;
+  height: calc(100vh - 60px); /* Account for NavBar */
+  margin-top: 60px;
+  display: flex;
+  background-color: #020205;
+  overflow: hidden;
+}
+
+.centerPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #0a0a14;
+  overflow: hidden;
+}
+
+.editorTabs {
+  display: flex;
+  background: #111120;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.editorTab {
+  flex: 1;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.editorTab:hover {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.activeTab {
+  color: #4ecdc4;
+  border-bottom-color: #4ecdc4;
+  background: rgba(78, 205, 196, 0.05);
+}
+
+.iframeContainer {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 2px;
+  font-size: 14px;
+}

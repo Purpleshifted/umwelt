@@ -1,0 +1,191 @@
+.panel {
+  width: 300px;
+  height: 100%;
+  background: rgba(15, 15, 20, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+  color: #e0e0e0;
+}
+
+.header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #a78bfa;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 6px 0;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.item.expanded {
+  border-color: rgba(167, 139, 250, 0.4);
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.itemHeader:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.typeIcon {
+  font-size: 14px;
+}
+
+.nameInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 13px;
+  outline: none;
+}
+
+.nameInput:focus {
+  border-bottom: 1px solid #4ecdc4;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.deleteBtn:hover {
+  color: #ff6b6b;
+}
+
+.details {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.details select {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  outline: none;
+}
+
+.mathRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mathRow select {
+  flex: 1;
+}
+
+.opSelect {
+  flex: 0 0 40px !important;
+  text-align: center;
+}
+
+.scopesSection {
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.scopesHeader {
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a78bfa;
+  letter-spacing: 1px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.scopesList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.smallInput {
+  flex: 1;
+  font-size: 11px;
+  padding: 4px 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 4px;
+  min-width: 0;
+  outline: none;
+}
+.smallInput:focus {
+  border-color: #a78bfa;
+}

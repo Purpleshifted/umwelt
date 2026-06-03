@@ -1,0 +1,184 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(167, 139, 250, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px 6px 0 0;
+}
+
+.nameInput {
+  background: transparent;
+  border: none;
+  color: #a78bfa;
+  font-weight: 600;
+  font-size: 12px;
+  outline: none;
+  width: 120px;
+}
+
+.deleteBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+.deleteBtn:hover {
+  color: #ff6b6b;
+}
+
+.body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.row select, .row input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  width: 100px;
+}
+
+.mathBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mathBody select {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.handlesRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.handleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  left: -20px;
+}
+
+.handleLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.outHandleWrapper {
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 6px;
+}
+
+.handle {
+  width: 10px;
+  height: 10px;
+  background: #a78bfa !important;
+  border: 2px solid #222 !important;
+}
+
+.paramGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.paramGrid input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  width: 100%;
+}
+
+.scopeWrapper {
+  margin-top: 4px;
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 40px;
+}
+
+/* Hide the inner header of SignalScope when used in node */
+.scopeWrapper > div > div:first-child {
+  display: none; 
+}
+
+.resizeHandle {
+  background-color: rgba(167, 139, 250, 0.5) !important;
+  border-radius: 2px !important;
+  width: 10px !important;
+  height: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.node:hover .resizeHandle {
+  opacity: 1;
+}
+
+.resizeHandle:hover {
+  background-color: #a78bfa !important;
+}
+
+.resizeLine {
+  border-color: rgba(167, 139, 250, 0.0) !important;
+  transition: border-color 0.2s;
+}
+
+.node:hover .resizeLine {
+  border-color: rgba(167, 139, 250, 0.4) !important;
+}
+
+.node {
+  width: 100%;
+  height: 100%;
+  background: rgba(20, 20, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  transition: border-color 0.1s, box-shadow 0.1s;
+}
+
+.selected {
+  border: 1px solid #ff4b4b !important;
+  box-shadow: 0 0 0 1px #ff4b4b, 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}

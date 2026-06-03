@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: intersection-noisecraft
+    env: node
+    plan: free
+    rootDir: noisecraft
+    buildCommand: yarn install
+    startCommand: yarn start
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: NODE_ENV
+        value: production
+

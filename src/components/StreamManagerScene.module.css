@@ -1,0 +1,73 @@
+.container {
+  width: 100vw;
+  height: calc(100vh - 60px); /* Assuming navbar is 60px */
+  display: flex;
+  flex-direction: column;
+  background: #0d0d12;
+  color: white;
+  font-family: 'Inter', sans-serif;
+}
+
+.contextMenu {
+  position: absolute;
+  z-index: 1000;
+  background: rgba(20, 20, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  overflow: hidden;
+}
+
+.menuHeader {
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a78bfa;
+  letter-spacing: 1px;
+  background: rgba(167, 139, 250, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contextMenu button {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.contextMenu button:hover {
+  background: rgba(167, 139, 250, 0.3);
+}
+
+.canvasWrapper {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* React Flow custom dark theme overrides */
+:global(.dark-theme-flow) {
+  background-color: #0d0d12;
+}
+
+:global(.dark-theme-flow .react-flow__panel) {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+:global(.dark-theme-flow .react-flow__controls-button) {
+  background: #222;
+  border-bottom: 1px solid #444;
+  fill: #fff;
+}
+:global(.dark-theme-flow .react-flow__controls-button:hover) {
+  background: #444;
+}
