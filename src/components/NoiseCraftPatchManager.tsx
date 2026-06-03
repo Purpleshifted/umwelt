@@ -67,9 +67,12 @@ export default function NoiseCraftPatchManager({ onSelectPatch }: Props) {
   };
 
   const handleDuplicate = async (e: React.MouseEvent, sourceFile: string) => {
+    e.preventDefault();
     e.stopPropagation();
-    const newName = prompt(`Enter name for duplicate of ${sourceFile}:`, `${sourceFile.replace('.ncft', '')}_copy`);
-    if (!newName) return;
+    
+    // Auto-generate name instead of using prompt() which can be blocked by browsers
+    const baseName = sourceFile.replace('.ncft', '');
+    const newName = `${baseName}_copy_${Math.floor(Math.random() * 1000)}`;
     
     setLoading(true);
     try {
