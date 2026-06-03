@@ -1,3 +1,5 @@
+'use client';
+
 import styles from './page.module.css';
 import { useMusicStore, MusicModuleType } from '@/store/musicStore';
 import { useAudioMapStore } from '@/store/audioMapStore';
