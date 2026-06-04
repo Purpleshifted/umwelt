@@ -30,7 +30,7 @@
       "y": 229,
       "ins": [
         [
-          "22",
+          "27",
           0
         ],
         null
@@ -44,8 +44,44 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780481747404"
-      }
+        "moduleId": "music_mod_1780564778813"
+      },
+      "pitches": [
+        60,
+        60,
+        71,
+        60,
+        60,
+        69,
+        60,
+        60,
+        65,
+        69,
+        60,
+        60,
+        64,
+        65,
+        71,
+        67
+      ],
+      "gates": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
     },
     "4": {
       "type": "AudioOut",
@@ -75,7 +111,10 @@
       "x": 542,
       "y": 247,
       "ins": [
-        null,
+        [
+          "1",
+          1
+        ],
         [
           "13",
           0
@@ -140,7 +179,7 @@
         ""
       ],
       "params": {
-        "value": 1.2
+        "value": 1
       }
     },
     "13": {
@@ -331,24 +370,6 @@
         "maxVal": 1
       }
     },
-    "22": {
-      "type": "Clock",
-      "name": "Clock",
-      "x": 37,
-      "y": 48,
-      "ins": [],
-      "inNames": [],
-      "outNames": [
-        ""
-      ],
-      "params": {
-        "minVal": 60,
-        "maxVal": 240,
-        "value": 104.9601562499999,
-        "deviceId": null,
-        "controlId": null
-      }
-    },
     "23": {
       "type": "Mul",
       "name": "Mul",
@@ -408,7 +429,7 @@
         ""
       ],
       "params": {
-        "value": 5
+        "value": 50
       }
     },
     "26": {
@@ -424,7 +445,49 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.5942578125000001,
+        "value": 1,
+        "deviceId": null,
+        "controlId": null
+      }
+    },
+    "27": {
+      "type": "Pulse",
+      "name": "Pulse",
+      "x": 258,
+      "y": 112,
+      "ins": [
+        [
+          "28",
+          0
+        ],
+        null
+      ],
+      "inNames": [
+        "freq",
+        "pw"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {
+        "minVal": -1,
+        "maxVal": 1
+      }
+    },
+    "28": {
+      "type": "Clock",
+      "name": "Clock",
+      "x": 117,
+      "y": 49,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 60,
+        "maxVal": 240,
+        "value": 120,
         "deviceId": null,
         "controlId": null
       }

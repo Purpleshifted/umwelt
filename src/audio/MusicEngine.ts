@@ -106,8 +106,31 @@ class MusicEngine {
     };
 
     // Run an internal tick timer to simulate 24 PPQ at 120 BPM if no ClockOut is present
+    let wasBridgeRunning = false;
+    
     this.updateTimer = setInterval(() => {
       if (!this.isRunning) return;
+      
+      const bridge = getNoiseCraftBridge();
+      const isBridgeRunning = bridge.running;
+      
+      if (!isBridgeRunning) {
+        if (wasBridgeRunning) {
+          // Just stopped: clear sequences to silence the continuous AudioGraph
+          const state = useMusicStore.getState();
+          state.modules.forEach(m => {
+            if (m.type === 'magenta_ai' || m.type === 'harmonic_array') {
+              const targetId = this.getTargetOutputNodeId(m, state);
+              if (targetId) bridge.setSequence(targetId, [], []);
+            }
+          });
+          wasBridgeRunning = false;
+        }
+        lastTick = performance.now(); // keep time synced for when it starts again
+        return;
+      }
+      wasBridgeRunning = true;
+
       const now = performance.now();
       const dt = (now - lastTick) / 1000;
       lastTick = now;

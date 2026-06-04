@@ -636,7 +636,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.49039062500000274,
+        "value": 0.3595312500000028,
         "deviceId": null,
         "controlId": null
       }
@@ -1010,7 +1010,7 @@
           0
         ],
         [
-          "215",
+          "70",
           0
         ]
       ],
@@ -1060,7 +1060,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 0.5,
-        "value": 0.45744140624999985,
+        "value": 0.07048828125,
         "deviceId": null,
         "controlId": null
       }
@@ -1296,7 +1296,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.7356250000000035,
+        "value": 0.49574218750000343,
         "deviceId": null,
         "controlId": null
       }
@@ -1362,7 +1362,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.8330468750000014,
+        "value": 0.6316406250000016,
         "deviceId": null,
         "controlId": null
       }
@@ -1922,7 +1922,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.5278125000000032,
+        "value": 0.4320312500000032,
         "deviceId": null,
         "controlId": null
       }
@@ -2967,7 +2967,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 2,
-        "value": 0.8544277004313782,
+        "value": 1.0720058254313782,
         "deviceId": null,
         "controlId": null
       }
@@ -3141,7 +3141,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.358125,
+        "value": 0.23015625000000003,
         "deviceId": null,
         "controlId": null
       }
@@ -3149,8 +3149,8 @@
     "173": {
       "type": "Pulse",
       "name": "Pulse",
-      "x": 25,
-      "y": 1286,
+      "x": 205,
+      "y": 1210,
       "ins": [
         [
           "20",
@@ -3471,7 +3471,7 @@
         ""
       ],
       "params": {
-        "value": 0.3
+        "value": 0.15
       }
     },
     "195": {
@@ -3705,7 +3705,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 0.1,
-        "value": 0.038636622255981856,
+        "value": 0.02223427850598185,
         "deviceId": null,
         "controlId": null
       }
@@ -3745,32 +3745,44 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780481747404"
-      }
-    },
-    "215": {
-      "type": "Mul",
-      "name": "Mul",
-      "x": 3384,
-      "y": 751,
-      "ins": [
-        [
-          "70",
-          0
-        ],
-        [
-          "216",
-          0
-        ]
+        "moduleId": "music_mod_1780564778813"
+      },
+      "pitches": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
       ],
-      "inNames": [
-        "in0",
-        "in1"
-      ],
-      "outNames": [
-        "out"
-      ],
-      "params": {}
+      "gates": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "216": {
       "type": "Const",
@@ -3807,8 +3819,44 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780481747404"
-      }
+        "moduleId": "music_mod_1780564778813"
+      },
+      "pitches": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "gates": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "218": {
       "type": "AI_Seq",
@@ -3831,8 +3879,44 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780481747404"
-      }
+        "moduleId": "music_mod_1780564778813"
+      },
+      "pitches": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ],
+      "gates": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   }
 }
