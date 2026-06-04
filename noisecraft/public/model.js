@@ -45,7 +45,8 @@ export const NODE_SCHEMA =
 
     'AI_Seq': {
         ins: [
-            { name: 'clock', default: 0 }
+            { name: 'clock', default: 0 },
+            { name: 'gateT', default: 0.1 }
         ],
         outs: ['freq', 'gate'],
         params: [

@@ -34973,3 +34973,9 @@ Import trace:
 [browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
 ✓ Compiled in 35ms
  GET /music 200 in 136ms (next.js: 33ms, application-code: 104ms)
+ GET /audio 200 in 64ms (next.js: 41ms, application-code: 23ms)
+ GET /streams 200 in 77ms (next.js: 49ms, application-code: 28ms)
+ GET /music 200 in 30ms (next.js: 8ms, application-code: 22ms)
+ GET /audio 200 in 30ms (next.js: 9ms, application-code: 21ms)
+ GET /music 200 in 57ms (next.js: 20ms, application-code: 37ms)
+ GET /audio 200 in 48ms (next.js: 15ms, application-code: 34ms)

@@ -1035,7 +1035,7 @@ class AI_Seq extends AudioNode {
         this.stepIdx = 0; // reset to start
     }
 
-    update(time, clock)
+    update(time, clock, gateTime)
     {
         // Rising edge of the clock
         if (!this.clockSgn && clock > 0)
@@ -1079,8 +1079,7 @@ class AI_Seq extends AudioNode {
                 return [0, 0]; // force gate to 0 for one cycle to retrigger envelopes
 
             case 'on':
-                // For a simple trigger, we hold for a fixed short time (e.g. 50ms = 0.05s)
-                if (time - this.trigTime > 0.05)
+                if (time - this.trigTime > gateTime)
                 {
                     this.gateState = 'off';
                     this.trigTime = 0;

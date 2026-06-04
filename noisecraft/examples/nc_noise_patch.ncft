@@ -29,7 +29,10 @@
       "x": 62,
       "y": 229,
       "ins": [
-        null
+        [
+          "22",
+          0
+        ]
       ],
       "inNames": [
         "clock"
@@ -39,7 +42,7 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780481747404"
+        "moduleId": "music_mod_1780564778813"
       }
     },
     "4": {
@@ -316,7 +319,7 @@
       "y": 72,
       "ins": [
         [
-          "0",
+          "23",
           0
         ]
       ],
@@ -327,6 +330,24 @@
       "params": {
         "minVal": -1,
         "maxVal": 1
+      }
+    },
+    "22": {
+      "type": "Clock",
+      "name": "Clock",
+      "x": 61,
+      "y": 130,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 60,
+        "maxVal": 240,
+        "value": 120,
+        "deviceId": null,
+        "controlId": null
       }
     },
     "23": {
@@ -404,7 +425,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 1,
+        "value": 0.5942578125000001,
         "deviceId": null,
         "controlId": null
       }
