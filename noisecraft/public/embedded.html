@@ -163,6 +163,7 @@
         Play,
         Stop,
         ToggleCell,
+        SetSequence,
       } from "./model.js";
       import { AudioView } from "./audioview.js";
       import { Editor } from "./editor.js";
@@ -1444,13 +1445,19 @@
             
             // Find all AI_Seq nodes that have this moduleId selected
             for (const [id, nodeState] of Object.entries(app.model.state.nodes)) {
-              if (nodeState.type === "AI_Seq" && nodeState.params.moduleId === nodeId) {
-                app.audioView.send({
-                  type: "SET_SEQUENCE",
-                  nodeId: id,
-                  pitches: pitches,
-                  gates: gates
-                });
+              if (nodeState.type === "AI_Seq" && nodeState.params.moduleId == nodeId) {
+                // Update model state (which triggers audioView update and auto-save)
+                try {
+                  app.model.update(new SetSequence(id, pitches, gates));
+                } catch (e) {
+                  // Fallback if SetSequence is not yet loaded globally on model
+                  app.audioView.send({
+                    type: "SET_SEQUENCE",
+                    nodeId: id,
+                    pitches: pitches,
+                    gates: gates
+                  });
+                }
               }
             }
           }

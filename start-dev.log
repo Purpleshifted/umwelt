@@ -33079,3 +33079,18 @@ Import trace:
 ✓ Compiled in 252ms
  GET /music 200 in 386ms (next.js: 163ms, application-code: 223ms)
  GET /audio 200 in 71ms (next.js: 33ms, application-code: 38ms)
+ GET / 200 in 825ms (next.js: 558ms, application-code: 267ms)
+ GET /streams 200 in 72ms (next.js: 43ms, application-code: 28ms)
+ GET /music 200 in 86ms (next.js: 44ms, application-code: 42ms)
+ GET /audio 200 in 60ms (next.js: 38ms, application-code: 21ms)
+ GET /audio 200 in 191ms (next.js: 40ms, application-code: 150ms)
+ GET /streams 200 in 42ms (next.js: 11ms, application-code: 31ms)
+ GET /music 200 in 29ms (next.js: 6ms, application-code: 23ms)
+ GET /audio 200 in 84ms (next.js: 29ms, application-code: 56ms)
+ GET /audio 200 in 57ms (next.js: 5ms, application-code: 51ms)
+ GET /audio 200 in 125ms (next.js: 40ms, application-code: 85ms)
+./start-dev.sh: line 4:  9274 Terminated: 15          node server.js
+ GET /audio 200 in 95ms (next.js: 25ms, application-code: 71ms)
+ GET /audio 200 in 55ms (next.js: 7ms, application-code: 48ms)
+ GET /music 200 in 50ms (next.js: 10ms, application-code: 40ms)
+✓ Compiled in 222ms

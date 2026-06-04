@@ -19,6 +19,25 @@
         "minVal": -1,
         "maxVal": 1
       }
+    },
+    "1": {
+      "type": "AI_Seq",
+      "name": "AI_Seq",
+      "x": 422,
+      "y": 149,
+      "ins": [
+        null
+      ],
+      "inNames": [
+        "clock"
+      ],
+      "outNames": [
+        "freq",
+        "gate"
+      ],
+      "params": {
+        "moduleId": ""
+      }
     }
   }
 }

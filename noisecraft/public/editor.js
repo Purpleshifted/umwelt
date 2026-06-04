@@ -2242,10 +2242,11 @@ class AI_Seq extends UINode {
       select.appendChild(defaultOpt);
 
       if (window._musicModules) {
+        console.log("[AI_Seq] Updating options with modules:", window._musicModules);
         window._musicModules.forEach(mod => {
           let opt = document.createElement("option");
           opt.value = mod.id;
-          opt.innerText = mod.name;
+          opt.innerText = mod.name || `Module ${mod.id}`;
           select.appendChild(opt);
         });
       }

@@ -212,7 +212,7 @@ export class NoiseCraftBridge {
         }
         break;
 
-      case 'noiseCraft:editorReady':
+      case 'noiseCraft:projectLoaded':
         // The iframe is now fully loaded, send it the modules so dropdowns populate
         const state = useMusicStore.getState();
         const outModules = state.modules.map((m: any) => ({ id: m.id, name: m.name }));

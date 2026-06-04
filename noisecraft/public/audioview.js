@@ -57,6 +57,18 @@ export class AudioView
             return;
         }
 
+        if (action instanceof model.SetSequence)
+        {
+            this.send({
+                type: 'SET_SEQUENCE',
+                nodeId: action.nodeId,
+                pitches: action.pitches,
+                gates: action.gates
+            });
+
+            return;
+        }
+
         if (action instanceof model.ToggleCell)
         {
             this.send({

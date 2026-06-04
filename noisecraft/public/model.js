@@ -51,7 +51,7 @@ export const NODE_SCHEMA =
         params: [
             { name: 'moduleId', default: '' }
         ],
-        state: [],
+        state: ['pitches', 'gates'],
         description: 'AI Sequence Receiver (Unlimited Steps)',
     },
 
@@ -805,6 +805,13 @@ function resetState(project)
         'outNames',
         'params'
     ]);
+
+    // Delete any extraneous top-level properties like _lastSaved
+    for (let key of Object.keys(project)) {
+        if (key !== 'title' && key !== 'nodes') {
+            delete project[key];
+        }
+    }
 
     // For each node
     for (let id in project.nodes)
@@ -1655,6 +1662,27 @@ export class QueuePattern extends Action
     get undoable()
     {
         return false;
+    }
+}
+
+/**
+ * Set the AI Sequence pitches and gates
+ */
+export class SetSequence extends Action
+{
+    constructor(nodeId, pitches, gates)
+    {
+        super();
+        this.nodeId = nodeId;
+        this.pitches = pitches;
+        this.gates = gates;
+    }
+
+    update(model)
+    {
+        let node = model.state.nodes[this.nodeId];
+        node.pitches = this.pitches;
+        node.gates = this.gates;
     }
 }
 
