@@ -33133,3 +33133,13 @@ Import trace:
   23 |
   24 |     if (containerRef.current && selectedPatch) {
 ✓ Compiled in 44ms
+ GET /music 200 in 97ms (next.js: 65ms, application-code: 32ms)
+[browser] Encountered two children with the same key, `e_music_mod_1780487161245_music_mod_1780481747404`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /music 200 in 179ms (next.js: 8ms, application-code: 171ms)
+[browser] Encountered two children with the same key, `e_music_mod_1780487161245_music_mod_1780481747404`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /audio 200 in 54ms (next.js: 22ms, application-code: 32ms)
+ GET /audio 200 in 119ms (next.js: 7ms, application-code: 112ms)
+ GET /music 200 in 51ms (next.js: 22ms, application-code: 28ms)
+[browser] Encountered two children with the same key, `e_music_mod_1780487161245_music_mod_1780481747404`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /audio 200 in 43ms (next.js: 9ms, application-code: 34ms)
+✓ Compiled in 149ms

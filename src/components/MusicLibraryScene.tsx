@@ -63,7 +63,7 @@ function Flow() {
 
   const onConnect = useCallback((params: any) => {
     setEdges((eds) => {
-      const newEdge = { ...params, id: `e_${params.source}_${params.target}` };
+      const newEdge = { ...params, id: `e_${params.source}_${params.sourceHandle}_${params.target}_${params.targetHandle}_${Date.now()}` };
       return [...eds, newEdge];
     });
   }, [setEdges]);
