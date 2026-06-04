@@ -48,15 +48,15 @@
     "4": {
       "type": "AudioOut",
       "name": "AudioOut",
-      "x": 799,
-      "y": 221,
+      "x": 810,
+      "y": 265,
       "ins": [
         [
-          "7",
+          "23",
           0
         ],
         [
-          "7",
+          "23",
           0
         ]
       ],
@@ -319,7 +319,7 @@
       "y": 72,
       "ins": [
         [
-          "7",
+          "23",
           0
         ]
       ],
@@ -346,6 +346,86 @@
         "minVal": 60,
         "maxVal": 240,
         "value": 120,
+        "deviceId": null,
+        "controlId": null
+      }
+    },
+    "23": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 684,
+      "y": 326,
+      "ins": [
+        [
+          "7",
+          0
+        ],
+        [
+          "24",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "24": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 545,
+      "y": 409,
+      "ins": [
+        [
+          "25",
+          0
+        ],
+        [
+          "26",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "25": {
+      "type": "Const",
+      "name": "Const",
+      "x": 459,
+      "y": 427,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "value": 5
+      }
+    },
+    "26": {
+      "type": "Knob",
+      "name": "Knob",
+      "x": 441,
+      "y": 466,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 0,
+        "maxVal": 1,
+        "value": 0.5942578125000001,
         "deviceId": null,
         "controlId": null
       }

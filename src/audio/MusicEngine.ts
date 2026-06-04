@@ -62,42 +62,41 @@ class MusicEngine {
     syncModules();
     useMusicStore.subscribe(syncModules);
 
-    bridge.onClockPulse = (nodeId: string, pulseTime: number, sendTime: number) => {
-      if (!this.isRunning) return;
+    bridge.onClockPulse = (nodeId: string, pulseTime: number, sendTime: number, moduleId?: string) => {
+      if (!this.isRunning || !moduleId) return;
+      
       const musicState = useMusicStore.getState();
       const audioState = useAudioMapStore.getState();
       
-      const generators = musicState.modules.filter(m => m.type === 'magenta_ai' || m.type === 'harmonic_array');
+      const gen = musicState.modules.find(m => m.id === moduleId);
+      if (!gen || (gen.type !== 'magenta_ai' && gen.type !== 'harmonic_array')) return;
       
-      for (const gen of generators) {
-        let state = this.moduleStates.get(gen.id);
-        if (!state) {
-          state = { cursor: 0, seqLength: 0, isGenerating: false };
-          this.moduleStates.set(gen.id, state);
-        }
+      let state = this.moduleStates.get(gen.id);
+      if (!state) {
+        state = { cursor: 0, seqLength: 0, isGenerating: false };
+        this.moduleStates.set(gen.id, state);
+      }
 
-        // On every clock pulse, the AI_Seq node in the audio thread advances its own cursor.
-        // We track the cursor here to know when to generate the NEXT sequence.
-        state.cursor++;
+      // On every clock pulse from this specific AI_Seq node, advance its cursor.
+      state.cursor++;
 
-        if (state.cursor >= state.seqLength && !state.isGenerating) {
-          state.isGenerating = true;
-          
-          let driveValue = this.evaluateDriveValue(gen, musicState, audioState);
-          
-          this.generateSequenceForModule(gen, driveValue).then(seq => {
-            if (seq && seq.pitches.length > 0) {
-              this.sendSequenceToAI(gen, seq);
-              state.seqLength = seq.pitches.length;
-              state.cursor = 0;
-            } else {
-              // If generation failed or returned empty, retry soon
-              state.seqLength = 1; 
-              state.cursor = 0;
-            }
-            state.isGenerating = false;
-          });
-        }
+      if (state.cursor >= state.seqLength && !state.isGenerating) {
+        state.isGenerating = true;
+        
+        let driveValue = this.evaluateDriveValue(gen, musicState, audioState);
+        
+        this.generateSequenceForModule(gen, driveValue).then(seq => {
+          if (seq && seq.pitches.length > 0) {
+            this.sendSequenceToAI(gen, seq);
+            state.seqLength = seq.pitches.length;
+            state.cursor = 0;
+          } else {
+            // If generation failed or returned empty, retry soon
+            state.seqLength = 1; 
+            state.cursor = 0;
+          }
+          state.isGenerating = false;
+        });
       }
     };
   }

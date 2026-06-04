@@ -1039,9 +1039,18 @@ class AI_Seq extends AudioNode
 
     update(time, clock)
     {
+        let curSgn = (clock > 0);
+        
         // Rising edge of the clock
-        if (!this.clockSgn && clock > 0)
+        if (!this.clockSgn && curSgn)
         {
+            // Send a clock pulse back to the UI to trigger sequence generation if needed
+            this.send({
+                type: 'CLOCK_PULSE',
+                nodeId: this.nodeId,
+                time: time
+            });
+
             if (this.pitches.length > 0)
             {
                 let idx = this.stepIdx % this.pitches.length;
@@ -1061,7 +1070,7 @@ class AI_Seq extends AudioNode
             }
         }
 
-        this.clockSgn = (clock > 0);
+        this.clockSgn = curSgn;
 
         switch (this.gateState)
         {
