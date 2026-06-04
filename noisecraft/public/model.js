@@ -50,7 +50,8 @@ export const NODE_SCHEMA =
         ],
         outs: ['freq', 'gate'],
         params: [
-            { name: 'moduleId', default: '' }
+            { name: 'moduleId', default: '' },
+            { name: 'voice', default: 0 }
         ],
         state: ['pitches', 'gates'],
         description: 'AI Sequence Receiver (Unlimited Steps)',

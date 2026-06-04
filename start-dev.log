@@ -34999,3 +34999,12 @@ Import trace:
  GET /audio 200 in 44ms (next.js: 14ms, application-code: 30ms)
  GET /audio 200 in 102ms (next.js: 30ms, application-code: 72ms)
 ✓ Compiled in 150ms
+ GET /music 200 in 103ms (next.js: 56ms, application-code: 47ms)
+✓ Compiled in 327ms
+ GET /music 200 in 67ms (next.js: 8ms, application-code: 59ms)
+✓ Compiled in 121ms
+ GET /music 200 in 103ms (next.js: 61ms, application-code: 42ms)
+ GET /music 200 in 25ms (next.js: 1547µs, application-code: 24ms)
+ GET /audio 200 in 54ms (next.js: 27ms, application-code: 27ms)
+ GET /audio 200 in 93ms (next.js: 15ms, application-code: 78ms)
+✓ Compiled in 503ms

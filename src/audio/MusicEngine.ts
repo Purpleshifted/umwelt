@@ -19,6 +19,14 @@ class MusicEngine {
   private initialized = false;
   private qpm = 120; // Quarter notes per minute
   private updateTimer: NodeJS.Timeout | null = null;
+  private globalStepCount = 0;
+
+  private CHORD_PROGRESSION = [
+    { root: 0, notes: [0, 4, 7] }, // C Major
+    { root: 7, notes: [7, 11, 14] }, // G Major
+    { root: 9, notes: [9, 12, 16] }, // A Minor
+    { root: 5, notes: [5, 9, 12] }, // F Major
+  ];
   
   // State per generator module
   private moduleStates = new Map<string, ModulePlaybackState>();
@@ -44,7 +52,7 @@ class MusicEngine {
     }
   }
 
-  private sendSequenceToAI(targetId: string, seq: { pitches: number[]; gates: number[] }) {
+  private sendSequenceToAI(targetId: string, seq: { pitches: any[]; gates: any[] }) {
     const bridge = getNoiseCraftBridge();
     bridge.setSequence(targetId, seq.pitches, seq.gates);
   }
@@ -69,6 +77,7 @@ class MusicEngine {
     let accumulatedPulses = 0;
 
     const tickPulses = () => {
+      this.globalStepCount++;
       const state = useMusicStore.getState();
       const generators = state.modules.filter(m => m.type === 'magenta_ai' || m.type === 'harmonic_array');
       const audioState = useAudioMapStore.getState();
@@ -179,48 +188,42 @@ class MusicEngine {
     return module.id; // fallback
   }
 
-  private async generateSequenceForModule(module: MusicModule, musicState: any, audioState: any): Promise<{ pitches: number[], gates: number[] } | null> {
+  private async generateSequenceForModule(module: MusicModule, musicState: any, audioState: any): Promise<{ pitches: any[], gates: any[] } | null> {
     const seqLength = 16;
-    const pitches: number[] = [];
-    const gates: number[] = [];
+    const pitches: any[] = [];
+    const gates: any[] = [];
 
-    // Probability of a step having a note, based on density
     let density = this.getParamValue(module, 'density', 0.8, musicState, audioState);
     const effectiveDensity = density;
 
+    // Determine current global chord
+    const measureIndex = Math.floor(this.globalStepCount / seqLength);
+    const chord = this.CHORD_PROGRESSION[measureIndex % this.CHORD_PROGRESSION.length];
+
     if (module.type === 'harmonic_array') {
-      // Arpeggiate through a scale
       const config = module.harmonicConfig;
       let root = config?.rootNote ?? 60;
-      let scale = [0, 2, 4, 5, 7, 9, 11]; // Major
-      if (config?.scaleType === 'minor') scale = [0, 2, 3, 5, 7, 8, 10];
-      if (config?.scaleType === 'dorian') scale = [0, 2, 3, 5, 7, 9, 10];
-      if (config?.scaleType === 'altered') scale = [0, 1, 3, 4, 6, 8, 10];
-
+      let register = config?.register ?? 0;
+      
       let octaveRange = this.getParamValue(module, 'octaveRange', config?.octaveRange ?? 2, musicState, audioState);
-      let scaleTypeParam = this.getParamValue(module, 'scaleType', 0, musicState, audioState);
       
-      // If a parameter is hooked up for scaleType (0 to 1), use it to modulate root note dynamically
-      if (scaleTypeParam > 0) {
-          root += Math.floor(scaleTypeParam * 12);
-      }
-      
-      const fullScale: number[] = [];
-      for (let o = 0; o < octaveRange; o++) {
-        for (const note of scale) {
-          fullScale.push(root + note + (o * 12));
-        }
-      }
-
       for (let i = 0; i < seqLength; i++) {
         if (Math.random() < effectiveDensity) {
-          const idx = Math.floor(Math.random() * fullScale.length);
-          pitches.push(fullScale[idx]);
-          gates.push(1);
+          // Voice 0: Random chord note (Melody)
+          // Voice 1, 2, 3: The chord notes
+          const o = Math.floor(Math.random() * octaveRange);
+          const melodyNote = root + register + chord.notes[Math.floor(Math.random() * chord.notes.length)] + (o * 12);
+          
+          pitches.push([
+            melodyNote, 
+            root + register + chord.notes[0], 
+            root + register + chord.notes[1], 
+            root + register + chord.notes[2]
+          ]);
+          gates.push([1, 1, 1, 1]);
         } else {
-          // Rest
-          pitches.push(root);
-          gates.push(0);
+          pitches.push([root + register, root + register, root + register, root + register]);
+          gates.push([0, 0, 0, 0]);
         }
       }
       return { pitches, gates };
@@ -228,65 +231,82 @@ class MusicEngine {
 
     if (module.type === 'magenta_ai') {
       const temp = this.getParamValue(module, 'temperature', 1.0, musicState, audioState);
+      const register = module.magentaConfig?.register ?? 0;
+      const root = 60;
 
-      if (!this.rnn || !this.initialized) {
+      // Generate melody sequence using RNN
+      let rawPitches: number[] = [];
+      let rawGates: number[] = [];
+
+      if (!this.rnn || !this.initialized || effectiveDensity < 0.1) {
         // Fallback
-        const scale = [60, 62, 64, 65, 67, 69, 71, 72];
+        const scale = chord.notes.map(n => root + n);
         for (let i = 0; i < seqLength; i++) {
-          if (Math.random() < effectiveDensity) {
-            const leap = Math.random() < (temp - 0.5) ? Math.floor(Math.random() * 4) : 0;
-            pitches.push(scale[Math.floor(Math.random() * scale.length)] + (leap * 12));
-            gates.push(1);
+          if (Math.random() < effectiveDensity && effectiveDensity >= 0.1) {
+            const leap = Math.random() < (temp - 0.5) ? Math.floor(Math.random() * 2) : 0;
+            rawPitches.push(scale[Math.floor(Math.random() * scale.length)] + (leap * 12));
+            rawGates.push(1);
           } else {
-            pitches.push(60);
-            gates.push(0);
+            rawPitches.push(root);
+            rawGates.push(0);
           }
         }
-        return { pitches, gates };
-      }
+      } else {
+        const seed: INoteSequence = {
+          ticksPerQuarter: 220,
+          totalTime: 1.0,
+          timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
+          tempos: [{ time: 0, qpm: this.qpm }],
+          notes: [ { pitch: root + chord.notes[0], startTime: 0.0, endTime: 0.5, velocity: 80 } ]
+        };
 
-      // If density is very low, maybe we just don't generate to save compute
-      if (effectiveDensity < 0.1) {
-        for (let i = 0; i < seqLength; i++) {
-          pitches.push(60);
-          gates.push(0);
-        }
-        return { pitches, gates };
-      }
-
-      const seed: INoteSequence = {
-        ticksPerQuarter: 220,
-        totalTime: 1.0,
-        timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
-        tempos: [{ time: 0, qpm: this.qpm }],
-        notes: [ { pitch: 60, startTime: 0.0, endTime: 0.5, velocity: 80 } ]
-      };
-
-      const qns = sequences.quantizeNoteSequence(seed, 4);
-      try {
-        const result = await this.rnn.continueSequence(qns, seqLength, temp);
-        const unquantized = sequences.unquantizeSequence(result, this.qpm);
-        
-        // Convert notes to discrete 16-step grid
-        const stepTime = (60 / this.qpm) / 4; // 16th note duration
-        for (let i = 0; i < seqLength; i++) {
-          const stepStart = i * stepTime;
-          // Find if any note plays during this step
-          const note = unquantized.notes?.find(n => (n.startTime ?? 0) <= stepStart + 0.01 && (n.endTime ?? 0) > stepStart);
+        const qns = sequences.quantizeNoteSequence(seed, 4);
+        try {
+          const result = await this.rnn.continueSequence(qns, seqLength, temp);
+          const unquantized = sequences.unquantizeSequence(result, this.qpm);
           
-          if (note && Math.random() < effectiveDensity) {
-            pitches.push(note.pitch ?? 60);
-            gates.push(1);
-          } else {
-            pitches.push(60);
-            gates.push(0);
+          const stepTime = (60 / this.qpm) / 4; 
+          for (let i = 0; i < seqLength; i++) {
+            const stepStart = i * stepTime;
+            const note = unquantized.notes?.find(n => (n.startTime ?? 0) <= stepStart + 0.01 && (n.endTime ?? 0) > stepStart);
+            
+            if (note && Math.random() < effectiveDensity) {
+              rawPitches.push(note.pitch ?? root);
+              rawGates.push(1);
+            } else {
+              rawPitches.push(root);
+              rawGates.push(0);
+            }
           }
+        } catch (e) {
+          console.error('[MusicEngine] Generation failed:', e);
+          return null;
         }
-        return { pitches, gates };
-      } catch (e) {
-        console.error('[MusicEngine] Generation failed:', e);
-        return null;
       }
+
+      // Pack the Polyphonic Array
+      for (let i = 0; i < seqLength; i++) {
+        // Voice 0 is the AI generated melody, Voice 1,2,3 are the chord accompaniment
+        pitches.push([
+          rawPitches[i] + register,
+          root + register + chord.notes[0] - 12, // Bass/Chord Root slightly lower
+          root + register + chord.notes[1],
+          root + register + chord.notes[2]
+        ]);
+        
+        // If melody is resting, chords might still play on the downbeat or with density
+        let chordGate = rawGates[i];
+        if (i % 4 === 0 && effectiveDensity > 0.3) chordGate = 1; // Play chord on downbeat
+
+        gates.push([
+          rawGates[i],
+          chordGate,
+          chordGate,
+          chordGate
+        ]);
+      }
+
+      return { pitches, gates };
     }
 
     return null;

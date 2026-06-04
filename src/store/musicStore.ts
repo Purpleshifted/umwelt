@@ -8,12 +8,14 @@ export interface HarmonicArrayConfig {
   scaleType: 'major' | 'minor' | 'dorian' | 'altered';
   rootNote: number; // MIDI note number, e.g. 60 for C4
   octaveRange: number;
+  register?: number; // 0 for default, -12 for Tenor, -24 for Bass, +12 for Soprano
 }
 
 export interface MagentaConfig {
   temperatureMin: number;
   temperatureMax: number;
   density: number; // 0 to 1
+  register?: number;
 }
 
 export interface SineConfig {

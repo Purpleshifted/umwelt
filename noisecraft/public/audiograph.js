@@ -1048,8 +1048,15 @@ class AI_Seq extends AudioNode {
                 if (this.pitches.length > 0)
                 {
                     let idx = this.stepIdx % this.pitches.length;
-                    let pitch = this.pitches[idx];
-                    let gate = this.gates[idx];
+                    
+                    // Support both monophonic arrays [60, 62] and polyphonic arrays [[60, 64], [62, 67]]
+                    let pitchGroup = this.pitches[idx];
+                    let gateGroup = this.gates[idx];
+                    
+                    let voice = this.params.voice || 0;
+                    
+                    let pitch = Array.isArray(pitchGroup) ? (pitchGroup[voice] ?? pitchGroup[0]) : pitchGroup;
+                    let gate = Array.isArray(gateGroup) ? (gateGroup[voice] ?? gateGroup[0]) : gateGroup;
                     
                     if (gate > 0) {
                         // Convert MIDI to Hz

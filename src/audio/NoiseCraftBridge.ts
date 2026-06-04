@@ -341,7 +341,7 @@ export class NoiseCraftBridge {
   /**
    * Send a sequence of pitches and gates to an AI_Seq node
    */
-  setSequence(nodeId: string, pitches: number[], gates: number[]): void {
+  setSequence(nodeId: string, pitches: any[], gates: any[]): void {
     if (!this.iframe?.contentWindow) return;
     this.iframe.contentWindow.postMessage({
       type: 'noiseCraft:setSequence',

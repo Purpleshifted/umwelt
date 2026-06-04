@@ -97,6 +97,21 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
 
         {module.type === 'harmonic_array' && (
           <div className={styles.configArea}>
+            <div className={styles.field} style={{ marginBottom: '10px' }}>
+              <label>Register</label>
+              <select 
+                className="nodrag"
+                value={module.harmonicConfig?.register ?? 0}
+                onChange={(e) => updateModule(module.id, { 
+                  harmonicConfig: { ...module.harmonicConfig!, register: parseInt(e.target.value) } 
+                })}
+              >
+                <option value={12}>Soprano (+1 Oct)</option>
+                <option value={0}>Alto (Default)</option>
+                <option value={-12}>Tenor (-1 Oct)</option>
+                <option value={-24}>Bass (-2 Oct)</option>
+              </select>
+            </div>
             <div className={styles.paramHandleRow}>
               <Handle type="target" position={Position.Left} id="scaleType" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
               <span style={{ fontSize: '10px' }}>Scale Type (0-1)</span>
@@ -110,6 +125,21 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
 
         {module.type === 'magenta_ai' && (
           <div className={styles.configArea}>
+            <div className={styles.field} style={{ marginBottom: '10px' }}>
+              <label>Register</label>
+              <select 
+                className="nodrag"
+                value={module.magentaConfig?.register ?? 0}
+                onChange={(e) => updateModule(module.id, { 
+                  magentaConfig: { ...module.magentaConfig!, register: parseInt(e.target.value) } 
+                })}
+              >
+                <option value={12}>Soprano (+1 Oct)</option>
+                <option value={0}>Alto (Default)</option>
+                <option value={-12}>Tenor (-1 Oct)</option>
+                <option value={-24}>Bass (-2 Oct)</option>
+              </select>
+            </div>
             <div className={styles.paramHandleRow}>
               <Handle type="target" position={Position.Left} id="temperature" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
               <span style={{ fontSize: '10px' }}>Temperature (0-1)</span>

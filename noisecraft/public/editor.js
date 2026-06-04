@@ -2264,6 +2264,30 @@ class AI_Seq extends UINode {
     
     // Stop event propagation so clicking the select doesn't drag the node
     select.onpointerdown = (evt) => evt.stopPropagation();
+
+    // Dropdown for selecting the Voice (Polyphony)
+    let voiceSelect = document.createElement("select");
+    voiceSelect.className = "nodrag";
+    voiceSelect.style.margin = "4px";
+    voiceSelect.style.width = "90%";
+    voiceSelect.style.backgroundColor = "#222";
+    voiceSelect.style.color = "#FFF";
+    voiceSelect.style.border = "1px solid #444";
+    
+    for (let i = 0; i < 4; i++) {
+        let opt = document.createElement("option");
+        opt.value = i;
+        opt.innerText = `Voice ${i + 1}`;
+        voiceSelect.appendChild(opt);
+    }
+    
+    voiceSelect.value = state.params.voice || 0;
+    this.centerDiv.appendChild(voiceSelect);
+
+    voiceSelect.onchange = (evt) => {
+      this.send(new model.SetParam(this.nodeId, "voice", parseInt(voiceSelect.value)));
+    };
+    voiceSelect.onpointerdown = (evt) => evt.stopPropagation();
   }
 }
 
