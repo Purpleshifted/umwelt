@@ -2,56 +2,18 @@
   "title": "1",
   "nodes": {
     "0": {
-      "type": "Knob",
-      "name": "Freq",
-      "x": 40,
-      "y": 40,
-      "ins": [],
-      "inNames": [],
-      "outNames": [
-        ""
-      ],
-      "params": {
-        "minVal": 100,
-        "maxVal": 900,
-        "value": 220,
-        "deviceId": null,
-        "controlId": null
-      }
-    },
-    "1": {
-      "type": "Knob",
-      "name": "Gain",
-      "x": 40,
-      "y": 110,
-      "ins": [],
-      "inNames": [],
-      "outNames": [
-        ""
-      ],
-      "params": {
-        "minVal": 0,
-        "maxVal": 1,
-        "value": 0.2,
-        "deviceId": null,
-        "controlId": null
-      }
-    },
-    "2": {
-      "type": "Sine",
-      "name": "Osc",
-      "x": 200,
-      "y": 40,
+      "type": "Tri",
+      "name": "Tri",
+      "x": 542,
+      "y": 174,
       "ins": [
         [
-          "0",
+          "1",
           0
-        ],
-        null
+        ]
       ],
       "inNames": [
-        "freq",
-        "sync"
+        "freq"
       ],
       "outNames": [
         "out"
@@ -61,42 +23,40 @@
         "maxVal": 1
       }
     },
-    "3": {
-      "type": "Mul",
-      "name": "Amp",
-      "x": 358,
-      "y": 49,
+    "1": {
+      "type": "AI_Seq",
+      "name": "AI_Seq",
+      "x": 62,
+      "y": 229,
       "ins": [
         [
-          "2",
-          0
-        ],
-        [
-          "1",
+          "22",
           0
         ]
       ],
       "inNames": [
-        "in0",
-        "in1"
+        "clock"
       ],
       "outNames": [
-        "out"
+        "freq",
+        "gate"
       ],
-      "params": {}
+      "params": {
+        "moduleId": "music_mod_1780483055515"
+      }
     },
     "4": {
       "type": "AudioOut",
-      "name": "Out",
-      "x": 500,
-      "y": 50,
+      "name": "AudioOut",
+      "x": 799,
+      "y": 221,
       "ins": [
         [
-          "6",
+          "7",
           0
         ],
         [
-          "6",
+          "7",
           0
         ]
       ],
@@ -110,17 +70,29 @@
     "6": {
       "type": "ADSR",
       "name": "ADSR",
-      "x": 350,
-      "y": 204,
+      "x": 542,
+      "y": 247,
       "ins": [
         [
-          "2",
+          "1",
+          1
+        ],
+        [
+          "13",
           0
         ],
-        null,
-        null,
-        null,
-        null
+        [
+          "15",
+          0
+        ],
+        [
+          "14",
+          0
+        ],
+        [
+          "16",
+          0
+        ]
       ],
       "inNames": [
         "gate",
@@ -133,6 +105,250 @@
         "out"
       ],
       "params": {}
+    },
+    "7": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 686,
+      "y": 222,
+      "ins": [
+        [
+          "0",
+          0
+        ],
+        [
+          "6",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "8": {
+      "type": "Const",
+      "name": "Const",
+      "x": 60,
+      "y": 316,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "value": 1.2
+      }
+    },
+    "13": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 302,
+      "y": 317,
+      "ins": [
+        [
+          "8",
+          0
+        ],
+        [
+          "17",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "14": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 301,
+      "y": 487,
+      "ins": [
+        [
+          "8",
+          0
+        ],
+        [
+          "19",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "15": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 301,
+      "y": 402,
+      "ins": [
+        [
+          "8",
+          0
+        ],
+        [
+          "18",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "16": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 302,
+      "y": 571,
+      "ins": [
+        [
+          "8",
+          0
+        ],
+        [
+          "20",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "17": {
+      "type": "Knob",
+      "name": "Knob",
+      "x": 52,
+      "y": 407,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 0,
+        "maxVal": 1,
+        "value": 0.09867187499999998,
+        "deviceId": null,
+        "controlId": null
+      }
+    },
+    "18": {
+      "type": "Knob",
+      "name": "Knob",
+      "x": 134,
+      "y": 407,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 0,
+        "maxVal": 1,
+        "value": 0.38218749999999996,
+        "deviceId": null,
+        "controlId": null
+      }
+    },
+    "19": {
+      "type": "Knob",
+      "name": "Knob",
+      "x": 54,
+      "y": 504,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 0,
+        "maxVal": 1,
+        "value": 0.40761718750000003,
+        "deviceId": null,
+        "controlId": null
+      }
+    },
+    "20": {
+      "type": "Knob",
+      "name": "Knob",
+      "x": 136,
+      "y": 502,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 0,
+        "maxVal": 1,
+        "value": 0.15550781250000004,
+        "deviceId": null,
+        "controlId": null
+      }
+    },
+    "21": {
+      "type": "Scope",
+      "name": "Scope",
+      "x": 687,
+      "y": 72,
+      "ins": [
+        [
+          "7",
+          0
+        ]
+      ],
+      "inNames": [
+        ""
+      ],
+      "outNames": [],
+      "params": {
+        "minVal": -1,
+        "maxVal": 1
+      }
+    },
+    "22": {
+      "type": "Clock",
+      "name": "Clock",
+      "x": 61,
+      "y": 130,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 60,
+        "maxVal": 240,
+        "value": 120,
+        "deviceId": null,
+        "controlId": null
+      }
     }
   }
 }
