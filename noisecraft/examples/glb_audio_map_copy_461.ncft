@@ -1254,7 +1254,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.3270703125000003,
+        "value": 0.36992187500000057,
         "deviceId": null,
         "controlId": null
       }
@@ -2815,7 +2815,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.5521484374999994,
+        "value": 0.4669921874999994,
         "deviceId": null,
         "controlId": null
       }
@@ -3471,7 +3471,7 @@
         ""
       ],
       "params": {
-        "value": 0.15935
+        "value": 0.3
       }
     },
     "195": {
@@ -3733,10 +3733,12 @@
         [
           "173",
           0
-        ]
+        ],
+        null
       ],
       "inNames": [
-        "clock"
+        "clock",
+        "gateT"
       ],
       "outNames": [
         "freq",
@@ -3793,10 +3795,12 @@
         [
           "173",
           0
-        ]
+        ],
+        null
       ],
       "inNames": [
-        "clock"
+        "clock",
+        "gateT"
       ],
       "outNames": [
         "freq",
@@ -3815,10 +3819,12 @@
         [
           "173",
           0
-        ]
+        ],
+        null
       ],
       "inNames": [
-        "clock"
+        "clock",
+        "gateT"
       ],
       "outNames": [
         "freq",

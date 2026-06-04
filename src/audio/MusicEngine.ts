@@ -18,6 +18,7 @@ class MusicEngine {
   private rnn: MusicRNN | null = null;
   private initialized = false;
   private qpm = 120; // Quarter notes per minute
+  private updateTimer: NodeJS.Timeout | null = null;
   
   // State per generator module
   private moduleStates = new Map<string, ModulePlaybackState>();
@@ -64,55 +65,69 @@ class MusicEngine {
     syncModules();
     useMusicStore.subscribe(syncModules);
 
-    bridge.onClockPulse = (nodeId: string, pulseTime: number, sendTime: number) => {
-      if (!this.isRunning) return;
-      
-      const musicState = useMusicStore.getState();
+    let lastTick = performance.now();
+    let accumulatedPulses = 0;
+
+    const tickPulses = () => {
+      const state = useMusicStore.getState();
+      const generators = state.modules.filter(m => m.type === 'magenta_ai' || m.type === 'harmonic_array');
       const audioState = useAudioMapStore.getState();
-      
-      const generators = musicState.modules.filter(m => m.type === 'magenta_ai' || m.type === 'harmonic_array');
-      
+
       for (const gen of generators) {
-        let state = this.moduleStates.get(gen.id);
-        if (!state) {
-          state = { cursor: 0, seqLength: 0, isGenerating: false };
-          this.moduleStates.set(gen.id, state);
+        let genState = this.moduleStates.get(gen.id);
+        if (!genState) {
+          genState = { cursor: 0, seqLength: 0, isGenerating: false };
+          this.moduleStates.set(gen.id, genState);
         }
 
-        // On every clock pulse from the generic ClockOut node, advance cursor.
-        state.cursor++;
+        genState.cursor++;
 
-        // There are 6 clock pulses per 16th note step (24 PPQ / 4 = 6 PPS).
-        const totalPulsesNeeded = state.seqLength * 6;
+        const totalPulsesNeeded = genState.seqLength * 6; // 6 pulses per 16th note
 
-        if (state.cursor >= totalPulsesNeeded && !state.isGenerating) {
-          state.isGenerating = true;
+        if (genState.cursor >= totalPulsesNeeded && !genState.isGenerating) {
+          genState.isGenerating = true;
           
-          this.generateSequenceForModule(gen, musicState, audioState).then(seq => {
+          this.generateSequenceForModule(gen, state, audioState).then(seq => {
             if (seq && seq.pitches.length > 0) {
-              const targetId = this.getTargetOutputNodeId(gen, musicState);
+              const targetId = this.getTargetOutputNodeId(gen, state);
               if (targetId) {
                 this.sendSequenceToAI(targetId, seq);
               }
-              state.seqLength = seq.pitches.length;
-              state.cursor = 0;
+              genState.seqLength = seq.pitches.length;
+              genState.cursor = 0;
             } else {
-              // If generation failed or returned empty, retry soon
-              state.seqLength = 1; 
-              state.cursor = 0;
+              genState.seqLength = 1; 
+              genState.cursor = 0;
             }
-            state.isGenerating = false;
+            genState.isGenerating = false;
           });
         }
       }
     };
+
+    // Run an internal tick timer to simulate 24 PPQ at 120 BPM if no ClockOut is present
+    this.updateTimer = setInterval(() => {
+      if (!this.isRunning) return;
+      const now = performance.now();
+      const dt = (now - lastTick) / 1000;
+      lastTick = now;
+
+      const bpm = 120;
+      const pulsesPerSec = (bpm / 60) * 24;
+      accumulatedPulses += dt * pulsesPerSec;
+      
+      while (accumulatedPulses >= 1) {
+        accumulatedPulses -= 1;
+        tickPulses();
+      }
+    }, 1000 / 60);
   }
 
   stop() {
     this.isRunning = false;
-    const bridge = getNoiseCraftBridge();
-    if (bridge.onClockPulse) {
-      bridge.onClockPulse = undefined;
+    if (this.updateTimer) {
+      clearInterval(this.updateTimer);
+      this.updateTimer = null;
     }
   }
 

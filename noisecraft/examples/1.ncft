@@ -32,10 +32,15 @@
         [
           "22",
           0
+        ],
+        [
+          "28",
+          0
         ]
       ],
       "inNames": [
-        "clock"
+        "clock",
+        "gateT"
       ],
       "outNames": [
         "freq",
@@ -73,10 +78,7 @@
       "x": 542,
       "y": 247,
       "ins": [
-        [
-          "1",
-          1
-        ],
+        null,
         [
           "13",
           0
@@ -335,8 +337,8 @@
     "22": {
       "type": "Clock",
       "name": "Clock",
-      "x": 61,
-      "y": 130,
+      "x": 37,
+      "y": 48,
       "ins": [],
       "inNames": [],
       "outNames": [
@@ -345,7 +347,7 @@
       "params": {
         "minVal": 60,
         "maxVal": 240,
-        "value": 120,
+        "value": 150.4593749999999,
         "deviceId": null,
         "controlId": null
       }
@@ -428,6 +430,86 @@
         "value": 0.5942578125000001,
         "deviceId": null,
         "controlId": null
+      }
+    },
+    "28": {
+      "type": "Pulse",
+      "name": "Pulse",
+      "x": 252,
+      "y": 124,
+      "ins": [
+        [
+          "31",
+          0
+        ],
+        null
+      ],
+      "inNames": [
+        "freq",
+        "pw"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {
+        "minVal": -1,
+        "maxVal": 1
+      }
+    },
+    "30": {
+      "type": "Knob",
+      "name": "Knob",
+      "x": 139,
+      "y": 46,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "minVal": 0,
+        "maxVal": 1,
+        "value": 1,
+        "deviceId": null,
+        "controlId": null
+      }
+    },
+    "31": {
+      "type": "Mul",
+      "name": "Mul",
+      "x": 238,
+      "y": 35,
+      "ins": [
+        [
+          "30",
+          0
+        ],
+        [
+          "32",
+          0
+        ]
+      ],
+      "inNames": [
+        "in0",
+        "in1"
+      ],
+      "outNames": [
+        "out"
+      ],
+      "params": {}
+    },
+    "32": {
+      "type": "Const",
+      "name": "Const",
+      "x": 153,
+      "y": 142,
+      "ins": [],
+      "inNames": [],
+      "outNames": [
+        ""
+      ],
+      "params": {
+        "value": 20
       }
     }
   }
