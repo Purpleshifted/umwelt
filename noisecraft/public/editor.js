@@ -2265,23 +2265,6 @@ class AI_Seq extends UINode {
     // Stop event propagation so clicking the select doesn't drag the node
     select.onpointerdown = (evt) => evt.stopPropagation();
   }
-
-  clockPulse(pulseTime) {
-    let curTime = performance.now();
-    let pulseDt = pulseTime - (this.lastTime || 0);
-    let sendTime = this.lastSent ? this.lastSent + pulseDt * 1000 : curTime;
-
-    window.parent.postMessage({
-      type: 'noiseCraft:clockPulse',
-      nodeId: this.id, // For legacy
-      moduleId: this.state.params.moduleId, // For correct routing
-      pulseTime: pulseTime,
-      sendTime: sendTime
-    }, '*');
-
-    this.lastTime = pulseTime;
-    this.lastSent = sendTime;
-  }
 }
 
 // Map of node types to specialized node classes

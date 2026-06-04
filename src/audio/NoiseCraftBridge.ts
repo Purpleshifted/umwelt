@@ -48,7 +48,7 @@ export class NoiseCraftBridge {
   private analyserRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private _editorVisible = false;
   
-  public onClockPulse?: (nodeId: string, pulseTime: number, sendTime: number, moduleId?: string) => void;
+  public onClockPulse?: (nodeId: string, pulseTime: number, sendTime: number) => void;
 
   noisecraftUrl(filename = 'nc_noise_patch.ncft'): string {
     // Load from /public/examples/ so we load the autosaved version instead of the static public version
@@ -208,7 +208,7 @@ export class NoiseCraftBridge {
 
       case 'noiseCraft:clockPulse':
         if (this.onClockPulse) {
-          this.onClockPulse(e.data.nodeId, e.data.pulseTime, e.data.sendTime, e.data.moduleId);
+          this.onClockPulse(e.data.nodeId, e.data.pulseTime, e.data.sendTime);
         }
         break;
 
