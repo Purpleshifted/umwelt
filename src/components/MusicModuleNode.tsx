@@ -95,81 +95,39 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
           </div>
         )}
 
-        {module.type === 'harmonic_array' && module.harmonicConfig && (
-              <div className={styles.configArea}>
-                <div className={styles.field}>
-                  <label>Scale Type</label>
-                  <select 
-                    className="nodrag"
-                    value={module.harmonicConfig.scaleType}
-                    onChange={(e) => updateModule(module.id, { 
-                      harmonicConfig: { ...module.harmonicConfig!, scaleType: e.target.value as any } 
-                    })}
-                  >
-                    <option value="major">Major</option>
-                    <option value="minor">Minor</option>
-                    <option value="dorian">Dorian</option>
-                    <option value="altered">Altered</option>
-                  </select>
-                </div>
-                <div className={styles.field}>
-                  <label>Octave Range: {module.harmonicConfig.octaveRange}</label>
-                  <input 
-                    type="range" min="1" max="4" 
-                    className="nodrag"
-                    value={module.harmonicConfig.octaveRange}
-                    onChange={(e) => updateModule(module.id, { 
-                      harmonicConfig: { ...module.harmonicConfig!, octaveRange: parseInt(e.target.value) } 
-                    })}
-                  />
-                </div>
-              </div>
-            )}
-
-            {module.type === 'magenta_ai' && module.magentaConfig && (
-              <div className={styles.configArea}>
-                <div className={styles.field}>
-                  <label>Max Temperature: {module.magentaConfig.temperatureMax}</label>
-                  <input 
-                    type="range" min="0.5" max="2.0" step="0.1"
-                    className="nodrag"
-                    value={module.magentaConfig.temperatureMax}
-                    onChange={(e) => updateModule(module.id, { 
-                      magentaConfig: { ...module.magentaConfig!, temperatureMax: parseFloat(e.target.value) } 
-                    })}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label>Density: {module.magentaConfig.density}</label>
-                  <input 
-                    type="range" min="0.1" max="1.0" step="0.1"
-                    className="nodrag"
-                    value={module.magentaConfig.density}
-                    onChange={(e) => updateModule(module.id, { 
-                      magentaConfig: { ...module.magentaConfig!, density: parseFloat(e.target.value) } 
-                    })}
-                  />
-                </div>
-              </div>
-            )}
-
-            {(module.type === 'harmonic_array' || module.type === 'magenta_ai') && (
-          <>
-            <div className={styles.outputs}>
-              <div className={styles.outRow}>
-                <span>Pitch (Hz)</span>
-                <div className={styles.dot} />
-              </div>
-              <div className={styles.outRow}>
-                <span>Gate (0/1)</span>
-                <div className={styles.dot} />
-              </div>
+        {module.type === 'harmonic_array' && (
+          <div className={styles.configArea}>
+            <div className={styles.paramHandleRow}>
+              <Handle type="target" position={Position.Left} id="scaleType" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+              <span style={{ fontSize: '10px' }}>Scale Type (0-1)</span>
             </div>
-            
-            {/* Source handles for pitch and gate */}
-            <Handle type="source" position={Position.Right} id="pitch" style={{ top: 'auto', bottom: '30px' }} className={styles.handle} />
-            <Handle type="source" position={Position.Right} id="gate" style={{ top: 'auto', bottom: '15px' }} className={styles.handle} />
-          </>
+            <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+              <Handle type="target" position={Position.Left} id="octaveRange" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+              <span style={{ fontSize: '10px' }}>Octave Range (0-1)</span>
+            </div>
+          </div>
+        )}
+
+        {module.type === 'magenta_ai' && (
+          <div className={styles.configArea}>
+            <div className={styles.paramHandleRow}>
+              <Handle type="target" position={Position.Left} id="temperature" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+              <span style={{ fontSize: '10px' }}>Temperature (0-1)</span>
+            </div>
+            <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+              <Handle type="target" position={Position.Left} id="density" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+              <span style={{ fontSize: '10px' }}>Density (0-1)</span>
+            </div>
+          </div>
+        )}
+
+        {(module.type === 'harmonic_array' || module.type === 'magenta_ai') && (
+          <div className={styles.outputs}>
+            <div className={styles.outRow}>
+              <span>Sequence Output</span>
+              <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#ff6b6b' }} />
+            </div>
+          </div>
         )}
       </div>
     </div>

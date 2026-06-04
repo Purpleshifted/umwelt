@@ -29,10 +29,7 @@
       "x": 62,
       "y": 229,
       "ins": [
-        [
-          "22",
-          0
-        ]
+        null
       ],
       "inNames": [
         "clock"
@@ -73,7 +70,10 @@
       "x": 542,
       "y": 247,
       "ins": [
-        null,
+        [
+          "1",
+          1
+        ],
         [
           "13",
           0
@@ -329,24 +329,6 @@
         "maxVal": 1
       }
     },
-    "22": {
-      "type": "Clock",
-      "name": "Clock",
-      "x": 61,
-      "y": 130,
-      "ins": [],
-      "inNames": [],
-      "outNames": [
-        ""
-      ],
-      "params": {
-        "minVal": 60,
-        "maxVal": 240,
-        "value": 120,
-        "deviceId": null,
-        "controlId": null
-      }
-    },
     "23": {
       "type": "Mul",
       "name": "Mul",
@@ -422,27 +404,10 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.5942578125000001,
+        "value": 1,
         "deviceId": null,
         "controlId": null
       }
-    },
-    "27": {
-      "type": "ClockOut",
-      "name": "ClockOut",
-      "x": 412,
-      "y": 140,
-      "ins": [
-        [
-          "1",
-          1
-        ]
-      ],
-      "inNames": [
-        "clock"
-      ],
-      "outNames": [],
-      "params": {}
     }
   }
 }

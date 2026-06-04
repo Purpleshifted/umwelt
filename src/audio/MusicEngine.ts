@@ -43,9 +43,9 @@ class MusicEngine {
     }
   }
 
-  private sendSequenceToAI(module: MusicModule, seq: { pitches: number[]; gates: number[] }) {
+  private sendSequenceToAI(targetId: string, seq: { pitches: number[]; gates: number[] }) {
     const bridge = getNoiseCraftBridge();
-    bridge.setSequence(module.id, seq.pitches, seq.gates);
+    bridge.setSequence(targetId, seq.pitches, seq.gates);
   }
 
   start() {
@@ -56,7 +56,9 @@ class MusicEngine {
 
     const syncModules = () => {
       const state = useMusicStore.getState();
-      const outModules = state.modules.map(m => ({ id: m.id, name: m.name }));
+      const outModules = state.modules
+        .filter(m => m.type === 'module_output' || m.type === 'magenta_ai' || m.type === 'harmonic_array')
+        .map(m => ({ id: m.id, name: m.name }));
       bridge.postMessage({ type: 'noiseCraft:updateModules', modules: outModules });
     };
     syncModules();
@@ -86,11 +88,12 @@ class MusicEngine {
         if (state.cursor >= totalPulsesNeeded && !state.isGenerating) {
           state.isGenerating = true;
           
-          let driveValue = this.evaluateDriveValue(gen, musicState, audioState);
-          
-          this.generateSequenceForModule(gen, driveValue).then(seq => {
+          this.generateSequenceForModule(gen, musicState, audioState).then(seq => {
             if (seq && seq.pitches.length > 0) {
-              this.sendSequenceToAI(gen, seq);
+              const targetId = this.getTargetOutputNodeId(gen, musicState);
+              if (targetId) {
+                this.sendSequenceToAI(targetId, seq);
+              }
               state.seqLength = seq.pitches.length;
               state.cursor = 0;
             } else {
@@ -113,45 +116,39 @@ class MusicEngine {
     }
   }
 
-  private evaluateDriveValue(module: MusicModule, musicState: any, audioState: any): number {
-    let driveValue = 0;
-    const inputEdge = musicState.edges.find((e: any) => e.target === module.id);
+  private getParamValue(module: MusicModule, paramName: string, defaultValue: number, musicState: any, audioState: any): number {
+    const inputEdge = musicState.edges.find((e: any) => e.target === module.id && e.targetHandle === paramName);
     if (inputEdge) {
       const inputModule = musicState.modules.find((m: any) => m.id === inputEdge.source);
       if (inputModule) {
+        if (inputModule.type === 'slider') return inputModule.sliderConfig?.value ?? defaultValue;
+        if (inputModule.type === 'knob') return inputModule.knobConfig?.value ?? defaultValue;
         if (inputModule.type === 'virtual_stream' && inputModule.inputStreamId) {
           const sensors = useSensorStore.getState();
           const sensorValues = { ppg: sensors.ppg, emg: sensors.emg, ecg: sensors.ecg, gsr: sensors.gsr, mouseX: sensors.mouseX, mouseY: sensors.mouseY };
-          driveValue = evaluateStreamValue(inputModule.inputStreamId, audioState.streams, sensorValues);
-        } else if (inputModule.type === 'noise' && inputModule.noiseConfig) {
-          driveValue = Math.random() * inputModule.noiseConfig.speed;
-        } else if (inputModule.type === 'sine' && inputModule.sineConfig) {
-          const t = performance.now() / 1000;
-          driveValue = (Math.sin(t * Math.PI * 2 * inputModule.sineConfig.frequency) + 1) / 2;
+          return evaluateStreamValue(inputModule.inputStreamId, audioState.streams, sensorValues);
         }
       }
-    } else {
-      if (module.inputStreamId) {
-        const sensors = useSensorStore.getState();
-        const sensorValues = { ppg: sensors.ppg, emg: sensors.emg, ecg: sensors.ecg, gsr: sensors.gsr, mouseX: sensors.mouseX, mouseY: sensors.mouseY };
-        driveValue = evaluateStreamValue(module.inputStreamId, audioState.streams, sensorValues);
-      }
     }
-    return driveValue;
+    return defaultValue;
   }
 
-  private async generateSequenceForModule(module: MusicModule, driveValue: number): Promise<{ pitches: number[], gates: number[] } | null> {
+  private getTargetOutputNodeId(module: MusicModule, musicState: any): string | null {
+    const outputEdge = musicState.edges.find((e: any) => e.source === module.id && e.sourceHandle === 'sequence');
+    if (outputEdge) {
+      return outputEdge.target;
+    }
+    return module.id; // fallback
+  }
+
+  private async generateSequenceForModule(module: MusicModule, musicState: any, audioState: any): Promise<{ pitches: number[], gates: number[] } | null> {
     const seqLength = 16;
     const pitches: number[] = [];
     const gates: number[] = [];
 
-    // Probability of a step having a note, based on density and drive
-    let density = 0.8;
-    if (module.type === 'magenta_ai') density = module.magentaConfig?.density ?? 0.8;
-    // Harmonic array could have a density setting too in the future, for now default to 0.8.
-    
-    // Scale density by drive value. If drive is low, fewer notes.
-    const effectiveDensity = density * (0.5 + driveValue * 0.5); 
+    // Probability of a step having a note, based on density
+    let density = this.getParamValue(module, 'density', 0.8, musicState, audioState);
+    const effectiveDensity = density;
 
     if (module.type === 'harmonic_array') {
       // Arpeggiate through a scale
@@ -160,10 +157,18 @@ class MusicEngine {
       let scale = [0, 2, 4, 5, 7, 9, 11]; // Major
       if (config?.scaleType === 'minor') scale = [0, 2, 3, 5, 7, 8, 10];
       if (config?.scaleType === 'dorian') scale = [0, 2, 3, 5, 7, 9, 10];
+      if (config?.scaleType === 'altered') scale = [0, 1, 3, 4, 6, 8, 10];
+
+      let octaveRange = this.getParamValue(module, 'octaveRange', config?.octaveRange ?? 2, musicState, audioState);
+      let scaleTypeParam = this.getParamValue(module, 'scaleType', 0, musicState, audioState);
+      
+      // If a parameter is hooked up for scaleType (0 to 1), use it to modulate root note dynamically
+      if (scaleTypeParam > 0) {
+          root += Math.floor(scaleTypeParam * 12);
+      }
       
       const fullScale: number[] = [];
-      const octaves = config?.octaveRange ?? 2;
-      for (let o = 0; o < octaves; o++) {
+      for (let o = 0; o < octaveRange; o++) {
         for (const note of scale) {
           fullScale.push(root + note + (o * 12));
         }
@@ -184,7 +189,7 @@ class MusicEngine {
     } 
 
     if (module.type === 'magenta_ai') {
-      const temp = module.magentaConfig?.temperatureMax ?? 1.0;
+      const temp = this.getParamValue(module, 'temperature', 1.0, musicState, audioState);
 
       if (!this.rnn || !this.initialized) {
         // Fallback
@@ -198,6 +203,15 @@ class MusicEngine {
             pitches.push(60);
             gates.push(0);
           }
+        }
+        return { pitches, gates };
+      }
+
+      // If density is very low, maybe we just don't generate to save compute
+      if (effectiveDensity < 0.1) {
+        for (let i = 0; i < seqLength; i++) {
+          pitches.push(60);
+          gates.push(0);
         }
         return { pitches, gates };
       }

@@ -24,6 +24,18 @@ export interface NoiseConfig {
   speed: number;
 }
 
+export interface SliderConfig {
+  value: number;
+  min: number;
+  max: number;
+}
+
+export interface KnobConfig {
+  value: number;
+  min: number;
+  max: number;
+}
+
 export interface MusicModule {
   id: string;
   name: string;
@@ -33,6 +45,8 @@ export interface MusicModule {
   magentaConfig?: MagentaConfig;
   sineConfig?: SineConfig;
   noiseConfig?: NoiseConfig;
+  sliderConfig?: SliderConfig;
+  knobConfig?: KnobConfig;
   position?: { x: number; y: number };
 }
 

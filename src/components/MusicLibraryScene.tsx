@@ -12,18 +12,29 @@ import {
   ReactFlowProvider,
   useNodesState,
   useEdgesState,
-  Panel
+  Panel,
+  Handle,
+  Position
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import { useMusicStore, MusicModuleType, MusicModule } from '@/store/musicStore';
 import { useAudioMapStore } from '@/store/audioMapStore';
 import MusicModuleNode from './MusicModuleNode';
+import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
 import styles from './MusicLibraryScene.module.css';
 import { musicEngine } from '@/audio/MusicEngine';
 
 const nodeTypes = {
-  musicModule: MusicModuleNode,
+  musicModule: (props: any) => {
+    const { module } = props.data;
+    if (module.type === 'slider') return <SliderInputNode {...props} />;
+    if (module.type === 'knob') return <KnobInputNode {...props} />;
+    if (module.type === 'module_output') return <ModuleOutputNode {...props} />;
+    
+    // Fallback for all other generators/modules
+    return <MusicModuleNode {...props} />;
+  }
 };
 
 function Flow() {
@@ -183,11 +194,18 @@ function Flow() {
               boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
             }}
           >
-            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px' }}>Add Input</div>
-            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
-            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sine', contextMenu.x, contextMenu.y)}>Sine LFO</button>
-            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('noise', contextMenu.x, contextMenu.y)}>Noise</button>
-          </div>
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px' }}>Add Module</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('magenta_ai', contextMenu.x, contextMenu.y)}>Magenta Composer</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('harmonic_array', contextMenu.x, contextMenu.y)}>Harmonic Array</button>
+          
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Add Input</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('slider', contextMenu.x, contextMenu.y)}>Slider Input</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('knob', contextMenu.x, contextMenu.y)}>Knob Input</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
+
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Add Output</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Output Channel</button>
+        </div>
         )}
       </ReactFlow>
     </div>

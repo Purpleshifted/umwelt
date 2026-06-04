@@ -33143,3 +33143,1833 @@ Import trace:
 [browser] Encountered two children with the same key, `e_music_mod_1780487161245_music_mod_1780481747404`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
  GET /audio 200 in 43ms (next.js: 9ms, application-code: 34ms)
 ✓ Compiled in 149ms
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled in 339ms
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled in 17ms
+[browser] ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  21 | import { useMusicStore, MusicModuleType, MusicModule } from '@/store/musicStore';
+  22 | import { useAudioMapStore } from '@/store/audioMapStore';
+> 23 | import HarmonicArrayNode from './HarmonicArrayNode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  24 | import MagentaAINode from './MagentaAINode';
+  25 | import VirtualStreamNode from './VirtualStreamNode';
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  22 | import { useAudioMapStore } from '@/store/audioMapStore';
+  23 | import HarmonicArrayNode from './HarmonicArrayNode';
+> 24 | import MagentaAINode from './MagentaAINode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  25 | import VirtualStreamNode from './VirtualStreamNode';
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+  27 | import styles from './MusicLibraryScene.module.css';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  23 | import HarmonicArrayNode from './HarmonicArrayNode';
+  24 | import MagentaAINode from './MagentaAINode';
+> 25 | import VirtualStreamNode from './VirtualStreamNode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+  27 | import styles from './MusicLibraryScene.module.css';
+  28 | import { musicEngine } from '@/audio/MusicEngine';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  21 | import { useMusicStore, MusicModuleType, MusicModule } from '@/store/musicStore';
+  22 | import { useAudioMapStore } from '@/store/audioMapStore';
+> 23 | import HarmonicArrayNode from './HarmonicArrayNode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  24 | import MagentaAINode from './MagentaAINode';
+  25 | import VirtualStreamNode from './VirtualStreamNode';
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  22 | import { useAudioMapStore } from '@/store/audioMapStore';
+  23 | import HarmonicArrayNode from './HarmonicArrayNode';
+> 24 | import MagentaAINode from './MagentaAINode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  25 | import VirtualStreamNode from './VirtualStreamNode';
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+  27 | import styles from './MusicLibraryScene.module.css';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  23 | import HarmonicArrayNode from './HarmonicArrayNode';
+  24 | import MagentaAINode from './MagentaAINode';
+> 25 | import VirtualStreamNode from './VirtualStreamNode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+  27 | import styles from './MusicLibraryScene.module.css';
+  28 | import { musicEngine } from '@/audio/MusicEngine';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  [90m21 |[0m [36mimport[0m { useMusicStore, [33mMusicModuleType[0m, [33mMusicModule[0m } [36mfrom[0m [32m'@/store/musicStore'[0m;
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+[31m[1m>[0m [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  [90m22 |[0m [36mimport[0m { useAudioMapStore } [36mfrom[0m [32m'@/store/audioMapStore'[0m;
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+[31m[1m>[0m [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  [90m23 |[0m [36mimport[0m [33mHarmonicArrayNode[0m [36mfrom[0m [32m'./HarmonicArrayNode'[0m;
+  [90m24 |[0m [36mimport[0m [33mMagentaAINode[0m [36mfrom[0m [32m'./MagentaAINode'[0m;
+[31m[1m>[0m [90m25 |[0m [36mimport[0m [33mVirtualStreamNode[0m [36mfrom[0m [32m'./VirtualStreamNode'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m26 |[0m [36mimport[0m { [33mSliderInputNode[0m, [33mKnobInputNode[0m, [33mModuleOutputNode[0m } [36mfrom[0m [32m'./InputNodes'[0m;
+  [90m27 |[0m [36mimport[0m styles [36mfrom[0m [32m'./MusicLibraryScene.module.css'[0m;
+  [90m28 |[0m [36mimport[0m { musicEngine } [36mfrom[0m [32m'@/audio/MusicEngine'[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled in 35ms
+✓ Compiled in 225ms
+ GET /audio 200 in 42ms (next.js: 9ms, application-code: 33ms)
+✓ Compiled in 51ms
+✓ Compiled in 87ms
+ GET /audio 200 in 56ms (next.js: 21ms, application-code: 35ms)
+✓ Compiled in 158ms
+✓ Compiled in 14ms
+[browser] ./src/components/MusicLibraryScene.tsx:23:1
+Module not found: Can't resolve './HarmonicArrayNode'
+  21 | import { useMusicStore, MusicModuleType, MusicModule } from '@/store/musicStore';
+  22 | import { useAudioMapStore } from '@/store/audioMapStore';
+> 23 | import HarmonicArrayNode from './HarmonicArrayNode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  24 | import MagentaAINode from './MagentaAINode';
+  25 | import VirtualStreamNode from './VirtualStreamNode';
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicLibraryScene.tsx:24:1
+Module not found: Can't resolve './MagentaAINode'
+  22 | import { useAudioMapStore } from '@/store/audioMapStore';
+  23 | import HarmonicArrayNode from './HarmonicArrayNode';
+> 24 | import MagentaAINode from './MagentaAINode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  25 | import VirtualStreamNode from './VirtualStreamNode';
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+  27 | import styles from './MusicLibraryScene.module.css';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicLibraryScene.tsx:25:1
+Module not found: Can't resolve './VirtualStreamNode'
+  23 | import HarmonicArrayNode from './HarmonicArrayNode';
+  24 | import MagentaAINode from './MagentaAINode';
+> 25 | import VirtualStreamNode from './VirtualStreamNode';
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  26 | import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
+  27 | import styles from './MusicLibraryScene.module.css';
+  28 | import { musicEngine } from '@/audio/MusicEngine';
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./src/components/MusicModuleNode.tsx:135:13
+Expected ',', got '{'
+  133 |             </div>
+  134 |             
+> 135 |             {/* Source handles for pitch and gate */}
+      |             ^
+  136 |             <Handle type="source" position={Position.Right} id="pitch" style={{ top: 'aut...
+  137 |             <Handle type="source" position={Position.Right} id="gate" style={{ top: 'auto...
+  138 |           </>
+
+Parsing ecmascript source code failed
+
+Import trace:
+  Client Component Browser:
+    ./src/components/MusicModuleNode.tsx [Client Component Browser]
+    ./src/components/MusicLibraryScene.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Client Component Browser]
+    ./src/app/music/page.tsx [Server Component] 
+✓ Compiled in 34ms
+✓ Compiled in 47ms
+✓ Compiled in 30ms
+✓ Compiled in 21ms
+ GET /audio 200 in 127ms (next.js: 26ms, application-code: 101ms)
+ GET /music 200 in 49ms (next.js: 17ms, application-code: 32ms)
+[browser] Encountered two children with the same key, `e_music_mod_1780487161245_music_mod_1780481747404`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `e_music_mod_1780487161245_music_mod_1780481747404`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
+✓ Compiled in 35ms
+ GET /music 200 in 136ms (next.js: 33ms, application-code: 104ms)
