@@ -33,10 +33,7 @@
           "22",
           0
         ],
-        [
-          "28",
-          0
-        ]
+        null
       ],
       "inNames": [
         "clock",
@@ -78,10 +75,7 @@
       "x": 542,
       "y": 247,
       "ins": [
-        [
-          "1",
-          1
-        ],
+        null,
         [
           "13",
           0
@@ -146,7 +140,7 @@
         ""
       ],
       "params": {
-        "value": 1.2
+        "value": 1
       }
     },
     "13": {
@@ -276,7 +270,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.38218749999999996,
+        "value": 0.20828124999999992,
         "deviceId": null,
         "controlId": null
       }
@@ -294,7 +288,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.40761718750000003,
+        "value": 0.6819140624999998,
         "deviceId": null,
         "controlId": null
       }
@@ -312,7 +306,7 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.15550781250000004,
+        "value": 0.25308593749999997,
         "deviceId": null,
         "controlId": null
       }
@@ -350,7 +344,7 @@
       "params": {
         "minVal": 60,
         "maxVal": 240,
-        "value": 150.4593749999999,
+        "value": 104.9601562499999,
         "deviceId": null,
         "controlId": null
       }
@@ -414,7 +408,7 @@
         ""
       ],
       "params": {
-        "value": 200
+        "value": 5
       }
     },
     "26": {
@@ -430,89 +424,9 @@
       "params": {
         "minVal": 0,
         "maxVal": 1,
-        "value": 0.7274999999999999,
+        "value": 0.5942578125000001,
         "deviceId": null,
         "controlId": null
-      }
-    },
-    "28": {
-      "type": "Pulse",
-      "name": "Pulse",
-      "x": 252,
-      "y": 124,
-      "ins": [
-        [
-          "31",
-          0
-        ],
-        null
-      ],
-      "inNames": [
-        "freq",
-        "pw"
-      ],
-      "outNames": [
-        "out"
-      ],
-      "params": {
-        "minVal": -1,
-        "maxVal": 1
-      }
-    },
-    "30": {
-      "type": "Knob",
-      "name": "Knob",
-      "x": 139,
-      "y": 46,
-      "ins": [],
-      "inNames": [],
-      "outNames": [
-        ""
-      ],
-      "params": {
-        "minVal": 0,
-        "maxVal": 1,
-        "value": 1,
-        "deviceId": null,
-        "controlId": null
-      }
-    },
-    "31": {
-      "type": "Mul",
-      "name": "Mul",
-      "x": 238,
-      "y": 35,
-      "ins": [
-        [
-          "30",
-          0
-        ],
-        [
-          "32",
-          0
-        ]
-      ],
-      "inNames": [
-        "in0",
-        "in1"
-      ],
-      "outNames": [
-        "out"
-      ],
-      "params": {}
-    },
-    "32": {
-      "type": "Const",
-      "name": "Const",
-      "x": 153,
-      "y": 142,
-      "ins": [],
-      "inNames": [],
-      "outNames": [
-        ""
-      ],
-      "params": {
-        "value": 20
       }
     }
   }

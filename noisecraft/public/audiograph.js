@@ -1032,7 +1032,8 @@ class AI_Seq extends AudioNode {
     {
         this.pitches = pitches || [];
         this.gates = gates || [];
-        this.stepIdx = 0; // reset to start
+        // DO NOT reset stepIdx. Allow the sequencer to progress seamlessly 
+        // through the newly generated sequence without restarting from the beginning.
     }
 
     update(time, clock, gateTime)
