@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Edge } from '@xyflow/react';
 
-export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'noise' | 'sine' | 'virtual_stream';
+export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output';
 
 export interface HarmonicArrayConfig {
   scaleType: 'major' | 'minor' | 'dorian' | 'altered';

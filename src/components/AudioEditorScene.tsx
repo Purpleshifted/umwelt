@@ -16,6 +16,11 @@ export default function AudioEditorScene() {
   const [selectedPatch, setSelectedPatch] = useState<string | null>(null);
 
   useEffect(() => {
+    // Start the global MusicEngine so sequence generation works
+    import('@/audio/MusicEngine').then(({ musicEngine }) => {
+      musicEngine.start();
+    });
+
     if (containerRef.current && selectedPatch) {
       const bridge = getNoiseCraftBridge();
       const iframe = bridge.createIframe(containerRef.current, true, selectedPatch);

@@ -33110,3 +33110,26 @@ Import trace:
 ✓ Compiled in 138ms
 ✓ Compiled in 20ms
 ✓ Compiled in 186ms
+ GET /audio 200 in 86ms (next.js: 26ms, application-code: 60ms)
+ GET /audio 200 in 83ms (next.js: 15ms, application-code: 68ms)
+✓ Compiled in 4.8s
+ GET /audio 200 in 297ms (next.js: 237ms, application-code: 60ms)
+[browser] ⨯ unhandledRejection: TypeError: getMusicEngine is not a function
+    at AudioEditorScene.useEffect (src/components/AudioEditorScene.tsx:21:7)
+  19 |     // Start the global MusicEngine so sequence generation works
+  20 |     import('@/audio/MusicEngine').then(({ getMusicEngine }) => {
+> 21 |       getMusicEngine().start();
+     |       ^
+  22 |     });
+  23 |
+  24 |     if (containerRef.current && selectedPatch) {
+[browser] ⨯ unhandledRejection: TypeError: getMusicEngine is not a function
+    at AudioEditorScene.useEffect (src/components/AudioEditorScene.tsx:21:7)
+  19 |     // Start the global MusicEngine so sequence generation works
+  20 |     import('@/audio/MusicEngine').then(({ getMusicEngine }) => {
+> 21 |       getMusicEngine().start();
+     |       ^
+  22 |     });
+  23 |
+  24 |     if (containerRef.current && selectedPatch) {
+✓ Compiled in 44ms
