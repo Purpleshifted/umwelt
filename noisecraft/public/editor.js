@@ -2213,6 +2213,10 @@ class Scope extends UINode {
 
 class AI_Seq extends UINode {
   constructor(id, state, editor) {
+    // Ensure voice param exists for old patches
+    if (!('voice' in state.params)) {
+      state.params.voice = 0;
+    }
     super(id, state, editor);
     // Visual label
     let label = document.createElement("div");

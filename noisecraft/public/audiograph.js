@@ -1014,6 +1014,10 @@ class GateSeq extends Sequencer
  */
 class AI_Seq extends AudioNode {
     constructor(id, state, sampleRate, send) {
+        // Ensure voice param exists for old patches that predate it
+        if (!('voice' in state.params)) {
+            state.params.voice = 0;
+        }
         super(id, state, sampleRate, send);
         this.pitches = state.pitches || [];
         this.gates = state.gates || [];
