@@ -80,7 +80,10 @@ class MusicEngine {
         // On every clock pulse from the generic ClockOut node, advance cursor.
         state.cursor++;
 
-        if (state.cursor >= state.seqLength && !state.isGenerating) {
+        // There are 6 clock pulses per 16th note step (24 PPQ / 4 = 6 PPS).
+        const totalPulsesNeeded = state.seqLength * 6;
+
+        if (state.cursor >= totalPulsesNeeded && !state.isGenerating) {
           state.isGenerating = true;
           
           let driveValue = this.evaluateDriveValue(gen, musicState, audioState);

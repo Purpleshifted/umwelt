@@ -429,6 +429,23 @@
         "deviceId": null,
         "controlId": null
       }
+    },
+    "27": {
+      "type": "ClockOut",
+      "name": "ClockOut",
+      "x": 236,
+      "y": 129,
+      "ins": [
+        [
+          "22",
+          0
+        ]
+      ],
+      "inNames": [
+        "clock"
+      ],
+      "outNames": [],
+      "params": {}
     }
   }
 }

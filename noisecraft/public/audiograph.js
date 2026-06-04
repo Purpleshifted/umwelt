@@ -1012,19 +1012,17 @@ class GateSeq extends Sequencer
 /**
  * AI Sequence Receiver (Unlimited Steps)
  */
-class AI_Seq extends AudioNode
-{
-    constructor(id, state, sampleRate, send)
-    {
+class AI_Seq extends AudioNode {
+    constructor(id, state, sampleRate, send) {
         super(id, state, sampleRate, send);
-        this.clockSgn = false;
+        this.pitches = state.pitches || [];
+        this.gates = state.gates || [];
         this.stepIdx = 0;
-        this.pitches = [];
-        this.gates = [];
         this.freq = 0;
-        this.gateVal = 0;
         this.gateState = 'off';
+        this.clockSgn = false;
         this.trigTime = 0;
+        this.clockCnt = 0;
     }
 
     /**
@@ -1042,23 +1040,31 @@ class AI_Seq extends AudioNode
         // Rising edge of the clock
         if (!this.clockSgn && clock > 0)
         {
-            if (this.pitches.length > 0)
+            if (this.clockCnt === 0)
             {
-                let idx = this.stepIdx % this.pitches.length;
-                let pitch = this.pitches[idx];
-                let gate = this.gates[idx];
+                this.clockCnt = music.CLOCK_PPS;
                 
-                if (gate > 0) {
-                    // Convert MIDI to Hz
-                    this.freq = 440 * Math.pow(2, (pitch - 69) / 12);
-                    this.gateState = 'pretrig';
-                    this.trigTime = time;
-                } else {
-                    this.gateState = 'off';
+                if (this.pitches.length > 0)
+                {
+                    let idx = this.stepIdx % this.pitches.length;
+                    let pitch = this.pitches[idx];
+                    let gate = this.gates[idx];
+                    
+                    if (gate > 0) {
+                        // Convert MIDI to Hz
+                        this.freq = 440 * Math.pow(2, (pitch - 69) / 12);
+                        this.gateState = 'pretrig';
+                        this.trigTime = time;
+                    } else {
+                        this.gateState = 'off';
+                    }
+                    
+                    this.stepIdx++;
                 }
-                
-                this.stepIdx++;
             }
+            
+            if (this.clockCnt > 0)
+                this.clockCnt--;
         }
 
         this.clockSgn = (clock > 0);
