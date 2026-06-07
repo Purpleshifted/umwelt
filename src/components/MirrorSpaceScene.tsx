@@ -1,10 +1,13 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useControls } from 'leva';
+import { musicEngine } from '@/audio/MusicEngine';
+import { useAudioGraphStore } from '@/store/audioGraphStore';
+import { getNoiseCraftBridge } from '@/audio/NoiseCraftBridge';
 
 function PointGrid() {
   const pointsRef = useRef<THREE.Points>(null);
@@ -105,8 +108,58 @@ function PointGrid() {
 }
 
 export default function MirrorSpaceScene() {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    // Start the global MusicEngine so sequence generation works
+    import('@/audio/MusicEngine').then(({ musicEngine }) => {
+      // Just initialize
+    });
+  }, []);
+
+  const handlePlayToggle = () => {
+    if (!isPlaying) {
+      setIsPlaying(true);
+      musicEngine.start();
+      musicEngine.playTracks();
+      
+      const ctx = useAudioGraphStore.getState().audioContext;
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+
+      getNoiseCraftBridge().startAudio();
+    } else {
+      setIsPlaying(false);
+      musicEngine.stop();
+      musicEngine.stopTracks();
+      getNoiseCraftBridge().stopAudio();
+    }
+  };
+
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#000', paddingTop: '60px' }}>
+    <div style={{ width: '100vw', height: '100vh', background: '#000', paddingTop: '60px', position: 'relative' }}>
+      <button 
+        onClick={handlePlayToggle}
+        style={{
+          position: 'absolute',
+          top: '80px',
+          right: '20px',
+          zIndex: 100,
+          background: isPlaying ? 'rgba(255, 107, 107, 0.2)' : 'rgba(78, 205, 196, 0.2)',
+          color: isPlaying ? '#ff6b6b' : '#4ecdc4',
+          border: `1px solid ${isPlaying ? '#ff6b6b' : '#4ecdc4'}`,
+          padding: '8px 16px',
+          borderRadius: '20px',
+          cursor: 'pointer',
+          fontFamily: 'Inter, sans-serif',
+          fontWeight: 600,
+          fontSize: '12px',
+          letterSpacing: '1px',
+          backdropFilter: 'blur(4px)',
+          transition: 'all 0.2s ease'
+        }}
+      >
+        {isPlaying ? '■ STOP AUDIO' : '▶ PLAY AUDIO'}
+      </button>
       <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
         <color attach="background" args={['#020205']} />
         <PointGrid />
