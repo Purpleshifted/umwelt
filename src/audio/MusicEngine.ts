@@ -1903,35 +1903,83 @@ class MusicEngine {
             this.previewIntervals.push(interval);
          }
       }
-    } else {
-      const config = results[sourceId];
-      if (config && config.type === 'virtual_instrument') {
-        import('./SamplerEngine').then(async sampler => {
-          const instr = config.config?.instrument ?? 'acoustic_grand_piano';
-          const vol = config.config?.volume ?? 0.8;
-          
-          const engine = sampler.getSamplerEngine();
-          // Ensure it's loaded before playing
-          await engine.getInstrument(instr);
-          
-          engine.playNote(instr, 60, this.Tone!.now(), 2, vol * 127);
-          
+      const seq = state.nodeOutputs?.[sourceId]?.sequence as MonoSequence | PolySequence | undefined;
+      
+      if (seq && seq.pitches && seq.pitches.length > 0) {
+        // Play the actual sequence for preview!
+        this.Tone.Transport.bpm.value = this.qpm;
+        const beatDuration = 60 / this.qpm;
+        const stepDuration = beatDuration / 4;
+        const seqLength = Array.isArray(seq.pitches[0]) ? seq.pitches.length : seq.pitches.length;
+        
+        const events: any[] = [];
+        for (let i = 0; i < seqLength; i++) {
+          const time = i * stepDuration;
+          let isGateOn = false;
+          let notesToPlay: number[] = [];
+          if (Array.isArray(seq.pitches[0])) {
+            const poly = seq as PolySequence;
+            for (let j = 0; j < (poly.gates[i] || []).length; j++) {
+              if (poly.gates[i][j]) { isGateOn = true; notesToPlay.push(poly.pitches[i][j]); }
+            }
+          } else {
+            const mono = seq as MonoSequence;
+            if (mono.gates[i]) { isGateOn = true; notesToPlay.push(mono.pitches[i]); }
+          }
+          if (isGateOn && notesToPlay.length > 0) {
+            events.push({ time, notes: notesToPlay });
+          }
+        }
+        
+        const part = new this.Tone.Part((time, value) => {
+          const freqs = value.notes.map((midi: number) => this.Tone!.Frequency(midi, "midi").toFrequency());
+          if (chain.triggerNode?.triggerAttackRelease) {
+            chain.triggerNode.triggerAttackRelease(freqs, "16n", time);
+          }
+        }, events);
+        
+        part.start(0);
+        this.Tone.Transport.start();
+        this.previewActiveNodes.push(part as any);
+        
+        const totalDuration = seqLength * stepDuration;
+        setTimeout(() => {
+          part.stop();
+          part.dispose();
+          useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
+          this.stopPreviewSynths();
+        }, (totalDuration + 0.5) * 1000);
+        
+      } else {
+        const config = results[sourceId];
+        if (config && config.type === 'virtual_instrument') {
+          import('./SamplerEngine').then(async sampler => {
+            const instr = config.config?.instrument ?? 'acoustic_grand_piano';
+            const vol = config.config?.volume ?? 0.8;
+            
+            const engine = sampler.getSamplerEngine();
+            // Ensure it's loaded before playing
+            await engine.getInstrument(instr);
+            
+            engine.playNote(instr, 60, this.Tone!.now(), 2, vol * 127);
+            
+            setTimeout(() => {
+              useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
+            }, 2000);
+          });
+        } else if (chain.triggerNode?.triggerAttackRelease) {
+          chain.triggerNode.triggerAttackRelease(this.Tone!.Frequency("C4").toFrequency(), "4n");
           setTimeout(() => {
             useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
-          }, 2000);
-        });
-      } else if (chain.triggerNode?.triggerAttackRelease) {
-        chain.triggerNode.triggerAttackRelease(this.Tone!.Frequency("C4").toFrequency(), "4n");
-        setTimeout(() => {
-          useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
-          this.stopPreviewSynths();
-        }, 3000);
-      } else {
-        // Fallback: Just stop it after 3s if no triggerNode
-        setTimeout(() => {
-          useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
-          this.stopPreviewSynths();
-        }, 3000);
+            this.stopPreviewSynths();
+          }, 3000);
+        } else {
+          // Fallback: Just stop it after 3s if no triggerNode
+          setTimeout(() => {
+            useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
+            this.stopPreviewSynths();
+          }, 3000);
+        }
       }
     }
   }
