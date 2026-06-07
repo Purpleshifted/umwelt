@@ -2070,6 +2070,14 @@ class MusicEngine {
         const vol = config.config?.volume ?? 0.8;
         const dummyNode = new this.Tone.Gain(1);
         
+        // Create nativeGain ONCE and connect it to dummyNode
+        const nativeGain = dummyNode.context.rawContext.createGain();
+        if ((dummyNode as any).input) {
+            nativeGain.connect((dummyNode as any).input);
+        } else {
+            nativeGain.connect(dummyNode as any);
+        }
+        
         const triggerAttackRelease = (freqs: any, duration: any, time: any) => {
            import('./SamplerEngine').then(sampler => {
               const engine = sampler.getSamplerEngine();
@@ -2077,47 +2085,19 @@ class MusicEngine {
               const fArray = Array.isArray(freqs) ? freqs : [freqs];
               fArray.forEach(f => {
                  const midi = Math.round(12 * Math.log2(f / 440) + 69);
-                 // We pass dummyNode context as the output so smplr routes to Track Bus
-                 engine.playNote(instrName, midi, time, durSec, vol * 127, dummyNode.context.rawContext.createGain());
+                 // Reuse nativeGain!
+                 engine.playNote(instrName, midi, time, durSec, vol * 127, nativeGain);
               });
            });
         };
 
-        // Preload instrument with output node context
+        // Preload instrument
         import('./SamplerEngine').then(sampler => {
            const engine = sampler.getSamplerEngine();
-           // We pass a dummy native node for smplr to route to 
-           const nativeGain = dummyNode.context.rawContext.createGain();
-           if ((dummyNode as any).input) {
-               nativeGain.connect((dummyNode as any).input);
-           } else {
-               nativeGain.connect(dummyNode as any);
-           }
            engine.getInstrument(instrName, nativeGain);
-           
-           // Override triggerAttackRelease to use the exact same nativeGain 
-           triggerNode = { 
-               triggerAttackRelease: (freqs: any, duration: any, time: any) => {
-                   const durSec = this.Tone!.Time(duration).toSeconds();
-                   const fArray = Array.isArray(freqs) ? freqs : [freqs];
-                   fArray.forEach((f: any) => {
-                       const midi = Math.round(12 * Math.log2(f / 440) + 69);
-                       engine.playNote(instrName, midi, time, durSec, vol * 127, nativeGain);
-                   });
-               }
-           };
         });
 
-        // We return a proxy triggerNode since import is async
-        let tempTriggerNode = {
-            triggerAttackRelease: (freqs: any, duration: any, time: any) => {
-                if (triggerNode && triggerNode !== tempTriggerNode) {
-                    triggerNode.triggerAttackRelease(freqs, duration, time);
-                }
-            }
-        };
-
-        return { triggerNode: tempTriggerNode, outputNode: dummyNode };
+        return { triggerNode: { triggerAttackRelease }, outputNode: dummyNode };
       }
       case 'polysynth': {
         const oscOpts = this.getOscillatorConfig(config.config);
