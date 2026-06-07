@@ -513,10 +513,16 @@
             audioWorkletNode = audioView.audioWorklet;
 
             // Connect AudioWorklet to BOTH destination and MediaStreamDestination
-            // - destination: For self audio (always plays, even without spatial processing)
+            // - destination: For self audio (only if NOT headless)
             // - MediaStreamDestination: For spatial processing in parent window
             audioWorkletNode.disconnect();
-            audioWorkletNode.connect(audioView.audioCtx.destination); // Self audio - always on
+            
+            const url = new URL(window.location.href);
+            const uiMode = url.searchParams.get("ui");
+            if (uiMode !== "minimal") {
+              audioWorkletNode.connect(audioView.audioCtx.destination); 
+            }
+            
             audioWorkletNode.connect(mediaStreamDestination); // For spatial processing
 
             // Expose MediaStreamDestination to parent window for direct access
@@ -1443,9 +1449,11 @@
           if (app.model && app.audioView) {
             const { nodeId, pitches, gates } = data; // Here nodeId is actually the moduleId
             
+            let matched = false;
             // Find all AI_Seq nodes that have this moduleId selected
             for (const [id, nodeState] of Object.entries(app.model.state.nodes)) {
-              if (nodeState.type === "AI_Seq" && nodeState.params.moduleId == nodeId) {
+              if ((nodeState.type === "AI_Seq" || nodeState.type === "AI_Poly") && nodeState.params.moduleId == nodeId) {
+                matched = true;
                 // Update model state (which triggers audioView update and auto-save)
                 try {
                   app.model.update(new SetSequence(id, pitches, gates));
@@ -1457,6 +1465,19 @@
                     pitches: pitches,
                     gates: gates
                   });
+                }
+              }
+            }
+            
+            // Fallback: If no exact match found (user deleted/recreated seq_out), apply to ALL AI sequence nodes
+            if (!matched) {
+              for (const [id, nodeState] of Object.entries(app.model.state.nodes)) {
+                if (nodeState.type === "AI_Seq" || nodeState.type === "AI_Poly") {
+                  try {
+                    app.model.update(new SetSequence(id, pitches, gates));
+                  } catch (e) {
+                    app.audioView.send({ type: "SET_SEQUENCE", nodeId: id, pitches: pitches, gates: gates });
+                  }
                 }
               }
             }

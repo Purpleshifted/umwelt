@@ -7,6 +7,7 @@ export const metadata: Metadata = {
 };
 
 import NavBar from "@/components/layout/NavBar";
+import GlobalDashboard from "@/components/GlobalDashboard";
 
 export default function RootLayout({
   children,
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <NavBar />
         {children}
+        <GlobalDashboard />
       </body>
     </html>
   );

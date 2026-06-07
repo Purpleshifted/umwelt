@@ -50,6 +50,7 @@ export default function NavBar() {
     { href: '/mirror', label: 'MIRROR SPACE' },
     { href: '/streams', label: 'STREAM MANAGER' },
     { href: '/music', label: 'MUSIC LIBRARY' },
+    { href: '/noisecraft-manager', label: 'NOISECRAFT MANAGER' },
     { href: '/audio', label: 'AUDIO EDITOR' },
     { href: '/experience', label: 'EXPERIENCE' },
     { href: '/collective', label: 'COLLECTIVE' },

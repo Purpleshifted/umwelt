@@ -19,6 +19,7 @@ export default function NoiseCraftPatchManager({ onSelectPatch }: Props) {
   const [loading, setLoading] = useState(true);
   const [newPatchName, setNewPatchName] = useState('');
   const [creating, setCreating] = useState(false);
+  const [selectedPatch, setSelectedPatch] = useState<string | null>(null);
 
   const fetchPatches = async () => {
     setLoading(true);
@@ -36,8 +37,39 @@ export default function NoiseCraftPatchManager({ onSelectPatch }: Props) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPatches();
-  }, []);
+    
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedPatch) {
+        if (window.confirm(`Are you sure you want to delete ${selectedPatch}?`)) {
+          setLoading(true);
+          try {
+            const res = await fetch('/noisecraft/delete-patch', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ filename: selectedPatch }),
+            });
+            if (res.ok) {
+              setSelectedPatch(null);
+              await fetchPatches();
+            } else {
+              const err = await res.json();
+              alert('Failed to delete patch: ' + err.error);
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Network error while deleting patch');
+          } finally {
+            setLoading(false);
+          }
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPatch]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +104,9 @@ export default function NoiseCraftPatchManager({ onSelectPatch }: Props) {
     
     // Auto-generate name instead of using prompt() which can be blocked by browsers
     const baseName = sourceFile.replace('.ncft', '');
-    const newName = `${baseName}_copy_${Math.floor(Math.random() * 1000)}`;
+    // eslint-disable-next-line
+    const randomStr = Math.floor(Math.random() * 1000).toString(36);
+    const newName = `${baseName}_copy_${randomStr}`;
     
     setLoading(true);
     try {
@@ -90,6 +124,39 @@ export default function NoiseCraftPatchManager({ onSelectPatch }: Props) {
     } catch (err) {
       console.error(err);
       alert('Network error while duplicating patch');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRename = async (e: React.MouseEvent, filename: string) => {
+    e.stopPropagation();
+    const newName = window.prompt(`Rename ${filename} to:`, filename.replace('.ncft', ''));
+    if (!newName) return;
+    
+    let safeName = newName.trim();
+    if (!safeName.endsWith('.ncft')) safeName += '.ncft';
+    if (safeName === filename) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch('/noisecraft/rename-patch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldFilename: filename, newFilename: safeName }),
+      });
+      if (res.ok) {
+        if (selectedPatch === filename) {
+          setSelectedPatch(safeName);
+        }
+        await fetchPatches();
+      } else {
+        const err = await res.json();
+        alert('Failed to rename patch: ' + err.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error while renaming patch');
     } finally {
       setLoading(false);
     }
@@ -125,15 +192,28 @@ export default function NoiseCraftPatchManager({ onSelectPatch }: Props) {
           <div className={styles.empty}>No patches found.</div>
         ) : (
           patches.map((patch) => (
-            <div key={patch.filename} className={styles.patchCard} onClick={() => onSelectPatch(patch.filename)}>
+            <div 
+              key={patch.filename} 
+              className={`${styles.patchCard} ${selectedPatch === patch.filename ? styles.selected : ''}`} 
+              onClick={() => setSelectedPatch(patch.filename)}
+              onDoubleClick={() => onSelectPatch(patch.filename)}
+              style={selectedPatch === patch.filename ? { outline: '2px solid #ff4757', backgroundColor: '#333' } : {}}
+            >
               <div className={styles.patchIcon}>🎹</div>
               <div className={styles.patchInfo}>
-                <div className={styles.patchTitle}>{patch.title || patch.filename.replace('.ncft', '')}</div>
+                <div className={styles.patchTitle}>{patch.filename.replace('.ncft', '')}</div>
                 <div className={styles.patchMeta}>
-                  {patch.filename} • {(patch.size / 1024).toFixed(1)} KB
+                  {(patch.size / 1024).toFixed(1)} KB
                 </div>
               </div>
               <div className={styles.patchActions}>
+                <button 
+                  className={styles.duplicateBtn} 
+                  onClick={(e) => handleRename(e, patch.filename)}
+                  title="Rename this patch"
+                >
+                  ✎
+                </button>
                 <button 
                   className={styles.duplicateBtn} 
                   onClick={(e) => handleDuplicate(e, patch.filename)}
@@ -141,7 +221,7 @@ export default function NoiseCraftPatchManager({ onSelectPatch }: Props) {
                 >
                   ⧉
                 </button>
-                <button className={styles.openBtn}>Edit</button>
+                <button className={styles.openBtn} onClick={(e) => { e.stopPropagation(); onSelectPatch(patch.filename); }}>Edit</button>
               </div>
             </div>
           ))

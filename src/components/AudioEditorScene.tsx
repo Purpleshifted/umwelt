@@ -79,46 +79,12 @@ export default function AudioEditorScene() {
       <ScopePanel />
       
       <div className={styles.centerPane}>
-        {/* Tabs: Macro Patcher vs NoiseCraft Editor */}
-        <div className={styles.editorTabs}>
-          <button
-            className={`${styles.editorTab} ${!showNoiseCraft ? styles.activeTab : ''}`}
-            onClick={() => setShowNoiseCraft(false)}
-          >
-            🎛️ Macro Patcher
-          </button>
-          <button
-            className={`${styles.editorTab} ${showNoiseCraft ? styles.activeTab : ''}`}
-            onClick={() => setShowNoiseCraft(true)}
-          >
-            🎹 NoiseCraft Editor
-          </button>
-        </div>
-
-        {/* Macro Patcher (main view) */}
-        <div style={{ flex: 1, display: showNoiseCraft ? 'none' : 'flex', position: 'relative' }}>
+        <div style={{ flex: 1, display: 'flex', position: 'relative' }}>
           <MacroPatcher />
-        </div>
-
-        {/* NoiseCraft Workspace (Patch Manager + iframe) */}
-        <div style={{ flex: 1, display: showNoiseCraft ? 'flex' : 'none', flexDirection: 'column', position: 'relative' }}>
-          {selectedPatch ? (
-            <>
-              <div style={{ background: '#1a1a2e', padding: '8px 16px', display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <button onClick={handleBackToManager} style={{ background: 'none', border: 'none', color: '#4ecdc4', cursor: 'pointer', fontSize: '12px', marginRight: '16px' }}>
-                  ← Back to Patches
-                </button>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Editing: <strong>{selectedPatch}</strong></span>
-              </div>
-              <div ref={containerRef} className={styles.iframeContainer} />
-            </>
-          ) : (
-            <NoiseCraftPatchManager onSelectPatch={handleSelectPatch} />
-          )}
         </div>
       </div>
       
-      <NodeMappingPanel activeContext={showNoiseCraft ? (selectedPatch || 'nc_noise_patch.ncft') : 'macro'} />
+      <NodeMappingPanel activeContext="macro" />
     </div>
   );
 }

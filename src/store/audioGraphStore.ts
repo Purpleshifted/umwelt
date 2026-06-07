@@ -4,7 +4,6 @@ import { persist } from 'zustand/middleware';
 // ─── Audio Node Type Registry ───
 export type AudioNodeType =
   | 'noisecraft_source'
-  | 'oscillator'
   | 'gain'
   | 'biquad_filter'
   | 'delay'
@@ -12,6 +11,10 @@ export type AudioNodeType =
   | 'hrtf_panner'
   | 'stereo_panner'
   | 'analyser'
+  | 'virtual_instrument'
+  | 'vst_instrument'
+  | 'score_in'
+  | 'track_in'
   | 'destination';
 
 export interface AudioGraphNode {
@@ -59,7 +62,6 @@ interface AudioGraphState {
   // Audio graph rebuild
   rebuildAudioGraph: () => void;
   
-  // History state
   history: { nodes: AudioGraphNode[]; edges: AudioGraphEdge[] }[];
   historyIndex: number;
   undo: () => void;
@@ -67,10 +69,22 @@ interface AudioGraphState {
   saveState: () => void;
 }
 
+export const trackBuses = new Map<string, GainNode>();
+
+export const getTrackBus = (ctx: AudioContext, trackName: string) => {
+  if (!trackBuses.has(trackName)) {
+    const bus = ctx.createGain();
+    bus.gain.value = 1.0;
+    trackBuses.set(trackName, bus);
+  }
+  return trackBuses.get(trackName)!;
+};
+
 // Default parameters per node type
 export const DEFAULT_PARAMS: Record<AudioNodeType, Record<string, number | string | boolean>> = {
   noisecraft_source: { patchFile: 'nc_noise_patch.ncft', gain: 1.0 },
-  oscillator: { type: 'sine', frequency: 440, detune: 0, gain: 0.3 },
+  score_in: { channel: 'A' },
+  track_in: { channel: 'A' },
   gain: { gain: 1.0 },
   biquad_filter: { type: 'lowpass', frequency: 1000, Q: 1, gain: 0 },
   delay: { delayTime: 0.3, feedback: 0.4, wet: 0.5 },
@@ -78,12 +92,13 @@ export const DEFAULT_PARAMS: Record<AudioNodeType, Record<string, number | strin
   hrtf_panner: { positionX: 0, positionY: 0, positionZ: -1, refDistance: 1, rolloff: 1 },
   stereo_panner: { pan: 0 },
   analyser: { fftSize: 256, smoothing: 0.8 },
+  virtual_instrument: { channel: 'A', instrument: 'synth', gain: 0.5 },
+  vst_instrument: { instrument: 'synth', gain: 0.5 },
   destination: {},
 };
 
 export const NODE_LABELS: Record<AudioNodeType, string> = {
   noisecraft_source: 'NoiseCraft',
-  oscillator: 'Oscillator',
   gain: 'Gain',
   biquad_filter: 'Filter',
   delay: 'Delay',
@@ -91,6 +106,10 @@ export const NODE_LABELS: Record<AudioNodeType, string> = {
   hrtf_panner: 'HRTF Panner',
   stereo_panner: 'Stereo Pan',
   analyser: 'Analyser',
+  virtual_instrument: 'Virtual Instrument (Legacy)',
+  vst_instrument: 'VST Instrument',
+  score_in: 'Score In',
+  track_in: 'Track In',
   destination: 'Speaker Out',
 };
 
@@ -253,17 +272,61 @@ export const useAudioGraphStore = create<AudioGraphState>()(
           }
           break;
         }
-        case 'oscillator': {
-          const osc = audioContext.createOscillator();
-          osc.type = (gNode.params.type as OscillatorType) || 'sine';
-          osc.frequency.value = (gNode.params.frequency as number) || 440;
-          osc.detune.value = (gNode.params.detune as number) || 0;
-          const oscGain = audioContext.createGain();
-          oscGain.gain.value = (gNode.params.gain as number) ?? 0.3;
-          osc.connect(oscGain);
-          osc.start();
-          audioNode = oscGain;
-          newLiveNodes.set(gNode.id + '_osc', osc);
+
+        case 'virtual_instrument': {
+          const gain = audioContext.createGain();
+          gain.gain.value = (gNode.params.gain as number) ?? 0.5;
+          audioNode = gain;
+          break;
+        }
+        case 'vst_instrument': {
+          const gain = audioContext.createGain();
+          gain.gain.value = (gNode.params.gain as number) ?? 0.5;
+          audioNode = gain;
+          
+          // Setup Tone.js Synth globally so MusicEngine can use it
+          if (typeof window !== 'undefined') {
+            import('tone').then((Tone) => {
+              Tone.setContext(audioContext);
+              const w = window as any;
+              if (!w.__toneSynths) w.__toneSynths = new Map();
+              
+              // Cleanup old synth if exists
+              if (w.__toneSynths.has(gNode.id)) {
+                w.__toneSynths.get(gNode.id).dispose();
+              }
+              
+              let synth: any;
+              const instr = gNode.params.instrument || 'synth';
+              if (instr === 'piano') {
+                synth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' } });
+              } else if (instr === 'marimba') {
+                synth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { decay: 0.5, sustain: 0, release: 0.1 } });
+              } else {
+                synth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sawtooth' } });
+              }
+              
+              synth.connect(audioContext.destination); // Fallback
+              // Since Tone.js uses its own AudioContext wrapper, connecting it directly to a Web Audio native GainNode is possible by connecting to its native node
+              Tone.connect(synth, gain);
+              
+              w.__toneSynths.set(gNode.id, synth);
+            });
+          }
+          break;
+        }
+        case 'track_in': {
+          // Receives audio from MusicLibrary track_out nodes via global track buses
+          const trackName = (gNode.params.channel as string) || 'Track 1';
+          const bus = getTrackBus(audioContext, trackName);
+          
+          const gain = audioContext.createGain();
+          gain.gain.value = (gNode.params.gain as number) ?? 1.0;
+          
+          bus.connect(gain);
+          
+          audioNode = gain;
+          newLiveNodes.set(gNode.id + '_trackin', gain);
           break;
         }
         case 'gain': {

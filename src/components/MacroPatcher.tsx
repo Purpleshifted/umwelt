@@ -25,12 +25,13 @@ import {
   DEFAULT_PARAMS,
   NODE_LABELS,
 } from '@/store/audioGraphStore';
+import { musicEngine } from '@/audio/MusicEngine';
+import { useMusicStore } from '@/store/musicStore';
 import styles from './MacroPatcher.module.css';
 
 // ─── Node type icons ───
 const NODE_ICONS: Record<AudioNodeType, string> = {
   noisecraft_source: '🎹',
-  oscillator: '〰️',
   gain: '🔊',
   biquad_filter: '🎚️',
   delay: '⏱️',
@@ -38,12 +39,15 @@ const NODE_ICONS: Record<AudioNodeType, string> = {
   hrtf_panner: '🎧',
   stereo_panner: '↔️',
   analyser: '📊',
+  virtual_instrument: '🎹',
+  vst_instrument: '🎹',
+  score_in: '🎼',
+  track_in: '📡',
   destination: '🔈',
 };
 
 const ACCENT_CLASSES: Record<AudioNodeType, string> = {
   noisecraft_source: styles.nodeAccent_noisecraft,
-  oscillator: styles.nodeAccent_oscillator,
   gain: styles.nodeAccent_gain,
   biquad_filter: styles.nodeAccent_filter,
   delay: styles.nodeAccent_delay,
@@ -51,6 +55,10 @@ const ACCENT_CLASSES: Record<AudioNodeType, string> = {
   hrtf_panner: styles.nodeAccent_panner,
   stereo_panner: styles.nodeAccent_panner,
   analyser: styles.nodeAccent_analyser,
+  virtual_instrument: styles.nodeAccent_oscillator,
+  vst_instrument: styles.nodeAccent_oscillator,
+  score_in: styles.nodeAccent_oscillator,
+  track_in: styles.nodeAccent_oscillator,
   destination: styles.nodeAccent_destination,
 };
 
@@ -78,7 +86,7 @@ function AudioNodeComponent({ id, data, selected }: { id: string; data: any; sel
       } ${nodeType === 'noisecraft_source' ? styles.noisecraftNode : ''}`}
     >
       {/* Input handle */}
-      {nodeType !== 'noisecraft_source' && nodeType !== 'oscillator' && (
+      {nodeType !== 'noisecraft_source' && (
         <Handle type="target" position={Position.Left} id="in" className={styles.handleIn} />
       )}
 
@@ -97,14 +105,6 @@ function AudioNodeComponent({ id, data, selected }: { id: string; data: any; sel
 
         {nodeType === 'gain' && (
           <ParamSlider label="Gain" value={graphNode.params.gain as number} min={0} max={2} step={0.01} onChange={(v) => handleParamChange('gain', v)} nodeId={id} paramName="gain" />
-        )}
-
-        {nodeType === 'oscillator' && (
-          <>
-            <ParamSelect label="Wave" value={graphNode.params.type as string} options={['sine', 'square', 'sawtooth', 'triangle']} onChange={(v) => handleParamChange('type', v)} nodeId={id} paramName="type" />
-            <ParamSlider label="Freq" value={graphNode.params.frequency as number} min={20} max={2000} step={1} onChange={(v) => handleParamChange('frequency', v)} nodeId={id} paramName="frequency" />
-            <ParamSlider label="Gain" value={graphNode.params.gain as number} min={0} max={1} step={0.01} onChange={(v) => handleParamChange('gain', v)} nodeId={id} paramName="gain" />
-          </>
         )}
 
         {nodeType === 'biquad_filter' && (
@@ -155,6 +155,76 @@ function AudioNodeComponent({ id, data, selected }: { id: string; data: any; sel
             />
           </>
         )}
+
+        {nodeType === 'virtual_instrument' && (
+          <>
+            <ParamSelect
+              label="Channel"
+              value={String(graphNode.params.channel || 'A')}
+              options={['A', 'B', 'C', 'D']}
+              onChange={(v) => handleParamChange('channel', v)}
+              nodeId={id} 
+              paramName="channel"
+            />
+            <ParamSelect
+              label="Sound"
+              value={String(graphNode.params.instrument || 'synth')}
+              options={['synth', 'piano', 'marimba']}
+              onChange={(v) => handleParamChange('instrument', v)}
+              nodeId={id} 
+              paramName="instrument"
+            />
+            <ParamSlider label="Gain" value={graphNode.params.gain as number} min={0} max={2} step={0.01} onChange={(v) => handleParamChange('gain', v)} nodeId={id} paramName="gain" />
+          </>
+        )}
+
+        {nodeType === 'vst_instrument' && (
+          <>
+            <ParamSelect
+              label="Sound"
+              value={String(graphNode.params.instrument || 'synth')}
+              options={['synth', 'piano', 'marimba']}
+              onChange={(v) => handleParamChange('instrument', v)}
+              nodeId={id} 
+              paramName="instrument"
+            />
+            <ParamSlider label="Gain" value={graphNode.params.gain as number} min={0} max={2} step={0.01} onChange={(v) => handleParamChange('gain', v)} nodeId={id} paramName="gain" />
+          </>
+        )}
+
+        {nodeType === 'score_in' && (() => {
+          const channelOptions = ['A', 'B', 'C', 'D'];
+          return (
+            <>
+              <ParamSelect
+                label="Channel"
+                value={String(graphNode.params.channel || 'A')}
+                options={channelOptions}
+                onChange={(v) => handleParamChange('channel', v)}
+                nodeId={id} 
+                paramName="channel"
+              />
+            </>
+          );
+        })()}
+
+        {nodeType === 'track_in' && (() => {
+          const musicModules = useMusicStore((state) => state.modules);
+          const trackOptions = musicModules.filter(m => m.type === 'track_out').map(m => m.trackOutConfig?.trackName || 'Track 1');
+          if (trackOptions.length === 0) trackOptions.push('Track 1');
+          return (
+            <>
+              <ParamSelect
+                label="Channel"
+                value={String(graphNode.params.channel || trackOptions[0])}
+                options={trackOptions}
+                onChange={(v) => handleParamChange('channel', v)}
+                nodeId={id} 
+                paramName="channel"
+              />
+            </>
+          );
+        })()}
 
         {nodeType === 'destination' && (
           <div style={{ fontSize: '10px', color: 'rgba(78, 205, 196, 0.6)', textAlign: 'center', padding: '4px 0' }}>
@@ -231,7 +301,8 @@ const nodeTypes: NodeTypes = {
 // ─── Context Menu entries ───
 const NODE_MENU_ITEMS: { type: AudioNodeType; label: string; icon: string }[] = [
   { type: 'noisecraft_source', label: 'NoiseCraft Source', icon: '🎹' },
-  { type: 'oscillator', label: 'Oscillator', icon: '〰️' },
+  { type: 'score_in', label: 'Score In (Sequence)', icon: '🎼' },
+  { type: 'track_in', label: 'Track In (Broadcast)', icon: '📡' },
   { type: 'gain', label: 'Gain', icon: '🔊' },
   { type: 'biquad_filter', label: 'Filter (Biquad)', icon: '🎚️' },
   { type: 'delay', label: 'Delay', icon: '⏱️' },
@@ -239,6 +310,9 @@ const NODE_MENU_ITEMS: { type: AudioNodeType; label: string; icon: string }[] = 
   { type: 'hrtf_panner', label: 'HRTF Panner', icon: '🎧' },
   { type: 'stereo_panner', label: 'Stereo Pan', icon: '↔️' },
   { type: 'analyser', label: 'Analyser', icon: '📊' },
+  { type: 'virtual_instrument', label: 'Virtual Instrument (Legacy)', icon: '🎹' },
+  { type: 'vst_instrument', label: 'VST Instrument', icon: '🎹' },
+  { type: 'destination', label: 'Audio Output', icon: '🔈' },
 ];
 
 // ─── Main Component ───
@@ -247,6 +321,7 @@ export default function MacroPatcher() {
   const graphEdges = useAudioGraphStore((s) => s.edges);
   const addGraphNode = useAudioGraphStore((s) => s.addNode);
   const addGraphEdge = useAudioGraphStore((s) => s.addEdge);
+  const removeGraphNode = useAudioGraphStore((s) => s.removeNode);
   const removeGraphEdge = useAudioGraphStore((s) => s.removeEdge);
   const setGraphNodes = useAudioGraphStore((s) => s.setNodes);
   const setGraphEdges = useAudioGraphStore((s) => s.setEdges);
@@ -301,14 +376,24 @@ export default function MacroPatcher() {
         return;
       }
       
+      // Save
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        useAudioGraphStore.getState().saveState();
+        return;
+      }
+
       // Duplicate
       if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
         e.preventDefault();
         const state = useAudioGraphStore.getState();
+        const idMap = new Map<string, string>();
+        
         selectedNodeIds.forEach(id => {
           const node = state.nodes.find(n => n.id === id);
           if (node && node.type !== 'destination') { // Don't duplicate destination
             const newId = `${node.type}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            idMap.set(node.id, newId);
             state.addNode({
               ...node,
               id: newId,
@@ -317,6 +402,18 @@ export default function MacroPatcher() {
             });
           }
         });
+        
+        const selectedEdges = state.edges.filter(e => idMap.has(e.source) && idMap.has(e.target));
+        selectedEdges.forEach(e => {
+          state.addEdge({
+            id: `e-${idMap.get(e.source)}-${idMap.get(e.target)}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            source: idMap.get(e.source)!,
+            target: idMap.get(e.target)!,
+            sourceHandle: e.sourceHandle,
+            targetHandle: e.targetHandle,
+          });
+        });
+        
         setTimeout(() => rebuild(), 50);
       }
     };
@@ -360,6 +457,19 @@ export default function MacroPatcher() {
     [removeGraphEdge, rebuild]
   );
 
+  // Handle node deletion
+  const onNodesDelete = useCallback(
+    (deleted: Node[]) => {
+      deleted.forEach((n) => {
+        if (n.type !== 'destination') {
+          removeGraphNode(n.id);
+        }
+      });
+      setTimeout(() => rebuild(), 50);
+    },
+    [removeGraphNode, rebuild]
+  );
+
   // Handle node position changes
   const onNodeDragStop = useCallback(
     (_: any, node: Node) => {
@@ -372,6 +482,28 @@ export default function MacroPatcher() {
   const onPaneContextMenu = useCallback(
     (event: React.MouseEvent | MouseEvent) => {
       event.preventDefault();
+      if (!reactFlowInstance.current) return;
+      const bounds = reactFlowWrapper.current?.getBoundingClientRect();
+      if (!bounds) return;
+      const flowPos = reactFlowInstance.current.screenToFlowPosition({
+        x: (event as React.MouseEvent).clientX,
+        y: (event as React.MouseEvent).clientY,
+      });
+      setContextMenu({
+        x: (event as React.MouseEvent).clientX - bounds.left,
+        y: (event as React.MouseEvent).clientY - bounds.top,
+        flowX: flowPos.x,
+        flowY: flowPos.y,
+      });
+    },
+    []
+  );
+
+  const onNodeContextMenu = useCallback(
+    (event: React.MouseEvent | MouseEvent, node: Node) => {
+      event.preventDefault();
+      // Only select the clicked node to ensure context actions (like delete) apply to it
+      setSelectedNodeIds([node.id]);
       if (!reactFlowInstance.current) return;
       const bounds = reactFlowWrapper.current?.getBoundingClientRect();
       if (!bounds) return;
@@ -416,10 +548,12 @@ export default function MacroPatcher() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodesDelete={onNodesDelete}
         onEdgesDelete={onEdgesDelete}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStop={onNodeDragStop as any}
         onSelectionChange={onSelectionChange}
+        onNodeContextMenu={onNodeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
         onPaneClick={onPaneClick}
         onInit={(instance: any) => { reactFlowInstance.current = instance; }}
@@ -440,7 +574,6 @@ export default function MacroPatcher() {
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="rgba(255,255,255,0.05)" />
       </ReactFlow>
 
-      {/* Toolbar */}
       <div className={styles.toolbar}>
         <button
           className={styles.toolbarBtn}
@@ -448,6 +581,44 @@ export default function MacroPatcher() {
           title="Rebuild the audio graph (connect all nodes)"
         >
           ▶ Build Graph
+        </button>
+        <button
+          className={styles.toolbarBtn}
+          onClick={() => {
+            const ctx = useAudioGraphStore.getState().audioContext;
+            if (ctx && ctx.state === 'suspended') ctx.resume();
+            musicEngine.playTracks();
+            
+            const iframes = document.querySelectorAll('iframe.headless-nc');
+            iframes.forEach(iframe => {
+              const win = (iframe as HTMLIFrameElement).contentWindow;
+              if (win) {
+                try {
+                  const ncCtx = (win as any).noiseCraftAudioContext;
+                  if (ncCtx && ncCtx.state === 'suspended') {
+                    ncCtx.resume();
+                  }
+                } catch(e) {}
+                win.postMessage({ type: 'noiseCraft:play' }, '*');
+              }
+            });
+          }}
+          title="Play the audio graph and start all patches"
+        >
+          ▶ Start Audio
+        </button>
+        <button
+          className={styles.toolbarBtn}
+          onClick={() => {
+            const iframes = document.querySelectorAll('iframe.headless-nc');
+            iframes.forEach(iframe => {
+              const win = (iframe as HTMLIFrameElement).contentWindow;
+              if (win) win.postMessage({ type: 'noiseCraft:stop' }, '*');
+            });
+          }}
+          title="Stop all patches"
+        >
+          ⏹ Stop Audio
         </button>
       </div>
 
@@ -493,7 +664,15 @@ function HeadlessNoiseCraft({ nodeId, patchFile }: { nodeId: string; patchFile: 
     const iframe = document.createElement('iframe');
     iframe.src = `/noisecraft/public/embedded.html?src=/noisecraft/public/examples/${patchFile}&ui=minimal`;
     iframe.allow = 'autoplay; microphone';
-    iframe.style.display = 'none';
+    iframe.style.position = 'fixed'; // Use fixed to ensure it stays in viewport
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.style.width = '100px'; // Minimum size to avoid throttling
+    iframe.style.height = '100px';
+    iframe.style.opacity = '0.01';
+    iframe.style.pointerEvents = 'none';
+    iframe.style.zIndex = '-9999';
+    iframe.className = 'headless-nc';
     
     // Listen for stream ready
     const handleMessage = (e: MessageEvent) => {
@@ -503,6 +682,8 @@ function HeadlessNoiseCraft({ nodeId, patchFile }: { nodeId: string; patchFile: 
           const stream = (iframe.contentWindow as any)?.noiseCraftMediaStream;
           if (stream) {
             registerStream(nodeId, stream);
+            // Auto-start the internal sequencer once loaded
+            iframe.contentWindow?.postMessage({ type: 'noiseCraft:play' }, '*');
           }
           if (iframe.contentWindow) {
             useAudioGraphStore.getState().registerNoisecraftWindow(nodeId, iframe.contentWindow);
@@ -514,12 +695,7 @@ function HeadlessNoiseCraft({ nodeId, patchFile }: { nodeId: string; patchFile: 
     window.addEventListener('message', handleMessage);
     document.body.appendChild(iframe);
     
-    // Once iframe loads, wait a bit and tell it to play
-    iframe.onload = () => {
-      setTimeout(() => {
-        iframe.contentWindow?.postMessage({ type: 'noiseCraft:play' }, '*');
-      }, 500);
-    };
+    // Once iframe loads, DO NOT auto-play. Wait for user to hit "Start Audio" in toolbar.
     
     return () => {
       window.removeEventListener('message', handleMessage);

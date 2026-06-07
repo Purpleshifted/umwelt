@@ -103,13 +103,52 @@ function Flow() {
           removeModule(change.id);
         }
       });
-      
       if (positionUpdates.length > 0) {
         updateMultipleModules(positionUpdates);
       }
     },
     [onNodesChangeBase, updateMultipleModules, removeModule]
   );
+
+  const { getNodes } = useReactFlow();
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
+        e.preventDefault();
+        const selectedNodes = getNodes().filter(n => n.selected);
+        if (selectedNodes.length === 0) return;
+        
+        const idMap = new Map<string, string>();
+        
+        selectedNodes.forEach(node => {
+          const mod = node.data.module as MusicModule;
+          const newId = `music_mod_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+          idMap.set(mod.id, newId);
+          
+          addModule({
+            ...mod,
+            id: newId,
+            position: { x: (mod.position?.x || node.position.x) + 50, y: (mod.position?.y || node.position.y) + 50 },
+            name: `${mod.name} (copy)`
+          });
+        });
+        
+        const selectedEdges = edges.filter(e => idMap.has(e.source) && idMap.has(e.target));
+        selectedEdges.forEach(e => {
+          setEdges(eds => [...eds, {
+            ...e,
+            id: `e_${idMap.get(e.source)}_${e.sourceHandle}_${idMap.get(e.target)}_${e.targetHandle}_${Date.now()}`,
+            source: idMap.get(e.source)!,
+            target: idMap.get(e.target)!,
+            selected: false
+          }]);
+        });
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [getNodes, edges, setEdges, addModule]);
 
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean } | null>(null);
 
@@ -129,18 +168,30 @@ function Flow() {
     }
     
     const names: Record<string, string> = {
-      magenta_ai: 'Magenta Composer',
-      harmonic_array: 'Harmonic Array',
       chord_progression: 'Chord Progression',
+      harmonic_progressor: 'Harmonic Progressor',
       melody_gen: 'Melody Generator',
       chord_gen: 'Chord Generator',
+      piano_genie: 'Piano Genie',
+      coconet_harmonizer: 'Coconet Harmonizer',
       voice_splitter: 'Voice Splitter',
-      register_shift: 'Register Shift',
+      sequence_adder: 'Sequence Adder',
+      sequence_morpher: 'Sequence Morpher',
+      register_shifter: 'Register Shifter',
       slider: 'SLIDER',
       knob: 'KNOB',
       module_output: 'MODULE_OUTPUT',
       virtual_stream: 'VIRTUAL_STREAM',
-      audio_preview: 'Audio Preview',
+      score_out: 'Score Out (Audio)',
+      track_out: 'Track Out (Audio)',
+      ai_seq_out: 'AI Seq Out (Noisecraft)',
+      virtual_instrument: 'Virtual Instrument (Sampler)',
+      polysynth: 'PolySynth (Tone.js)',
+      oscillator: 'Oscillator',
+      adsr_envelope: 'ADSR Envelope',
+      filter: 'Filter',
+      reverb: 'Reverb',
+      mix_node: 'Mix Node'
     };
     
     addModule({
@@ -149,30 +200,43 @@ function Flow() {
       type,
       inputStreamId: null,
       position,
-      harmonicConfig: type === 'harmonic_array' ? {
-        scaleType: 'dorian',
-        rootNote: 60,
-        octaveRange: 2
-      } : undefined,
-      magentaConfig: type === 'magenta_ai' ? {
-        temperatureMin: 0.1,
-        temperatureMax: 1.5,
-        density: 0.8
-      } : undefined,
       sineConfig: type === 'sine' ? { frequency: 1.0 } : undefined,
       noiseConfig: type === 'noise' ? { speed: 1.0 } : undefined,
       chordProgressionConfig: type === 'chord_progression' ? { mode: 'major' } : undefined,
-      melodyGenConfig: type === 'melody_gen' ? { register: 0 } : undefined,
+      harmonicProgressorConfig: type === 'harmonic_progressor' ? { valence: 0.5, arousal: 0.5 } : undefined,
+      melodyGenConfig: type === 'melody_gen' ? { register: 0, rhythmicComplexity: 0.5, swingAmount: 0.0, algorithm: 'procedural' } : undefined,
       chordGenConfig: type === 'chord_gen' ? { register: 0, style: 'block' } : undefined,
       voiceSplitterConfig: type === 'voice_splitter' ? {} : undefined,
-      registerShiftConfig: type === 'register_shift' ? { shift: 0 } : undefined,
-      audioPreviewConfig: type === 'audio_preview' ? { isPlaying: false, waveType: 'sine' } : undefined,
+      sequenceAdderConfig: type === 'sequence_adder' ? {} : undefined,
+      registerShifterConfig: type === 'register_shifter' ? { semitones: 0 } : undefined,
+      sequenceMorpherConfig: type === 'sequence_morpher' ? { morphAmount: 0.5 } : undefined,
+      pianoGenieConfig: type === 'piano_genie' ? {} : undefined,
+      coconetHarmonizerConfig: type === 'coconet_harmonizer' ? {} : undefined,
+      scoreOutConfig: type === 'score_out' ? { channel: 'A', instrument: 'synth', isPlaying: true } : undefined,
+      aiSeqOutConfig: type === 'ai_seq_out' ? { masterClockEnabled: true } : undefined,
+      virtualInstrumentConfig: type === 'virtual_instrument' ? { instrument: 'acoustic_grand_piano', volume: 0.8 } : undefined,
+      trackOutConfig: type === 'track_out' ? { trackName: 'Track 1' } : undefined,
+      polysynthConfig: type === 'polysynth' ? { oscillatorType: 'sine', attack: 0.1, decay: 0.2, sustain: 0.5, release: 1 } : undefined,
+      oscillatorConfig: type === 'oscillator' ? { type: 'sine' } : undefined,
+      adsrEnvelopeConfig: type === 'adsr_envelope' ? { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1 } : undefined,
+      filterConfig: type === 'filter' ? { type: 'lowpass', frequency: 1000, Q: 1 } : undefined,
+      reverbConfig: type === 'reverb' ? { decay: 1.5, preDelay: 0.01, wet: 0.5 } : undefined,
+      mixNodeConfig: type === 'mix_node' ? { volA: 1.0, volB: 1.0 } : undefined,
+      previewUtilConfig: type === 'preview_util' ? { playing: false } : undefined
     });
     closeContextMenu();
   };
 
   return (
     <div className={styles.flowWrapper} onClick={closeContextMenu}>
+      <div style={{ position: 'absolute', bottom: 30, left: 30, zIndex: 10, display: 'flex', gap: '8px' }}>
+        <button className={styles.btn} onClick={() => {
+          musicEngine.playTracks();
+        }}>▶ Play Tracks</button>
+        <button className={styles.btn} onClick={() => {
+          musicEngine.stopTracks();
+        }}>⏹ Stop Tracks</button>
+      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -195,33 +259,7 @@ function Flow() {
           maskColor="rgba(0,0,0,0.7)"
           style={{ backgroundColor: '#111' }}
         />
-        
-        <Panel position="top-left" className={styles.toolbar}>
-          <div className={styles.title}>Generators</div>
-          <button className={styles.btn} onClick={() => handleAddModule('chord_progression')}>
-            + Chord Progression
-          </button>
-          <button className={styles.btn} onClick={() => handleAddModule('melody_gen')}>
-            + Melody Generator
-          </button>
-          <button className={styles.btn} onClick={() => handleAddModule('chord_gen')}>
-            + Chord Generator
-          </button>
-          <div className={styles.title} style={{ marginTop: '8px', fontSize: '11px', color: '#888' }}>Processing</div>
-          <button className={styles.btn} onClick={() => handleAddModule('voice_splitter')}>
-            + Voice Splitter
-          </button>
-          <button className={styles.btn} onClick={() => handleAddModule('register_shift')}>
-            + Register Shift
-          </button>
-          <div className={styles.title} style={{ marginTop: '8px', fontSize: '11px', color: '#666' }}>Legacy</div>
-          <button className={styles.btn} onClick={() => handleAddModule('harmonic_array')}>
-            + Harmonic Array
-          </button>
-          <button className={styles.btn} onClick={() => handleAddModule('magenta_ai')}>
-            + Magenta AI
-          </button>
-        </Panel>
+
 
         {contextMenu?.show && (
           <div 
@@ -239,7 +277,8 @@ function Flow() {
             }}
           >
           <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f59e0b', borderBottom: '1px solid #444', marginBottom: '4px' }}>Harmonic</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_progression', contextMenu.x, contextMenu.y)}>Chord Progression</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('harmonic_progressor', contextMenu.x, contextMenu.y)}>Harmonic Progressor</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_progression', contextMenu.x, contextMenu.y)}>Chord Progression (Legacy)</button>
 
           <div style={{ padding: '4px 8px', fontSize: '11px', color: '#34d399', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Generators</div>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('melody_gen', contextMenu.x, contextMenu.y)}>Melody Generator</button>
@@ -247,22 +286,32 @@ function Flow() {
           
           <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f472b6', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Processing</div>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('voice_splitter', contextMenu.x, contextMenu.y)}>Voice Splitter</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('register_shift', contextMenu.x, contextMenu.y)}>Register Shift</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sequence_adder', contextMenu.x, contextMenu.y)}>Sequence Adder</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sequence_morpher', contextMenu.x, contextMenu.y)}>Sequence Morpher</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('register_shifter', contextMenu.x, contextMenu.y)}>Register Shifter</button>
           
           <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Inputs</div>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('slider', contextMenu.x, contextMenu.y)}>Slider Input</button>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('knob', contextMenu.x, contextMenu.y)}>Knob Input</button>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
 
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f472b6', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Preview</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('audio_preview', contextMenu.x, contextMenu.y)}>Audio Preview</button>
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Instrument & Synthesis</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_instrument', contextMenu.x, contextMenu.y)}>Virtual Instrument (Sampler)</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('polysynth', contextMenu.x, contextMenu.y)}>PolySynth (Tone.js)</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('oscillator', contextMenu.x, contextMenu.y)}>Oscillator</button>
+          
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Effects & Utility</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('adsr_envelope', contextMenu.x, contextMenu.y)}>ADSR Envelope</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('filter', contextMenu.x, contextMenu.y)}>Filter</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('reverb', contextMenu.x, contextMenu.y)}>Reverb</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('mix_node', contextMenu.x, contextMenu.y)}>Mix Node</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('seq_to_freq', contextMenu.x, contextMenu.y)}>Seq → Freq Convert</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('preview_util', contextMenu.x, contextMenu.y)}>Preview Utility</button>
 
           <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Output</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Output Channel</button>
-          
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#666', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Legacy</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('magenta_ai', contextMenu.x, contextMenu.y)}>Magenta Composer</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('harmonic_array', contextMenu.x, contextMenu.y)}>Harmonic Array</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('track_out', contextMenu.x, contextMenu.y)}>Track Out (Audio)</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('ai_seq_out', contextMenu.x, contextMenu.y)}>AI Seq Out (Noisecraft)</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Network Output</button>
         </div>
         )}
       </ReactFlow>

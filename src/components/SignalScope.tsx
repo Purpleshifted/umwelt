@@ -25,7 +25,7 @@ export default function SignalScope({ streamId }: { streamId: string }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let history: number[] = new Array(MAX_HISTORY).fill(0);
+    const history: number[] = new Array(MAX_HISTORY).fill(0);
     let animationId: number;
 
     const draw = () => {
@@ -87,7 +87,7 @@ export default function SignalScope({ streamId }: { streamId: string }) {
       
       for (let i = 0; i < history.length; i++) {
         const x = (i / (MAX_HISTORY - 1)) * width;
-        let normalized = (history[i] - localMin) / (localMax - localMin);
+        const normalized = (history[i] - localMin) / (localMax - localMin);
         const y = height - (normalized * height * 0.8 + height * 0.1);
         
         if (i === 0) ctx.moveTo(x, y);

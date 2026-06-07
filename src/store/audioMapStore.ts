@@ -63,6 +63,10 @@ interface AudioMapState {
   redo: () => void;
   loadFromJson: (jsonStr: string) => void;
   exportToJson: () => string;
+  
+  // Sequence Bus
+  sequences: Record<string, any>; // Channel ID -> Sequence Data
+  setSequence: (channel: string, seqData: any) => void;
 }
 
 export const useAudioMapStore = create<AudioMapState>()(
@@ -81,6 +85,16 @@ export const useAudioMapStore = create<AudioMapState>()(
     mappings: []
   }],
   historyIndex: 0,
+  sequences: {},
+
+  setSequence: (channel: string, seqData: any) => {
+    set((state) => ({
+      sequences: {
+        ...state.sequences,
+        [channel]: seqData
+      }
+    }));
+  },
 
   saveState: () => {}, // Deprecated, replaced by pushHistory internally
 

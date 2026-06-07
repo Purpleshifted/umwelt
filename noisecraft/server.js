@@ -616,6 +616,71 @@ app.post('/duplicate-patch', jsonParser, function (req, res) {
   }
 });
 
+// POST /delete-patch - Delete an existing .ncft patch file
+app.post('/delete-patch', jsonParser, function (req, res) {
+  try {
+    const { filename } = req.body;
+    
+    if (!filename || typeof filename !== 'string' || !filename.endsWith('.ncft') || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+      return res.status(400).json({ error: 'Invalid filename' });
+    }
+    
+    const filePath = path.resolve(__dirname, 'examples', filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'Patch not found' });
+    }
+    
+    fs.unlinkSync(filePath);
+    console.log(`✓ Deleted ${filename}`);
+    res.json({ ok: true, filename });
+  } catch (err) {
+    console.error('Failed to delete patch:', err);
+    res.status(500).json({ error: 'Failed to delete patch: ' + err.message });
+  }
+});
+
+// POST /rename-patch - Rename an existing .ncft patch file
+app.post('/rename-patch', jsonParser, function (req, res) {
+  try {
+    const { oldFilename, newFilename } = req.body;
+    
+    if (!oldFilename || !newFilename || typeof oldFilename !== 'string' || typeof newFilename !== 'string' || 
+        !oldFilename.endsWith('.ncft') || !newFilename.endsWith('.ncft') || 
+        oldFilename.includes('..') || newFilename.includes('..') || 
+        oldFilename.includes('/') || newFilename.includes('/') ||
+        oldFilename.includes('\\') || newFilename.includes('\\')) {
+      return res.status(400).json({ error: 'Invalid filename' });
+    }
+    
+    const oldPath = path.resolve(__dirname, 'examples', oldFilename);
+    const newPath = path.resolve(__dirname, 'examples', newFilename);
+    
+    if (!fs.existsSync(oldPath)) {
+      return res.status(404).json({ error: 'Original patch not found' });
+    }
+    if (fs.existsSync(newPath)) {
+      return res.status(400).json({ error: 'Destination filename already exists' });
+    }
+    
+    fs.renameSync(oldPath, newPath);
+    
+    // Also update the title inside the JSON file
+    try {
+      const data = JSON.parse(fs.readFileSync(newPath, 'utf8'));
+      data.title = newFilename.replace('.ncft', '');
+      fs.writeFileSync(newPath, JSON.stringify(data, null, 2), 'utf8');
+    } catch (e) {
+      console.warn('Could not update title in JSON:', e);
+    }
+    
+    console.log(`✓ Renamed ${oldFilename} to ${newFilename}`);
+    res.json({ ok: true, filename: newFilename });
+  } catch (err) {
+    console.error('Failed to rename patch:', err);
+    res.status(500).json({ error: 'Failed to rename patch: ' + err.message });
+  }
+});
+
 // Serve static file requests (after API routes)
 app.use('/public', express.static('public'));
 

@@ -16,6 +16,7 @@ function InteriorCamera() {
     camera.position.lerp(new THREE.Vector3(0, 0, 0.4), 0.05);
     camera.lookAt(0, 0, -1);
     if (camera instanceof THREE.PerspectiveCamera) {
+      // eslint-disable-next-line
       camera.fov = 90;
       camera.updateProjectionMatrix();
     }

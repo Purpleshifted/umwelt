@@ -34,6 +34,11 @@ const DEFAULT_MAPPINGS: Record<string, KnobMapping> = {
 
 export class NoiseCraftBridge {
   private iframe: HTMLIFrameElement | null = null;
+
+  public getIframe(): HTMLIFrameElement | null {
+    return this.iframe;
+  }
+
   private analyser: AnalyserNode | null = null;
   private audioCtx: AudioContext | null = null;
   private frequencyData: Float32Array | null = null;
@@ -212,12 +217,42 @@ export class NoiseCraftBridge {
         }
         break;
 
-      case 'noiseCraft:projectLoaded':
+      case 'noiseCraft:projectLoaded': {
         // The iframe is now fully loaded, send it the modules so dropdowns populate
         const state = useMusicStore.getState();
-        const outModules = state.modules.map((m: any) => ({ id: m.id, name: m.name }));
+        const outModules = state.modules
+          .filter((m: any) => m.type === 'ai_seq_out' || m.type === 'seq_out')
+          .map((m: any) => ({ 
+            id: m.id, 
+            name: m.type === 'seq_out' ? `Channel ${m.seqOutConfig?.channel || '?'}` : m.name 
+          }));
         this.postMessage({ type: 'noiseCraft:updateModules', modules: outModules });
+        
+        // Broadcast the last known sequences from audioMapStore to the newly loaded iframe
+        import('@/store/audioMapStore').then(({ useAudioMapStore }) => {
+          const mapState = useAudioMapStore.getState();
+          state.modules.forEach(mod => {
+            if (mod.type === 'seq_out' && mod.seqOutConfig?.channel) {
+              const seq = mapState.sequences[mod.seqOutConfig.channel];
+              if (seq && seq.pitches) {
+                // Send directly to the iframe that triggered projectLoaded
+                if (e.source) {
+                  (e.source as Window).postMessage({
+                    type: 'noiseCraft:setSequence',
+                    nodeId: mod.id,
+                    pitches: seq.pitches,
+                    gates: seq.gates
+                  }, '*');
+                }
+              }
+            } else if (mod.type === 'ai_seq_out') {
+              // Wait, AI seq out sequences are not cached globally in audioMapStore.
+              // They are sent dynamically. They will just wait for the next pulse.
+            }
+          });
+        });
         break;
+      }
     }
   }
 
@@ -300,24 +335,26 @@ export class NoiseCraftBridge {
   }
 
   /**
-   * Send a generic postMessage to the iframe
+   * Send a generic postMessage to all registered NoiseCraft iframes
    */
   postMessage(message: any): void {
     if (this.iframe?.contentWindow) {
       this.iframe.contentWindow.postMessage(message, '*');
     }
+    // Broadcast to headless Audio Editor iframes
+    import('@/store/audioGraphStore').then(({ useAudioGraphStore }) => {
+      const windows = useAudioGraphStore.getState().noisecraftWindows;
+      windows.forEach((win) => {
+        try { win.postMessage(message, '*'); } catch (e) {}
+      });
+    });
   }
 
   /**
    * Start NoiseCraft audio playback via postMessage.
    */
   startAudio(): void {
-    if (!this.iframe?.contentWindow) {
-      console.warn('[NoiseCraft Bridge] iframe not ready');
-      return;
-    }
-    
-    this.iframe.contentWindow.postMessage({ type: 'noiseCraft:play' }, '*');
+    this.postMessage({ type: 'noiseCraft:play' });
     console.log('[NoiseCraft Bridge] Sent play command');
   }
 
@@ -325,8 +362,7 @@ export class NoiseCraftBridge {
    * Stop NoiseCraft audio playback.
    */
   stopAudio(): void {
-    if (!this.iframe?.contentWindow) return;
-    this.iframe.contentWindow.postMessage({ type: 'noiseCraft:stop' }, '*');
+    this.postMessage({ type: 'noiseCraft:stop' });
     this._isPlaying = false;
   }
 
@@ -334,21 +370,20 @@ export class NoiseCraftBridge {
    * Directly send parameter updates to specific nodes.
    */
   setParams(params: Array<{ nodeId: string; paramName: string; value: number }>): void {
-    if (!this.iframe?.contentWindow || !this._isPlaying) return;
-    this.iframe.contentWindow.postMessage({ type: 'noiseCraft:setParams', params }, '*');
+    if (!this._isPlaying) return;
+    this.postMessage({ type: 'noiseCraft:setParams', params });
   }
 
   /**
    * Send a sequence of pitches and gates to an AI_Seq node
    */
   setSequence(nodeId: string, pitches: any[], gates: any[]): void {
-    if (!this.iframe?.contentWindow) return;
-    this.iframe.contentWindow.postMessage({
+    this.postMessage({
       type: 'noiseCraft:setSequence',
       nodeId: nodeId,
       pitches: pitches,
       gates: gates
-    }, '*');
+    });
   }
 
   /**
@@ -357,8 +392,6 @@ export class NoiseCraftBridge {
    * All sensor inputs are 0-1 normalized.
    */
   update(ppg: number, emg: number, ecg: number, mouseX: number, mouseY: number): void {
-    if (!this.iframe?.contentWindow) return;
-    
     const sensorValues: Record<string, number> = { ppg, emg, ecg, mouseX, mouseY };
     const params: Array<{ nodeId: string; paramName: string; value: number }> = [];
     
@@ -377,10 +410,10 @@ export class NoiseCraftBridge {
     }
     
     if (params.length > 0) {
-      this.iframe.contentWindow.postMessage({
+      this.postMessage({
         type: 'noiseCraft:setParams',
         params,
-      }, '*');
+      });
     }
   }
 
@@ -388,8 +421,6 @@ export class NoiseCraftBridge {
    * Update NoiseCraft parameters using the new Virtual Streams and Node Mapping logic.
    */
   updateFromVirtualStreams(sensorValues: Record<string, number>, streams: VirtualStream[], mappings: NodeMapping[]): void {
-    if (!this.iframe?.contentWindow) return;
-
     // We use the centralized evaluateStreamValue which supports all 20+ operations, 
     // nested node paths, time-based CHOPs (like Envelope, Moving Average, Slope, Smooth), etc.
     const cache = new Map<string, number>();
@@ -411,10 +442,10 @@ export class NoiseCraftBridge {
     }
 
     if (params.length > 0) {
-      this.iframe.contentWindow.postMessage({
+      this.postMessage({
         type: 'noiseCraft:setParams',
         params,
-      }, '*');
+      });
     }
   }
 
