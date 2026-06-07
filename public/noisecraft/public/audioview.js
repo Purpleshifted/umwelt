@@ -161,7 +161,10 @@ export class AudioView
         // This seems to be necessary for Safari
         this.audioCtx.resume();
 
-        await this.audioCtx.audioWorklet.addModule('/noisecraft/public/audioworklet.js');
+        // Use import.meta.url to construct an absolute URL to audioworklet.js
+        // This ensures it resolves correctly regardless of Next.js routing or Vercel static serving
+        const workletUrl = new URL('./audioworklet.js', import.meta.url).href;
+        await this.audioCtx.audioWorklet.addModule(workletUrl);
 
         this.audioWorklet = new AudioWorkletNode(
             this.audioCtx,
