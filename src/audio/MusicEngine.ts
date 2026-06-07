@@ -2107,7 +2107,11 @@ class MusicEngine {
         const baseType = config.config?.type ?? 'sine';
         if (baseType === 'pinknoise' || baseType === 'whitenoise') {
           const synth = new this.Tone!.NoiseSynth({ noise: { type: baseType === 'pinknoise' ? 'pink' : 'white' }, envelope: { attack: 0.1, decay: 0, sustain: 1, release: 0.1 } });
-          triggerNode = { start: () => synth.triggerAttack(this.Tone!.now()), stop: () => synth.triggerRelease(this.Tone!.now()), triggerAttackRelease: (f: any, d: any) => synth.triggerAttackRelease(d, this.Tone!.now()) };
+          triggerNode = { 
+            start: (time?: any) => synth.triggerAttack(time ?? this.Tone!.now()), 
+            stop: (time?: any) => synth.triggerRelease(time ?? this.Tone!.now()), 
+            triggerAttackRelease: (f: any, d: any, t?: any) => synth.triggerAttackRelease(d, t ?? this.Tone!.now()) 
+          };
           outputNode = synth;
         } else {
           const oscOpts = this.getOscillatorConfig(config.config);
