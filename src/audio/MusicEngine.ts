@@ -710,8 +710,14 @@ class MusicEngine {
 
         const stepTime = 60 / this.qpm / 4;
         let lastPitch = root;
+        
+        // Find the actual start time of the generated sequence to offset our search
+        const firstNoteTime = unquantized.notes && unquantized.notes.length > 0 
+          ? unquantized.notes[0].startTime ?? 0 
+          : 0;
+
         for (let i = 0; i < seqLength; i++) {
-          const stepStart = i * stepTime;
+          const stepStart = firstNoteTime + i * stepTime;
           const note = unquantized.notes?.find(
             (n: any) => (n.startTime ?? 0) <= stepStart + 0.01 && (n.endTime ?? 0) > stepStart,
           );
