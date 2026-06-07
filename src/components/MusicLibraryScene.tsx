@@ -12,6 +12,7 @@ import {
   ReactFlowProvider,
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Panel,
   Handle,
   Position
@@ -40,6 +41,7 @@ const nodeTypes = {
 function Flow() {
   const { modules, addModule, updateMultipleModules, removeModule, edges, setEdges } = useMusicStore();
   const { streams } = useAudioMapStore();
+  const { screenToFlowPosition } = useReactFlow();
   
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<Node>([]);
 
@@ -121,8 +123,10 @@ function Flow() {
   }, []);
 
   const handleAddModule = (type: MusicModuleType, x?: number, y?: number) => {
-    const defaultX = window.innerWidth / 2 - 140;
-    const defaultY = window.innerHeight / 2 - 100;
+    let position = { x: window.innerWidth / 2 - 140, y: window.innerHeight / 2 - 100 };
+    if (x !== undefined && y !== undefined) {
+      position = screenToFlowPosition({ x, y });
+    }
     
     const names: Record<string, string> = {
       magenta_ai: 'Magenta Composer',
@@ -144,7 +148,7 @@ function Flow() {
       name: names[type] ?? type.replace('_', ' ').toUpperCase(),
       type,
       inputStreamId: null,
-      position: { x: x ?? defaultX, y: y ?? defaultY },
+      position,
       harmonicConfig: type === 'harmonic_array' ? {
         scaleType: 'dorian',
         rootNote: 60,
