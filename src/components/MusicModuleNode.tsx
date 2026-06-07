@@ -437,6 +437,42 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
         {(module.type === 'chord_progression' || module.type === 'melody_gen' || module.type === 'chord_gen' || module.type === 'voice_splitter' || module.type === 'register_shift') && (
           <NodeVisualizer moduleId={module.id} type={module.type} />
         )}
+
+        {module.type === 'audio_preview' && (
+          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
+            <button
+              className={styles.btn}
+              style={{ background: module.audioPreviewConfig?.isPlaying ? '#f43f5e' : '#10b981', color: 'white', width: '100%', padding: '6px' }}
+              onClick={() => {
+                // Resume audio context from user interaction
+                import('@/audio/MusicEngine').then(m => m.musicEngine.resumeAudioContext());
+                updateModule(module.id, {
+                  audioPreviewConfig: {
+                    ...(module.audioPreviewConfig || { waveType: 'sine' }),
+                    isPlaying: !module.audioPreviewConfig?.isPlaying
+                  }
+                });
+              }}
+            >
+              {module.audioPreviewConfig?.isPlaying ? 'STOP' : 'PLAY'}
+            </button>
+            <select
+              className={styles.select}
+              value={module.audioPreviewConfig?.waveType || 'sine'}
+              onChange={(e) => updateModule(module.id, {
+                audioPreviewConfig: {
+                  ...(module.audioPreviewConfig || { isPlaying: false }),
+                  waveType: e.target.value as any
+                }
+              })}
+            >
+              <option value="sine">Sine</option>
+              <option value="square">Square</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="triangle">Triangle</option>
+            </select>
+          </div>
+        )}
       </div>
     </div>
   );

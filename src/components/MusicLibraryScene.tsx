@@ -136,6 +136,7 @@ function Flow() {
       knob: 'KNOB',
       module_output: 'MODULE_OUTPUT',
       virtual_stream: 'VIRTUAL_STREAM',
+      audio_preview: 'Audio Preview',
     };
     
     addModule({
@@ -161,6 +162,7 @@ function Flow() {
       chordGenConfig: type === 'chord_gen' ? { register: 0, style: 'block' } : undefined,
       voiceSplitterConfig: type === 'voice_splitter' ? {} : undefined,
       registerShiftConfig: type === 'register_shift' ? { shift: 0 } : undefined,
+      audioPreviewConfig: type === 'audio_preview' ? { isPlaying: false, waveType: 'sine' } : undefined,
     });
     closeContextMenu();
   };
@@ -247,6 +249,9 @@ function Flow() {
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('slider', contextMenu.x, contextMenu.y)}>Slider Input</button>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('knob', contextMenu.x, contextMenu.y)}>Knob Input</button>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
+
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f472b6', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Preview</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('audio_preview', contextMenu.x, contextMenu.y)}>Audio Preview</button>
 
           <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Output</div>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Output Channel</button>

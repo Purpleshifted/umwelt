@@ -227,6 +227,7 @@ class MusicEngine {
   private qpm = 120;
   private updateTimer: NodeJS.Timeout | null = null;
   private globalStepCount = 0;
+  private audioCtx: AudioContext | null = null;
 
   // State per generator module
   private moduleStates = new Map<string, ModulePlaybackState>();
@@ -243,14 +244,29 @@ class MusicEngine {
   async initialize() {
     if (this.initialized) return;
     try {
+      // Lazily create AudioContext if needed
+      this.getAudioContext();
       this.rnn = new MusicRNN(
         'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn',
       );
       await this.rnn.initialize();
       this.initialized = true;
-      console.log('[MusicEngine] Magenta MusicRNN initialized!');
-    } catch (e) {
-      console.error('[MusicEngine] Failed to initialize Magenta:', e);
+    } catch (err) {
+      console.warn('Failed to load Magenta MusicRNN', err);
+    }
+  }
+
+  public getAudioContext(): AudioContext {
+    if (!this.audioCtx) {
+      this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    return this.audioCtx;
+  }
+
+  public async resumeAudioContext() {
+    const ctx = this.getAudioContext();
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
     }
   }
 
@@ -447,6 +463,9 @@ class MusicEngine {
           break;
         case 'register_shift':
           this.evalRegisterShift(mod, musicState, results, seqLength);
+          break;
+        case 'audio_preview':
+          this.evalAudioPreview(mod, musicState, results, seqLength);
           break;
         case 'module_output':
           this.evalModuleOutput(mod, musicState, results);
@@ -705,6 +724,74 @@ class MusicEngine {
 
     const mono: MonoSequence = { pitches, gates };
     results.set(mod.id, mono);
+  }
+
+  // ---- audio_preview -----------------------------------------------------
+
+  private evalAudioPreview(
+    mod: MusicModule,
+    musicState: any,
+    results: Map<string, any>,
+    seqLength: number,
+  ) {
+    if (!mod.audioPreviewConfig?.isPlaying) return;
+
+    const inputSeq = this.resolveInputData(mod, 'sequence', musicState, results) as MonoSequence | PolySequence | null;
+    if (!inputSeq || !inputSeq.pitches) return;
+
+    const ctx = this.getAudioContext();
+    if (ctx.state !== 'running') return;
+
+    const waveType = mod.audioPreviewConfig.waveType || 'sine';
+    const beatDuration = 60 / this.qpm;
+    const stepDuration = beatDuration / 4; // 16th notes
+    const startTime = ctx.currentTime + 0.05;
+
+    for (let i = 0; i < seqLength; i++) {
+      let isGateOn = false;
+      let notesToPlay: number[] = [];
+
+      if (Array.isArray(inputSeq.pitches[0])) {
+        const poly = inputSeq as PolySequence;
+        for (let j = 0; j < (poly.gates[i] || []).length; j++) {
+          if (poly.gates[i][j]) {
+            isGateOn = true;
+            notesToPlay.push(poly.pitches[i][j]);
+          }
+        }
+      } else {
+        const mono = inputSeq as MonoSequence;
+        if (mono.gates[i]) {
+          isGateOn = true;
+          notesToPlay.push(mono.pitches[i]);
+        }
+      }
+
+      if (isGateOn && notesToPlay.length > 0) {
+        const t = startTime + i * stepDuration;
+        for (const midiPitch of notesToPlay) {
+          if (midiPitch <= 0) continue;
+          const freq = 440 * Math.pow(2, (midiPitch - 69) / 12);
+          
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = waveType;
+          osc.frequency.value = freq;
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.2 / notesToPlay.length, t + 0.02);
+          gain.gain.setValueAtTime(0.2 / notesToPlay.length, t + stepDuration - 0.02);
+          gain.gain.linearRampToValueAtTime(0, t + stepDuration);
+          
+          osc.start(t);
+          osc.stop(t + stepDuration);
+        }
+      }
+    }
   }
 
   // ---- module_output -----------------------------------------------------

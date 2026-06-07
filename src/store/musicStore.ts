@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Edge } from '@xyflow/react';
 
-export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output' | 'chord_progression' | 'melody_gen' | 'chord_gen' | 'voice_splitter' | 'register_shift';
+export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output' | 'chord_progression' | 'melody_gen' | 'chord_gen' | 'voice_splitter' | 'register_shift' | 'audio_preview';
 
 export interface HarmonicArrayConfig {
   scaleType: 'major' | 'minor' | 'dorian' | 'altered';
@@ -59,6 +59,11 @@ export interface RegisterShiftConfig {
   shift: number; // semitones, e.g. -12 for one octave down
 }
 
+export interface AudioPreviewConfig {
+  isPlaying: boolean;
+  waveType: 'sine' | 'square' | 'sawtooth' | 'triangle';
+}
+
 export interface MusicModule {
   id: string;
   name: string;
@@ -75,6 +80,7 @@ export interface MusicModule {
   chordGenConfig?: ChordGenConfig;
   voiceSplitterConfig?: VoiceSplitterConfig;
   registerShiftConfig?: RegisterShiftConfig;
+  audioPreviewConfig?: AudioPreviewConfig;
   position?: { x: number; y: number };
 }
 
