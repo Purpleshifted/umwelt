@@ -2034,6 +2034,9 @@ class MusicEngine {
           });
         } else if (chain.triggerNode?.triggerAttackRelease) {
           chain.triggerNode.triggerAttackRelease(this.Tone!.Frequency("C4").toFrequency(), "4n");
+          if (this.Tone.Transport.state !== 'started') {
+             this.Tone.Transport.start();
+          }
           setTimeout(() => {
             useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
             this.stopPreviewSynths();
@@ -2153,9 +2156,9 @@ class MusicEngine {
         if (baseType === 'pinknoise' || baseType === 'whitenoise') {
           const synth = new this.Tone!.NoiseSynth({ noise: { type: baseType === 'pinknoise' ? 'pink' : 'white' }, envelope: { attack: 0.1, decay: 0, sustain: 1, release: 0.1 } });
           triggerNode = { 
-            start: (time?: any) => synth.triggerAttack(time ?? this.Tone!.now()), 
-            stop: (time?: any) => synth.triggerRelease(time ?? this.Tone!.now()), 
-            triggerAttackRelease: (f: any, d: any, t?: any) => synth.triggerAttackRelease(d, t ?? this.Tone!.now()) 
+            start: (time?: any) => synth.triggerAttack((time ?? this.Tone!.now()) + 0.05), 
+            stop: (time?: any) => synth.triggerRelease((time ?? this.Tone!.now()) + 0.05), 
+            triggerAttackRelease: (f: any, d: any, t?: any) => synth.triggerAttackRelease(d, (t ?? this.Tone!.now()) + 0.05) 
           };
           outputNode = synth;
         } else {
