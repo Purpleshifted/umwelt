@@ -1916,7 +1916,21 @@ class MusicEngine {
             this.previewIntervals.push(interval);
          }
       }
-      const seq = state.nodeOutputs?.[sourceId]?.sequence as MonoSequence | PolySequence | undefined;
+      let seq = state.nodeOutputs?.[sourceId]?.sequence as MonoSequence | PolySequence | undefined;
+      
+      // If the source itself doesn't have a sequence (e.g. virtual_instrument), 
+      // look ahead to see if it's connected to a track_out that HAS a sequence!
+      if (!seq || !seq.pitches || seq.pitches.length === 0) {
+         const trackOutEdge = state.edges.find(e => e.source === sourceId && (e.sourceHandle === 'instrument' || e.targetHandle === 'instrument'));
+         if (trackOutEdge) {
+            const trackOutId = trackOutEdge.target;
+            const seqEdge = state.edges.find(e => e.target === trackOutId && e.targetHandle === 'sequence');
+            if (seqEdge) {
+                const seqOut = state.nodeOutputs?.[seqEdge.source];
+                seq = seqOut?.sequence || seqOut;
+            }
+         }
+      }
       
       if (seq && seq.pitches && seq.pitches.length > 0) {
         // Play the actual sequence for preview!
