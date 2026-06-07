@@ -154,7 +154,16 @@ function Flow() {
 
   const handleContextMenu = useCallback((e: MouseEvent | React.MouseEvent) => {
     e.preventDefault();
-    setContextMenu({ x: e.clientX, y: e.clientY, show: true });
+    const menuHeight = 750; // Estimated height of the full menu
+    let y = e.clientY;
+    let x = e.clientX;
+    
+    // If clicking too close to the bottom, shift the menu up so it doesn't get squished too much
+    if (y > window.innerHeight - 300) {
+      y = Math.max(20, window.innerHeight - 300);
+    }
+    
+    setContextMenu({ x, y, show: true });
   }, []);
 
   const closeContextMenu = useCallback(() => {
@@ -271,47 +280,57 @@ function Flow() {
               zIndex: 1000, 
               background: '#222', 
               border: '1px solid #444', 
-              borderRadius: '4px',
-              padding: '4px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+              borderRadius: '6px',
+              padding: '8px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              flexWrap: 'wrap',
+              maxHeight: `calc(100vh - ${contextMenu.y}px - 20px)`,
+              alignContent: 'flex-start',
+              gap: '0 16px'
             }}
           >
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f59e0b', borderBottom: '1px solid #444', marginBottom: '4px' }}>Harmonic</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('harmonic_progressor', contextMenu.x, contextMenu.y)}>Harmonic Progressor</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_progression', contextMenu.x, contextMenu.y)}>Chord Progression (Legacy)</button>
+          <div style={{ width: '200px' }}>
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f59e0b', borderBottom: '1px solid #444', marginBottom: '4px' }}>Harmonic</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('harmonic_progressor', contextMenu.x, contextMenu.y)}>Harmonic Progressor</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_progression', contextMenu.x, contextMenu.y)}>Chord Progression (Legacy)</button>
 
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#34d399', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Generators</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('melody_gen', contextMenu.x, contextMenu.y)}>Melody Generator</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_gen', contextMenu.x, contextMenu.y)}>Chord Generator</button>
-          
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f472b6', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Processing</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('voice_splitter', contextMenu.x, contextMenu.y)}>Voice Splitter</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sequence_adder', contextMenu.x, contextMenu.y)}>Sequence Adder</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sequence_morpher', contextMenu.x, contextMenu.y)}>Sequence Morpher</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('register_shifter', contextMenu.x, contextMenu.y)}>Register Shifter</button>
-          
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Inputs</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('slider', contextMenu.x, contextMenu.y)}>Slider Input</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('knob', contextMenu.x, contextMenu.y)}>Knob Input</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#34d399', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Generators</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('melody_gen', contextMenu.x, contextMenu.y)}>Melody Generator</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_gen', contextMenu.x, contextMenu.y)}>Chord Generator</button>
+            
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f472b6', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Processing</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('voice_splitter', contextMenu.x, contextMenu.y)}>Voice Splitter</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sequence_adder', contextMenu.x, contextMenu.y)}>Sequence Adder</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('sequence_morpher', contextMenu.x, contextMenu.y)}>Sequence Morpher</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('register_shifter', contextMenu.x, contextMenu.y)}>Register Shifter</button>
+            
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Inputs</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('slider', contextMenu.x, contextMenu.y)}>Slider Input</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('knob', contextMenu.x, contextMenu.y)}>Knob Input</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
+          </div>
 
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Instrument & Synthesis</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_instrument', contextMenu.x, contextMenu.y)}>Virtual Instrument (Sampler)</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('polysynth', contextMenu.x, contextMenu.y)}>PolySynth (Tone.js)</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('oscillator', contextMenu.x, contextMenu.y)}>Oscillator</button>
-          
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Effects & Utility</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('adsr_envelope', contextMenu.x, contextMenu.y)}>ADSR Envelope</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('filter', contextMenu.x, contextMenu.y)}>Filter</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('reverb', contextMenu.x, contextMenu.y)}>Reverb</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('mix_node', contextMenu.x, contextMenu.y)}>Mix Node</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('seq_to_freq', contextMenu.x, contextMenu.y)}>Seq → Freq Convert</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('preview_util', contextMenu.x, contextMenu.y)}>Preview Utility</button>
+          <div style={{ width: '200px' }}>
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px' }}>Instrument & Synthesis</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_instrument', contextMenu.x, contextMenu.y)}>Virtual Instrument (Sampler)</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('polysynth', contextMenu.x, contextMenu.y)}>PolySynth (Tone.js)</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('oscillator', contextMenu.x, contextMenu.y)}>Oscillator</button>
+            
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Effects & Utility</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('adsr_envelope', contextMenu.x, contextMenu.y)}>ADSR Envelope</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('filter', contextMenu.x, contextMenu.y)}>Filter</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('reverb', contextMenu.x, contextMenu.y)}>Reverb</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('mix_node', contextMenu.x, contextMenu.y)}>Mix Node</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('seq_to_freq', contextMenu.x, contextMenu.y)}>Seq → Freq Convert</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('preview_util', contextMenu.x, contextMenu.y)}>Preview Utility</button>
 
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Output</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('track_out', contextMenu.x, contextMenu.y)}>Track Out (Audio)</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('ai_seq_out', contextMenu.x, contextMenu.y)}>AI Seq Out (Noisecraft)</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Network Output</button>
+            <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Output</div>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('track_out', contextMenu.x, contextMenu.y)}>Track Out (Audio)</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('ai_seq_out', contextMenu.x, contextMenu.y)}>AI Seq Out (Noisecraft)</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Network Output</button>
+          </div>
         </div>
         )}
       </ReactFlow>
