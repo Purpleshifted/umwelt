@@ -520,6 +520,9 @@ class MusicEngine {
         case 'track_out':
           this.evalTrackOut(mod, musicState, results, seqLength);
           break;
+        case 'player_out':
+          this.evalPlayerOut(mod, musicState, results, seqLength);
+          break;
         case 'polysynth':
           this.evalPolysynth(mod, musicState, results);
           break;
@@ -988,12 +991,21 @@ class MusicEngine {
   // ---- track_out and synth modules ---------------------------------------
 
   private evalTrackOut(mod: MusicModule, musicState: any, results: Map<string, any>, seqLength: number) {
+    const audioInEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'audio_in');
+    
+    results.set(mod.id, {
+      type: 'track_out',
+      sourceId: audioInEdge ? audioInEdge.source : null,
+    });
+  }
+
+  private evalPlayerOut(mod: MusicModule, musicState: any, results: Map<string, any>, seqLength: number) {
     const sequence = this.resolveInputData(mod, 'sequence', musicState, results);
     const instrumentEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'instrument');
     const instrumentId = instrumentEdge ? instrumentEdge.source : null;
     
     results.set(mod.id, {
-      type: 'track_out',
+      type: 'player_out',
       sequence,
       instrumentId,
     });
@@ -1658,44 +1670,64 @@ class MusicEngine {
     await this.Tone.start();
     this.Tone.Transport.bpm.value = this.qpm;
 
-    const playouts = state.modules.filter(m => m.type === 'track_out' || m.type === 'score_out');
+    const playouts = state.modules.filter(m => m.type === 'track_out' || m.type === 'player_out' || m.type === 'score_out');
     for (const outNode of playouts) {
       const config = results[outNode.id];
       if (!config) continue;
 
       let triggerNode: any = null;
-      if (outNode.type === 'track_out' && config.instrumentId) {
-        const chain = this.buildInstrumentChain(config.instrumentId, results);
-        if (chain && chain.triggerNode && chain.outputNode) {
-          triggerNode = chain.triggerNode;
-          const trackName = outNode.trackOutConfig?.trackName || 'Track 1';
-          const { useAudioGraphStore, getTrackBus } = await import('@/store/audioGraphStore');
-          const audioCtx = useAudioGraphStore.getState().audioContext;
-          if (audioCtx) {
-             const bus = getTrackBus(audioCtx, trackName);
-             this.Tone.connect(chain.outputNode, bus);
-          } else {
-             chain.outputNode.toDestination();
-          }
-        }
-      }
       
-      // Sequence playing logic ONLY if sequence exists
-      if (!config.sequence) {
-        if (outNode.type === 'track_out' && triggerNode) {
-          // Play continuously as a drone/noise source
-          if (triggerNode.triggerAttack) {
-            triggerNode.triggerAttack(this.Tone!.Frequency("C4").toFrequency(), this.Tone!.now());
-            this.activeToneNodes.push(triggerNode);
-          } else if (triggerNode.start) {
-            triggerNode.start(this.Tone!.now());
-            this.activeToneNodes.push(triggerNode);
+      // 1. Raw Audio Routing for track_out
+      if (outNode.type === 'track_out') {
+        if (config.sourceId) {
+          const chain = this.buildInstrumentChain(config.sourceId, results);
+          if (chain && chain.outputNode) {
+            const trackName = outNode.trackOutConfig?.trackName || 'Track 1';
+            const { useAudioGraphStore, getTrackBus } = await import('@/store/audioGraphStore');
+            const audioCtx = useAudioGraphStore.getState().audioContext;
+            if (audioCtx) {
+               const bus = getTrackBus(audioCtx, trackName);
+               this.Tone.connect(chain.outputNode, bus);
+            } else {
+               chain.outputNode.toDestination();
+            }
+            if (chain.triggerNode) {
+              if (chain.triggerNode.triggerAttack) {
+                chain.triggerNode.triggerAttack(this.Tone!.Frequency("C4").toFrequency(), this.Tone!.now());
+                this.activeToneNodes.push(chain.triggerNode);
+              } else if (chain.triggerNode.start) {
+                chain.triggerNode.start(this.Tone!.now());
+                this.activeToneNodes.push(chain.triggerNode);
+              }
+            }
           }
         }
         continue;
       }
+
+      // 2. Sequenced Player output
+      if (outNode.type === 'player_out') {
+        if (outNode.playerOutConfig?.isPlaying === false) continue;
+        if (config.instrumentId) {
+          const chain = this.buildInstrumentChain(config.instrumentId, results);
+          if (chain && chain.triggerNode && chain.outputNode) {
+            triggerNode = chain.triggerNode;
+            const trackName = outNode.playerOutConfig?.trackName || 'Track 1';
+            const { useAudioGraphStore, getTrackBus } = await import('@/store/audioGraphStore');
+            const audioCtx = useAudioGraphStore.getState().audioContext;
+            if (audioCtx) {
+               const bus = getTrackBus(audioCtx, trackName);
+               this.Tone.connect(chain.outputNode, bus);
+            } else {
+               chain.outputNode.toDestination();
+            }
+          }
+        }
+      }
       
-      if (!triggerNode && outNode.type === 'track_out') continue;
+      if (!config.sequence) continue;
+      
+      if (!triggerNode && outNode.type === 'player_out') continue;
       
       const isScoreOut = outNode.type === 'score_out';
       if (isScoreOut && outNode.scoreOutConfig?.isPlaying === false) continue;

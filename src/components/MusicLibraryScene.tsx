@@ -193,6 +193,7 @@ function Flow() {
       virtual_stream: 'VIRTUAL_STREAM',
       score_out: 'Score Out (Audio)',
       track_out: 'Track Out (Audio)',
+      player_out: 'Player Out (Seq + Audio)',
       ai_seq_out: 'AI Seq Out (Noisecraft)',
       virtual_instrument: 'Virtual Instrument (Sampler)',
       polysynth: 'PolySynth (Tone.js)',
@@ -225,6 +226,7 @@ function Flow() {
       aiSeqOutConfig: type === 'ai_seq_out' ? { masterClockEnabled: true } : undefined,
       virtualInstrumentConfig: type === 'virtual_instrument' ? { instrument: 'acoustic_grand_piano', volume: 0.8 } : undefined,
       trackOutConfig: type === 'track_out' ? { trackName: 'Track 1' } : undefined,
+      playerOutConfig: type === 'player_out' ? { trackName: 'Track 1', isPlaying: true } : undefined,
       polysynthConfig: type === 'polysynth' ? { oscillatorType: 'sine', attack: 0.1, decay: 0.2, sustain: 0.5, release: 1 } : undefined,
       oscillatorConfig: type === 'oscillator' ? { type: 'sine' } : undefined,
       adsrEnvelopeConfig: type === 'adsr_envelope' ? { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1 } : undefined,
@@ -328,6 +330,7 @@ function Flow() {
 
             <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Output</div>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('track_out', contextMenu.x, contextMenu.y)}>Track Out (Audio)</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('player_out', contextMenu.x, contextMenu.y)}>Player Out (Seq + Audio)</button>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('ai_seq_out', contextMenu.x, contextMenu.y)}>AI Seq Out (Noisecraft)</button>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Network Output</button>
           </div>

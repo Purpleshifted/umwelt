@@ -635,7 +635,33 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               placeholder="Track Name"
               style={{ width: '100%', marginBottom: '4px' }}
             />
-            <span style={{ fontSize: '10px', color: '#888' }}>Broadcasts to Audio Editor</span>
+            <span style={{ fontSize: '10px', color: '#888' }}>Routes Audio to Track</span>
+            <Handle type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '45%' }}>Audio In</span>
+          </div>
+        )}
+
+        {/* ── Player Out Node ── */}
+        {module.type === 'player_out' && (
+          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
+            <input 
+              type="text" 
+              className="nodrag"
+              value={module.playerOutConfig?.trackName ?? 'Track 1'}
+              onChange={(e) => updateModule(module.id, {
+                playerOutConfig: { ...module.playerOutConfig!, trackName: e.target.value }
+              })}
+              placeholder="Track Name"
+              style={{ width: '100%', marginBottom: '4px' }}
+            />
+            <button 
+              className="nodrag" 
+              onClick={() => updateModule(module.id, { playerOutConfig: { ...module.playerOutConfig!, isPlaying: !module.playerOutConfig?.isPlaying } })}
+              style={{ width: '100%', padding: '4px', background: module.playerOutConfig?.isPlaying ? '#4caf50' : '#444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            >
+              {module.playerOutConfig?.isPlaying ? 'Playing' : 'Stopped'}
+            </button>
+            <span style={{ fontSize: '10px', color: '#888' }}>Plays Seq on Track</span>
             <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: '30%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '25%' }}>Seq In</span>
             <Handle type="target" position={Position.Left} id="instrument" className={styles.handle} style={{ top: '70%' }} />
