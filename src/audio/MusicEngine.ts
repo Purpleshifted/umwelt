@@ -1657,7 +1657,7 @@ class MusicEngine {
       'chord_progression', 'harmonic_progressor', 'melody_gen', 'chord_gen',
       'voice_splitter', 'sequence_adder', 'register_shifter', 'score_out',
       'ai_seq_out', 'module_output', 'sequence_morpher', 'seq_out',
-      'virtual_instrument', 'track_out', 'polysynth', 'oscillator',
+      'virtual_instrument', 'track_out', 'player_out', 'polysynth', 'oscillator',
       'mix_node', 'seq_to_freq', 'filter', 'adsr_envelope'
     ]);
     const dagModules = musicState.modules.filter((m) => dagTypes.has(m.type));
