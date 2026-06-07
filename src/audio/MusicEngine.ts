@@ -1675,7 +1675,20 @@ class MusicEngine {
       }
       
       // Sequence playing logic ONLY if sequence exists
-      if (!config.sequence) continue;
+      if (!config.sequence) {
+        if (outNode.type === 'track_out' && triggerNode) {
+          // Play continuously as a drone/noise source
+          if (triggerNode.triggerAttack) {
+            triggerNode.triggerAttack(this.Tone!.Frequency("C4").toFrequency(), this.Tone!.now());
+            this.activeToneNodes.push(triggerNode);
+          } else if (triggerNode.start) {
+            triggerNode.start(this.Tone!.now());
+            this.activeToneNodes.push(triggerNode);
+          }
+        }
+        continue;
+      }
+      
       if (!triggerNode && outNode.type === 'track_out') continue;
       
       const isScoreOut = outNode.type === 'score_out';
