@@ -640,6 +640,8 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '25%' }}>Seq In</span>
             <Handle type="target" position={Position.Left} id="instrument" className={styles.handle} style={{ top: '70%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '65%' }}>Inst In</span>
+            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '70%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', right: '-45px', top: '65%' }}>Inst Out</span>
           </div>
         )}
 

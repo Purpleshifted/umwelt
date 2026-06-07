@@ -1851,6 +1851,10 @@ class MusicEngine {
          const inEdge = state.edges.find(e => e.target === m.id && e.targetHandle === 'in_instrument');
          results[m.id] = { type: 'reverb', config: m.reverbConfig, sourceId: inEdge?.source };
       }
+      if (m.type === 'track_out') {
+         const inEdge = state.edges.find(e => e.target === m.id && e.targetHandle === 'instrument');
+         results[m.id] = { type: 'track_out', config: m.trackOutConfig, sourceId: inEdge?.source };
+      }
     });
 
     const chain = this.buildInstrumentChain(sourceId, results);
@@ -1957,9 +1961,12 @@ class MusicEngine {
     const config = results[nodeId];
     if (!config) return null;
 
-    let triggerNode: any = null;
-    let outputNode: any = null;
-    let effectNode: any = null;
+    if (config.type === 'track_out') {
+      return this.buildInstrumentChain(config.sourceId, results);
+    }
+      let triggerNode: any = null;
+      let outputNode: any = null;
+      let effectNode: any = null;
 
     switch (config.type) {
       case 'noisecraft': {
