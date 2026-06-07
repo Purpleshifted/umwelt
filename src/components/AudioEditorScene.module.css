@@ -83,4 +83,7 @@
     font-size: 11px;
     flex: 0 0 auto;
   }
+  .hideOnMobile {
+    display: none !important;
+  }
 }

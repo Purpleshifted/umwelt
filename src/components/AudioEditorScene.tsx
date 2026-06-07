@@ -75,8 +75,10 @@ export default function AudioEditorScene() {
 
   return (
     <div className={styles.container}>
-      <VirtualBiosignalSimulator />
-      <ScopePanel />
+      <div className={styles.hideOnMobile} style={{ display: 'flex', height: '100%' }}>
+        <VirtualBiosignalSimulator />
+        <ScopePanel />
+      </div>
       
       <div className={styles.centerPane}>
         <div style={{ flex: 1, display: 'flex', position: 'relative' }}>
@@ -84,7 +86,9 @@ export default function AudioEditorScene() {
         </div>
       </div>
       
-      <NodeMappingPanel activeContext="macro" />
+      <div className={styles.hideOnMobile} style={{ display: 'flex', height: '100%' }}>
+        <NodeMappingPanel activeContext="macro" />
+      </div>
     </div>
   );
 }
