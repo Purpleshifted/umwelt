@@ -10,7 +10,11 @@ export class AudioView
         model.addView(this);
 
         // Web Audio context
-        this.audioCtx = null;
+        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)({
+            latencyHint: 'interactive',
+            sampleRate: 44100
+        });
+        window.noiseCraftAudioContext = this.audioCtx;
 
         // Background audio thread
         this.audioWorklet = null;
@@ -143,13 +147,16 @@ export class AudioView
     {
         // 이미 초기화된 상태에서 다시 호출될 수 있으므로
         // 두 번째 호출은 무시하고 조용히 반환
-        if (this.audioCtx)
+        if (this.audioWorklet)
             return;
 
-        this.audioCtx = new AudioContext({
-            latencyHint: 'interactive',
-            sampleRate: 44100
-        });
+        if (!this.audioCtx) {
+            this.audioCtx = new AudioContext({
+                latencyHint: 'interactive',
+                sampleRate: 44100
+            });
+            window.noiseCraftAudioContext = this.audioCtx;
+        }
 
         // This seems to be necessary for Safari
         this.audioCtx.resume();
