@@ -656,7 +656,11 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             />
             <button 
               className="nodrag" 
-              onClick={() => updateModule(module.id, { playerOutConfig: { ...module.playerOutConfig!, isPlaying: !module.playerOutConfig?.isPlaying } })}
+              onClick={async () => {
+                updateModule(module.id, { playerOutConfig: { ...module.playerOutConfig!, isPlaying: !module.playerOutConfig?.isPlaying } });
+                const { musicEngine } = await import('@/audio/MusicEngine');
+                setTimeout(() => musicEngine.playTracks(), 50);
+              }}
               style={{ width: '100%', padding: '4px', background: module.playerOutConfig?.isPlaying ? '#4caf50' : '#444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
               {module.playerOutConfig?.isPlaying ? 'Playing' : 'Stopped'}

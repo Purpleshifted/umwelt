@@ -240,14 +240,6 @@ function Flow() {
 
   return (
     <div className={styles.flowWrapper} onClick={closeContextMenu}>
-      <div style={{ position: 'absolute', bottom: 30, left: 30, zIndex: 10, display: 'flex', gap: '8px' }}>
-        <button className={styles.btn} onClick={() => {
-          musicEngine.playTracks();
-        }}>▶ Play Tracks</button>
-        <button className={styles.btn} onClick={() => {
-          musicEngine.stopTracks();
-        }}>⏹ Stop Tracks</button>
-      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
