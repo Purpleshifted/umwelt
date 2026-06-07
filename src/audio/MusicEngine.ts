@@ -453,6 +453,9 @@ class MusicEngine {
           break;
       }
     }
+    
+    // Save evaluated data to store for UI visualization
+    useMusicStore.getState().setNodeOutputs(Object.fromEntries(results));
   }
 
   // ---- chord_progression -------------------------------------------------

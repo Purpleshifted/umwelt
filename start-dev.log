@@ -35017,3 +35017,10 @@ Import trace:
  GET /music 200 in 259ms (next.js: 117ms, application-code: 142ms)
 ✓ Compiled in 314ms
 ✓ Compiled in 62ms
+[browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
+[browser] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002
+✓ Compiled in 153ms
+✓ Compiled in 40ms
+✓ Compiled in 85ms
+✓ Compiled in 236ms
+✓ Compiled in 128ms

@@ -40,6 +40,48 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
   const { updateModule, removeModule } = useMusicStore();
   const { streams } = useAudioMapStore();
 
+const PITCH_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+function getNoteName(midiPitch: number) {
+  if (midiPitch === 0 || !midiPitch) return '-';
+  const name = PITCH_NAMES[midiPitch % 12];
+  const octave = Math.floor(midiPitch / 12) - 1;
+  return `${name}${octave}`;
+}
+
+function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) {
+  const output = useMusicStore((s) => s.nodeOutputs[moduleId]);
+
+  if (!output) {
+    return <div style={{ fontSize: '10px', color: '#666', padding: '4px', textAlign: 'center', borderTop: '1px solid #333' }}>Waiting for data...</div>;
+  }
+
+  let content = null;
+
+  if (type === 'chord_progression' && Array.isArray(output) && output.length > 0) {
+    const chord = output[0];
+    if (chord && typeof chord.root === 'number') {
+      const rootName = getNoteName(48 + chord.key + chord.root).replace(/\d/, '');
+      content = <div>Current: {rootName} {chord.mode}</div>;
+    }
+  } else if ((type === 'melody_gen' || type === 'register_shift') && output.pitches) {
+    const preview = output.pitches.slice(0, 4).map((p: number, i: number) => output.gates[i] ? getNoteName(p) : '-').join(' ');
+    content = <div>Seq: {preview}...</div>;
+  } else if (type === 'chord_gen' && output.pitches && output.pitches[0]) {
+    const preview = output.pitches[0].map((p: number) => getNoteName(p)).join(',');
+    content = <div>Chd: [{preview}]...</div>;
+  } else if (type === 'voice_splitter' && output.pitches) {
+    const preview = output.pitches.slice(0, 4).map((p: number, i: number) => output.gates[i] ? getNoteName(p) : '-').join(' ');
+    content = <div>V0: {preview}...</div>;
+  }
+
+  return (
+    <div style={{ fontSize: '10px', color: '#aaa', padding: '4px', background: 'rgba(0,0,0,0.2)', borderTop: '1px solid #333', textAlign: 'center', marginTop: '8px' }}>
+      {content || 'Active'}
+    </div>
+  );
+}
+
   const handleInputStreamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateModule(module.id, { inputStreamId: e.target.value || null });
   };
@@ -390,6 +432,10 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
               </div>
             </div>
           </>
+        )}
+
+        {(module.type === 'chord_progression' || module.type === 'melody_gen' || module.type === 'chord_gen' || module.type === 'voice_splitter' || module.type === 'register_shift') && (
+          <NodeVisualizer moduleId={module.id} type={module.type} />
         )}
       </div>
     </div>

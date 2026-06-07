@@ -81,11 +81,13 @@ export interface MusicModule {
 interface MusicState {
   modules: MusicModule[];
   edges: Edge[];
+  nodeOutputs: Record<string, any>; // Stores the latest evaluation results from MusicEngine
   addModule: (module: MusicModule) => void;
   updateModule: (id: string, updates: Partial<MusicModule>) => void;
   updateMultipleModules: (updates: {id: string, changes: Partial<MusicModule>}[]) => void;
   removeModule: (id: string) => void;
   setEdges: (edges: Edge[] | ((eds: Edge[]) => Edge[])) => void;
+  setNodeOutputs: (outputs: Record<string, any>) => void;
 }
 
 export const useMusicStore = create<MusicState>()(
@@ -93,6 +95,7 @@ export const useMusicStore = create<MusicState>()(
     (set) => ({
       modules: [],
       edges: [],
+      nodeOutputs: {},
       addModule: (module) =>
         set((state) => ({ modules: [...state.modules, module] })),
       updateModule: (id, updates) =>
@@ -119,6 +122,7 @@ export const useMusicStore = create<MusicState>()(
         set((state) => ({
           edges: typeof edgesOrUpdater === 'function' ? edgesOrUpdater(state.edges) : edgesOrUpdater
         })),
+      setNodeOutputs: (outputs) => set({ nodeOutputs: outputs }),
     }),
     {
       name: 'umwelt-music-storage',
