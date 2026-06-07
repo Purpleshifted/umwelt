@@ -148,7 +148,7 @@ function AudioNodeComponent({ id, data, selected }: { id: string; data: any; sel
             <ParamSelect
               label="Patch"
               value={String(graphNode.params.patchFile || 'nc_noise_patch.ncft')}
-              options={(window as any).__ncftPatches || ['nc_noise_patch.ncft']}
+              options={(typeof window !== 'undefined' ? (window as any).__ncftPatches : null) || ['nc_noise_patch.ncft']}
               onChange={(v) => handleParamChange('patchFile', v)}
               nodeId={id} 
               paramName="patchFile"
