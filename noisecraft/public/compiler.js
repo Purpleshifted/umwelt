@@ -502,6 +502,18 @@ export function compile(graph)
             continue;
         }
 
+        if (node.type == 'AI_Poly')
+        {
+            audioNodes[nodeId] = node;
+
+            addLine(
+                `let [${outName(nodeId, 0)}, ${outName(nodeId, 1)}, ${outName(nodeId, 2)}, ${outName(nodeId, 3)}, ${outName(nodeId, 4)}, ${outName(nodeId, 5)}, ${outName(nodeId, 6)}, ${outName(nodeId, 7)}] = ` +
+                `nodes[${nodeId}].update(time, ${inVal(node, 0)}, ${inVal(node, 1)})`
+            );
+
+            continue;
+        }
+
         // Temporary so the compiler doesn't error when it sees a module
         if (node.type == 'Module')
         {

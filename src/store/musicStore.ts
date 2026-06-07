@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Edge } from '@xyflow/react';
 
-export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output';
+export type MusicModuleType = 'harmonic_array' | 'magenta_ai' | 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output' | 'chord_progression' | 'melody_gen' | 'chord_gen' | 'voice_splitter' | 'register_shift';
 
 export interface HarmonicArrayConfig {
   scaleType: 'major' | 'minor' | 'dorian' | 'altered';
@@ -38,6 +38,27 @@ export interface KnobConfig {
   max: number;
 }
 
+export interface ChordProgressionConfig {
+  mode: 'major' | 'minor' | 'dorian' | 'mixolydian';
+}
+
+export interface MelodyGenConfig {
+  register: number; // -24 to +12
+}
+
+export interface ChordGenConfig {
+  register: number;
+  style: 'block' | 'arpeggio' | 'broken';
+}
+
+export interface VoiceSplitterConfig {
+  // no config needed, purely transformational
+}
+
+export interface RegisterShiftConfig {
+  shift: number; // semitones, e.g. -12 for one octave down
+}
+
 export interface MusicModule {
   id: string;
   name: string;
@@ -49,6 +70,11 @@ export interface MusicModule {
   noiseConfig?: NoiseConfig;
   sliderConfig?: SliderConfig;
   knobConfig?: KnobConfig;
+  chordProgressionConfig?: ChordProgressionConfig;
+  melodyGenConfig?: MelodyGenConfig;
+  chordGenConfig?: ChordGenConfig;
+  voiceSplitterConfig?: VoiceSplitterConfig;
+  registerShiftConfig?: RegisterShiftConfig;
   position?: { x: number; y: number };
 }
 

@@ -11,6 +11,30 @@ interface MusicModuleNodeProps {
   };
 }
 
+const BORDER_COLORS: Record<string, string> = {
+  magenta_ai: '#fca5a5',
+  harmonic_array: '#93c5fd',
+  chord_progression: '#f59e0b',
+  melody_gen: '#34d399',
+  chord_gen: '#818cf8',
+  voice_splitter: '#f472b6',
+  register_shift: '#a78bfa',
+};
+
+function getBorderClass(type: string): string {
+  if (type === 'magenta_ai') return styles.magenta;
+  if (type === 'harmonic_array') return styles.harmonic;
+  return '';
+}
+
+function getBorderStyle(type: string): React.CSSProperties | undefined {
+  const color = BORDER_COLORS[type];
+  // For the original two types, CSS classes handle the border
+  if (type === 'magenta_ai' || type === 'harmonic_array') return undefined;
+  if (color) return { borderTop: `4px solid ${color}` };
+  return undefined;
+}
+
 export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
   const { module, selected } = data;
   const { updateModule, removeModule } = useMusicStore();
@@ -21,7 +45,10 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
   };
 
   return (
-    <div className={`${styles.node} ${selected ? styles.selected : ''} ${module.type === 'magenta_ai' ? styles.magenta : styles.harmonic}`}>
+    <div
+      className={`${styles.node} ${selected ? styles.selected : ''} ${getBorderClass(module.type)}`}
+      style={getBorderStyle(module.type)}
+    >
       {/* Target handle for incoming virtual stream data (visual only, logical binding is via ID) */}
       <Handle type="target" position={Position.Left} id="in" className={styles.handle} />
 
@@ -158,6 +185,211 @@ export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
               <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#ff6b6b' }} />
             </div>
           </div>
+        )}
+
+        {/* ── Chord Progression Node ── */}
+        {module.type === 'chord_progression' && (
+          <>
+            <div className={styles.configArea}>
+              <div className={styles.field}>
+                <label>Mode</label>
+                <select
+                  className="nodrag"
+                  value={module.chordProgressionConfig?.mode ?? 'major'}
+                  onChange={(e) => updateModule(module.id, {
+                    chordProgressionConfig: {
+                      ...module.chordProgressionConfig!,
+                      mode: e.target.value as 'major' | 'minor' | 'dorian' | 'mixolydian',
+                    },
+                  })}
+                >
+                  <option value="major">Major</option>
+                  <option value="minor">Minor</option>
+                  <option value="dorian">Dorian</option>
+                  <option value="mixolydian">Mixolydian</option>
+                </select>
+              </div>
+              <div className={styles.paramHandleRow}>
+                <Handle type="target" position={Position.Left} id="tension" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Tension (0-1)</span>
+              </div>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+                <Handle type="target" position={Position.Left} id="rate" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Rate (0-1)</span>
+              </div>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+                <Handle type="target" position={Position.Left} id="key" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Key (0-1)</span>
+              </div>
+            </div>
+            <div className={styles.outputs}>
+              <div className={styles.outRow}>
+                <span>Chord Data</span>
+                <Handle type="source" position={Position.Right} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f59e0b' }} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── Melody Gen Node ── */}
+        {module.type === 'melody_gen' && (
+          <>
+            <div className={styles.configArea}>
+              <div className={styles.field} style={{ marginBottom: '10px' }}>
+                <label>Register</label>
+                <select
+                  className="nodrag"
+                  value={module.melodyGenConfig?.register ?? 0}
+                  onChange={(e) => updateModule(module.id, {
+                    melodyGenConfig: {
+                      ...module.melodyGenConfig!,
+                      register: parseInt(e.target.value),
+                    },
+                  })}
+                >
+                  <option value={12}>Soprano (+1 Oct)</option>
+                  <option value={0}>Alto (Default)</option>
+                  <option value={-12}>Tenor (-1 Oct)</option>
+                  <option value={-24}>Bass (-2 Oct)</option>
+                </select>
+              </div>
+              <div className={styles.paramHandleRow}>
+                <Handle type="target" position={Position.Left} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Chord Data</span>
+              </div>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+                <Handle type="target" position={Position.Left} id="temperature" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Temperature (0-1)</span>
+              </div>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+                <Handle type="target" position={Position.Left} id="density" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Density (0-1)</span>
+              </div>
+            </div>
+            <div className={styles.outputs}>
+              <div className={styles.outRow}>
+                <span>Sequence Output</span>
+                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#34d399' }} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── Chord Gen Node ── */}
+        {module.type === 'chord_gen' && (
+          <>
+            <div className={styles.configArea}>
+              <div className={styles.field} style={{ marginBottom: '10px' }}>
+                <label>Register</label>
+                <select
+                  className="nodrag"
+                  value={module.chordGenConfig?.register ?? 0}
+                  onChange={(e) => updateModule(module.id, {
+                    chordGenConfig: {
+                      ...module.chordGenConfig!,
+                      register: parseInt(e.target.value),
+                      style: module.chordGenConfig?.style ?? 'block',
+                    },
+                  })}
+                >
+                  <option value={12}>Soprano (+1 Oct)</option>
+                  <option value={0}>Alto (Default)</option>
+                  <option value={-12}>Tenor (-1 Oct)</option>
+                  <option value={-24}>Bass (-2 Oct)</option>
+                </select>
+              </div>
+              <div className={styles.field}>
+                <label>Style</label>
+                <select
+                  className="nodrag"
+                  value={module.chordGenConfig?.style ?? 'block'}
+                  onChange={(e) => updateModule(module.id, {
+                    chordGenConfig: {
+                      ...module.chordGenConfig!,
+                      register: module.chordGenConfig?.register ?? 0,
+                      style: e.target.value as 'block' | 'arpeggio' | 'broken',
+                    },
+                  })}
+                >
+                  <option value="block">Block</option>
+                  <option value="arpeggio">Arpeggio</option>
+                  <option value="broken">Broken</option>
+                </select>
+              </div>
+              <div className={styles.paramHandleRow}>
+                <Handle type="target" position={Position.Left} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Chord Data</span>
+              </div>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+                <Handle type="target" position={Position.Left} id="rhythm" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Rhythm (0-1)</span>
+              </div>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
+                <Handle type="target" position={Position.Left} id="voicing" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Voicing (0-1)</span>
+              </div>
+            </div>
+            <div className={styles.outputs}>
+              <div className={styles.outRow}>
+                <span>Sequence Output</span>
+                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#818cf8' }} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── Voice Splitter Node ── */}
+        {module.type === 'voice_splitter' && (
+          <>
+            <div className={styles.configArea}>
+              <div className={styles.paramHandleRow}>
+                <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Sequence Input</span>
+              </div>
+            </div>
+            <div className={styles.outputs}>
+              {[0, 1, 2, 3].map((i) => (
+                <div className={styles.outRow} key={`voice_${i}`}>
+                  <span>Voice {i}</span>
+                  <Handle type="source" position={Position.Right} id={`voice_${i}`} className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f472b6' }} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ── Register Shift Node ── */}
+        {module.type === 'register_shift' && (
+          <>
+            <div className={styles.configArea}>
+              <div className={styles.field} style={{ marginBottom: '10px' }}>
+                <label>Shift (semitones)</label>
+                <select
+                  className="nodrag"
+                  value={module.registerShiftConfig?.shift ?? 0}
+                  onChange={(e) => updateModule(module.id, {
+                    registerShiftConfig: { shift: parseInt(e.target.value) },
+                  })}
+                >
+                  <option value={-24}>-24 (-2 Oct)</option>
+                  <option value={-12}>-12 (-1 Oct)</option>
+                  <option value={0}>0 (No shift)</option>
+                  <option value={12}>+12 (+1 Oct)</option>
+                  <option value={24}>+24 (+2 Oct)</option>
+                </select>
+              </div>
+              <div className={styles.paramHandleRow}>
+                <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <span style={{ fontSize: '10px' }}>Sequence Input</span>
+              </div>
+            </div>
+            <div className={styles.outputs}>
+              <div className={styles.outRow}>
+                <span>Sequence Output</span>
+                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#a78bfa' }} />
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>

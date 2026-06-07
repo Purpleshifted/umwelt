@@ -411,7 +411,10 @@ app.post('/save-ncft/:filename', jsonParser, function (req, res) {
     // Validate the project data
     try {
       const project = JSON.parse(data);
+      model.normalizeProject(project);
+      model.resetState(project);
       model.validateProject(project);
+      data = JSON.stringify(project, null, 2);
     } catch (err) {
       return res.status(400).json({ error: 'Invalid project data: ' + err.message });
     }

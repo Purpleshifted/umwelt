@@ -1107,6 +1107,86 @@ class AI_Seq extends AudioNode {
 }
 
 /**
+ * AI Polyphonic Receiver (4 voices)
+ * Outputs 8 values: [freq0, gate0, freq1, gate1, freq2, gate2, freq3, gate3]
+ */
+class AI_Poly extends AudioNode {
+    constructor(id, state, sampleRate, send) {
+        if (!('moduleId' in state.params)) {
+            state.params.moduleId = '';
+        }
+        super(id, state, sampleRate, send);
+        this.pitches = state.pitches || [];
+        this.gates = state.gates || [];
+        this.stepIdx = 0;
+        this.freqs = [0, 0, 0, 0];
+        this.gateStates = ['off', 'off', 'off', 'off'];
+        this.clockSgn = false;
+        this.trigTimes = [0, 0, 0, 0];
+        this.clockCnt = 0;
+    }
+
+    setSequence(pitches, gates) {
+        this.pitches = pitches || [];
+        this.gates = gates || [];
+    }
+
+    update(time, clock, gateTime) {
+        if (!this.clockSgn && clock > 0) {
+            if (this.clockCnt === 0) {
+                this.clockCnt = music.CLOCK_PPS;
+                
+                if (this.pitches.length > 0) {
+                    let idx = this.stepIdx % this.pitches.length;
+                    let pitchGroup = this.pitches[idx];
+                    let gateGroup = this.gates[idx];
+                    
+                    for (let v = 0; v < 4; v++) {
+                        let pitch = Array.isArray(pitchGroup) ? (pitchGroup[v] ?? 0) : (v === 0 ? pitchGroup : 0);
+                        let gate = Array.isArray(gateGroup) ? (gateGroup[v] ?? 0) : (v === 0 ? gateGroup : 0);
+                        
+                        if (gate > 0) {
+                            this.freqs[v] = 440 * Math.pow(2, (pitch - 69) / 12);
+                            this.gateStates[v] = 'pretrig';
+                            this.trigTimes[v] = time;
+                        } else {
+                            this.gateStates[v] = 'off';
+                        }
+                    }
+                    this.stepIdx++;
+                }
+            }
+            if (this.clockCnt > 0) this.clockCnt--;
+        }
+
+        this.clockSgn = (clock > 0);
+
+        let out = [];
+        for (let v = 0; v < 4; v++) {
+            switch (this.gateStates[v]) {
+                case 'off':
+                    out.push(this.freqs[v], 0);
+                    break;
+                case 'pretrig':
+                    this.gateStates[v] = 'on';
+                    out.push(0, 0);
+                    break;
+                case 'on':
+                    if (time - this.trigTimes[v] > gateTime) {
+                        this.gateStates[v] = 'off';
+                        this.trigTimes[v] = 0;
+                    }
+                    out.push(this.freqs[v], 1);
+                    break;
+                default:
+                    out.push(0, 0);
+            }
+        }
+        return out;
+    }
+}
+
+/**
  * Map of node types to classes
  */
 let NODE_CLASSES =
@@ -1131,4 +1211,5 @@ let NODE_CLASSES =
     MonoSeq: MonoSeq,
     GateSeq: GateSeq,
     AI_Seq: AI_Seq,
+    AI_Poly: AI_Poly,
 };

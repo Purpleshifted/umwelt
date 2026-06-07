@@ -3745,7 +3745,8 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780564778813"
+        "moduleId": "music_mod_1780564778813",
+        "voice": 0
       },
       "pitches": [
         72,
@@ -3819,7 +3820,8 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780564778813"
+        "moduleId": "music_mod_1780564778813",
+        "voice": 1
       },
       "pitches": [
         72,
@@ -3879,7 +3881,8 @@
         "gate"
       ],
       "params": {
-        "moduleId": "music_mod_1780564778813"
+        "moduleId": "music_mod_1780564778813",
+        "voice": 2
       },
       "pitches": [
         72,

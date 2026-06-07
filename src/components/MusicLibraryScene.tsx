@@ -122,9 +122,23 @@ function Flow() {
     const defaultX = window.innerWidth / 2 - 140;
     const defaultY = window.innerHeight / 2 - 100;
     
+    const names: Record<string, string> = {
+      magenta_ai: 'Magenta Composer',
+      harmonic_array: 'Harmonic Array',
+      chord_progression: 'Chord Progression',
+      melody_gen: 'Melody Generator',
+      chord_gen: 'Chord Generator',
+      voice_splitter: 'Voice Splitter',
+      register_shift: 'Register Shift',
+      slider: 'SLIDER',
+      knob: 'KNOB',
+      module_output: 'MODULE_OUTPUT',
+      virtual_stream: 'VIRTUAL_STREAM',
+    };
+    
     addModule({
       id: `music_mod_${Date.now()}`,
-      name: type === 'magenta_ai' ? 'Magenta Composer' : type === 'harmonic_array' ? 'Harmonic Array' : type.replace('_', ' ').toUpperCase(),
+      name: names[type] ?? type.replace('_', ' ').toUpperCase(),
       type,
       inputStreamId: null,
       position: { x: x ?? defaultX, y: y ?? defaultY },
@@ -139,7 +153,12 @@ function Flow() {
         density: 0.8
       } : undefined,
       sineConfig: type === 'sine' ? { frequency: 1.0 } : undefined,
-      noiseConfig: type === 'noise' ? { speed: 1.0 } : undefined
+      noiseConfig: type === 'noise' ? { speed: 1.0 } : undefined,
+      chordProgressionConfig: type === 'chord_progression' ? { mode: 'major' } : undefined,
+      melodyGenConfig: type === 'melody_gen' ? { register: 0 } : undefined,
+      chordGenConfig: type === 'chord_gen' ? { register: 0, style: 'block' } : undefined,
+      voiceSplitterConfig: type === 'voice_splitter' ? {} : undefined,
+      registerShiftConfig: type === 'register_shift' ? { shift: 0 } : undefined,
     });
     closeContextMenu();
   };
@@ -171,6 +190,23 @@ function Flow() {
         
         <Panel position="top-left" className={styles.toolbar}>
           <div className={styles.title}>Generators</div>
+          <button className={styles.btn} onClick={() => handleAddModule('chord_progression')}>
+            + Chord Progression
+          </button>
+          <button className={styles.btn} onClick={() => handleAddModule('melody_gen')}>
+            + Melody Generator
+          </button>
+          <button className={styles.btn} onClick={() => handleAddModule('chord_gen')}>
+            + Chord Generator
+          </button>
+          <div className={styles.title} style={{ marginTop: '8px', fontSize: '11px', color: '#888' }}>Processing</div>
+          <button className={styles.btn} onClick={() => handleAddModule('voice_splitter')}>
+            + Voice Splitter
+          </button>
+          <button className={styles.btn} onClick={() => handleAddModule('register_shift')}>
+            + Register Shift
+          </button>
+          <div className={styles.title} style={{ marginTop: '8px', fontSize: '11px', color: '#666' }}>Legacy</div>
           <button className={styles.btn} onClick={() => handleAddModule('harmonic_array')}>
             + Harmonic Array
           </button>
@@ -194,17 +230,28 @@ function Flow() {
               boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
             }}
           >
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px' }}>Add Module</div>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('magenta_ai', contextMenu.x, contextMenu.y)}>Magenta Composer</button>
-          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('harmonic_array', contextMenu.x, contextMenu.y)}>Harmonic Array</button>
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f59e0b', borderBottom: '1px solid #444', marginBottom: '4px' }}>Harmonic</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_progression', contextMenu.x, contextMenu.y)}>Chord Progression</button>
+
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#34d399', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Generators</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('melody_gen', contextMenu.x, contextMenu.y)}>Melody Generator</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('chord_gen', contextMenu.x, contextMenu.y)}>Chord Generator</button>
           
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Add Input</div>
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#f472b6', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Processing</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('voice_splitter', contextMenu.x, contextMenu.y)}>Voice Splitter</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('register_shift', contextMenu.x, contextMenu.y)}>Register Shift</button>
+          
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#888', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Inputs</div>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('slider', contextMenu.x, contextMenu.y)}>Slider Input</button>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('knob', contextMenu.x, contextMenu.y)}>Knob Input</button>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('virtual_stream', contextMenu.x, contextMenu.y)}>Virtual Stream</button>
 
-          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Add Output</div>
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Output</div>
           <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('module_output', contextMenu.x, contextMenu.y)}>Output Channel</button>
+          
+          <div style={{ padding: '4px 8px', fontSize: '11px', color: '#666', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Legacy</div>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('magenta_ai', contextMenu.x, contextMenu.y)}>Magenta Composer</button>
+          <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left' }} onClick={() => handleAddModule('harmonic_array', contextMenu.x, contextMenu.y)}>Harmonic Array</button>
         </div>
         )}
       </ReactFlow>
