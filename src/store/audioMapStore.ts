@@ -69,23 +69,19 @@ interface AudioMapState {
   setSequence: (channel: string, seqData: any) => void;
 }
 
+import defaultStreamManagerState from '@/constants/stream_manager_state.json';
+
 export const useAudioMapStore = create<AudioMapState>()(
   persist(
     (set, get) => ({
-      streams: [
-        { id: '1', name: 'Raw PPG', type: 'sensor', sensor: 'ppg' as SensorType },
-        { id: '2', name: 'Raw ECG', type: 'sensor', sensor: 'ecg' as SensorType }
-  ],
-  mappings: [],
-  history: [{
-    streams: [
-      { id: '1', name: 'Raw PPG', type: 'sensor', sensor: 'ppg' as SensorType },
-      { id: '2', name: 'Raw ECG', type: 'sensor', sensor: 'ecg' as SensorType }
-    ],
-    mappings: []
-  }],
-  historyIndex: 0,
-  sequences: {},
+      streams: defaultStreamManagerState.streams as VirtualStream[],
+      mappings: defaultStreamManagerState.mappings as NodeMapping[],
+      history: [{
+        streams: defaultStreamManagerState.streams as VirtualStream[],
+        mappings: defaultStreamManagerState.mappings as NodeMapping[]
+      }],
+      historyIndex: 0,
+      sequences: {},
 
   setSequence: (channel: string, seqData: any) => {
     set((state) => ({

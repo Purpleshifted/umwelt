@@ -113,27 +113,22 @@ export const NODE_LABELS: Record<AudioNodeType, string> = {
   destination: 'Speaker Out',
 };
 
-const DEFAULT_NODES: AudioGraphNode[] = [
-  {
-    id: 'dest-1',
-    type: 'destination',
-    label: 'Speaker Out',
-    params: {},
-    position: { x: 700, y: 200 },
-  },
-];
+import defaultAudioEditorState from '@/constants/audio_editor_state.json';
+
+const DEFAULT_NODES: AudioGraphNode[] = defaultAudioEditorState.state.nodes as AudioGraphNode[];
+const DEFAULT_EDGES = defaultAudioEditorState.state.edges as any[];
 
 export const useAudioGraphStore = create<AudioGraphState>()(
   persist(
     (set, get) => ({
       nodes: DEFAULT_NODES,
-      edges: [],
+      edges: DEFAULT_EDGES,
   audioContext: null,
   liveNodes: new Map(),
   noisecraftStreams: new Map(),
   noisecraftWindows: new Map(),
 
-  history: [{ nodes: DEFAULT_NODES, edges: [] }],
+  history: [{ nodes: DEFAULT_NODES, edges: DEFAULT_EDGES }],
   historyIndex: 0,
 
   saveState: () => set((state) => {

@@ -190,11 +190,13 @@ interface MusicState {
   setNodeOutputs: (outputs: Record<string, any>) => void;
 }
 
+import defaultMusicLibraryState from '@/constants/music_library_state.json';
+
 export const useMusicStore = create<MusicState>()(
   persist(
     (set) => ({
-      modules: [],
-      edges: [],
+      modules: defaultMusicLibraryState.state.modules as any[],
+      edges: defaultMusicLibraryState.state.edges as any[],
       nodeOutputs: {},
       addModule: (module) =>
         set((state) => ({ modules: [...state.modules, module] })),
