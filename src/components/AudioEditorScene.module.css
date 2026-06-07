@@ -68,3 +68,19 @@
   letter-spacing: 2px;
   font-size: 14px;
 }
+
+@media (max-width: 768px) {
+  .editorTabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .editorTabs::-webkit-scrollbar {
+    display: none;
+  }
+  .editorTab {
+    padding: 10px 12px;
+    font-size: 11px;
+    flex: 0 0 auto;
+  }
+}

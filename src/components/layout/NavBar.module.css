@@ -56,3 +56,26 @@
   background: #a78bfa;
   box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 12px;
+  }
+  .logo {
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  .links {
+    gap: 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .links::-webkit-scrollbar {
+    display: none;
+  }
+  .link {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+}

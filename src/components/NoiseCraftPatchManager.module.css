@@ -174,3 +174,23 @@
   padding: 40px;
   grid-column: 1 / -1;
 }
+
+@media (max-width: 768px) {
+  .createSection form {
+    flex-direction: column;
+  }
+  .patchList {
+    grid-template-columns: 1fr;
+  }
+  .patchCard {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .patchInfo {
+    min-width: 100%;
+  }
+  .patchActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

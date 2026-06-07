@@ -170,3 +170,26 @@
   background: #4ecdc4;
   transition: width 0.1s ease-out;
 }
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .content {
+    height: 35vh;
+    padding: 12px;
+  }
+  .tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tab {
+    padding: 8px 12px;
+    font-size: 10px;
+  }
+}
+
