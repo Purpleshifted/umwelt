@@ -35014,3 +35014,6 @@ Import trace:
  GET /audio 200 in 65ms (next.js: 10ms, application-code: 55ms)
  GET /audio 200 in 292ms (next.js: 103ms, application-code: 189ms)
 ✓ Compiled in 1559ms
+ GET /music 200 in 259ms (next.js: 117ms, application-code: 142ms)
+✓ Compiled in 314ms
+✓ Compiled in 62ms

@@ -113,6 +113,7 @@ export const useMusicStore = create<MusicState>()(
       removeModule: (id) =>
         set((state) => ({
           modules: state.modules.filter((m) => m.id !== id),
+          edges: state.edges.filter((e) => e.source !== id && e.target !== id),
         })),
       setEdges: (edgesOrUpdater) =>
         set((state) => ({

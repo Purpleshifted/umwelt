@@ -38,7 +38,7 @@ const nodeTypes = {
 };
 
 function Flow() {
-  const { modules, addModule, updateMultipleModules, edges, setEdges } = useMusicStore();
+  const { modules, addModule, updateMultipleModules, removeModule, edges, setEdges } = useMusicStore();
   const { streams } = useAudioMapStore();
   
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<Node>([]);
@@ -97,6 +97,8 @@ function Flow() {
       changes.forEach((change) => {
         if (change.type === 'position' && change.position) {
           positionUpdates.push({ id: change.id, changes: { position: change.position } });
+        } else if (change.type === 'remove') {
+          removeModule(change.id);
         }
       });
       
@@ -104,7 +106,7 @@ function Flow() {
         updateMultipleModules(positionUpdates);
       }
     },
-    [onNodesChangeBase, updateMultipleModules]
+    [onNodesChangeBase, updateMultipleModules, removeModule]
   );
 
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean } | null>(null);
