@@ -154,7 +154,7 @@ export class AudioView
         // This seems to be necessary for Safari
         this.audioCtx.resume();
 
-        await this.audioCtx.audioWorklet.addModule('/public/audioworklet.js');
+        await this.audioCtx.audioWorklet.addModule('/noisecraft/public/audioworklet.js');
 
         this.audioWorklet = new AudioWorkletNode(
             this.audioCtx,
