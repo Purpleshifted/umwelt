@@ -270,6 +270,9 @@ function Flow() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onEdgeDoubleClick={(e, edge) => {
+          setEdges(eds => eds.filter(x => x.id !== edge.id));
+        }}
         isValidConnection={(connection) => {
           const sourceNode = nodes.find(n => n.id === connection.source);
           const targetNode = nodes.find(n => n.id === connection.target);
