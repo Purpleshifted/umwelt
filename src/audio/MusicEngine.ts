@@ -1130,7 +1130,7 @@ class MusicEngine {
   }
 
   private evalReverb(mod: MusicModule, musicState: any, results: Map<string, any>) {
-    const inputEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'source');
+    const inputEdge = musicState.edges.find((e: any) => e.target === mod.id && (e.targetHandle === 'source' || e.targetHandle === 'in_instrument'));
     results.set(mod.id, {
       type: 'reverb',
       config: mod.reverbConfig,
@@ -1139,13 +1139,14 @@ class MusicEngine {
   }
 
   private evalMixNode(mod: MusicModule, musicState: any, results: Map<string, any>) {
-    const inputAEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'input_a');
-    const inputBEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'input_b');
+    const edgeA = musicState.edges.find((e: any) => e.target === mod.id && (e.targetHandle === 'inA' || e.targetHandle === 'in_instrument_a'));
+    const edgeB = musicState.edges.find((e: any) => e.target === mod.id && (e.targetHandle === 'inB' || e.targetHandle === 'in_instrument_b'));
+    
     results.set(mod.id, {
       type: 'mix_node',
       config: mod.mixNodeConfig,
-      sourceAId: inputAEdge ? inputAEdge.source : null,
-      sourceBId: inputBEdge ? inputBEdge.source : null
+      sourceAId: edgeA ? edgeA.source : null,
+      sourceBId: edgeB ? edgeB.source : null
     });
   }
 
