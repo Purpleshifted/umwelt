@@ -345,34 +345,14 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 <span style={{ fontSize: '10px' }}>Harmony Context</span>
               </div>
               
-              <div className={styles.paramHandleRow} style={{ marginTop: '8px', marginBottom: '8px' }}>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
                 <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="density" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                  <label style={{ fontSize: '10px' }}>Rhythmic Complexity</label>
-                  <input
-                    type="range" min="0" max="1" step="0.01"
-                    value={module.melodyGenConfig?.rhythmicComplexity ?? 0.5}
-                    onChange={(e) => updateModule(module.id, {
-                      melodyGenConfig: { ...module.melodyGenConfig!, rhythmicComplexity: parseFloat(e.target.value) }
-                    })}
-                    style={{ width: '100%' }} className="nodrag"
-                  />
-                </div>
+                <span style={{ fontSize: '10px' }}>Rhythmic Complexity (0-1)</span>
               </div>
 
-              <div className={styles.paramHandleRow} style={{ marginTop: '8px', marginBottom: '8px' }}>
+              <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
                 <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="swingAmount" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                  <label style={{ fontSize: '10px' }}>Swing Amount</label>
-                  <input
-                    type="range" min="0" max="1" step="0.01"
-                    value={module.melodyGenConfig?.swingAmount ?? 0.0}
-                    onChange={(e) => updateModule(module.id, {
-                      melodyGenConfig: { ...module.melodyGenConfig!, swingAmount: parseFloat(e.target.value) }
-                    })}
-                    style={{ width: '100%' }} className="nodrag"
-                  />
-                </div>
+                <span style={{ fontSize: '10px' }}>Swing Amount (0-1)</span>
               </div>
 
               <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
