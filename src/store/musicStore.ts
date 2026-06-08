@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Edge } from '@xyflow/react';
 
-export type MusicModuleType = 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output' | 'chord_progression' | 'harmonic_progressor' | 'melody_gen' | 'chord_gen' | 'voice_splitter' | 'sequence_adder' | 'register_shifter' | 'sequence_morpher' | 'piano_genie' | 'coconet_harmonizer' | 'score_out' | 'ai_seq_out' | 'seq_out' | 'virtual_instrument' | 'track_out' | 'player_out' | 'polysynth' | 'oscillator' | 'adsr_envelope' | 'filter' | 'reverb' | 'mix_node' | 'seq_to_freq' | 'preview_util';
+export type MusicModuleType = 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output' | 'chord_progression' | 'harmonic_progressor' | 'melody_gen' | 'chord_gen' | 'voice_splitter' | 'sequence_adder' | 'register_shifter' | 'sequence_morpher' | 'piano_genie' | 'coconet_harmonizer' | 'score_out' | 'ai_seq_out' | 'seq_out' | 'virtual_instrument' | 'track_out' | 'player_out' | 'polysynth' | 'oscillator' | 'adsr_envelope' | 'filter' | 'reverb' | 'mix_node' | 'seq_to_freq' | 'preview_util' | 'universal_preview';
 
 
 export interface SineConfig {
@@ -15,6 +15,11 @@ export interface NoiseConfig {
 
 export interface PreviewUtilConfig {
   playing: boolean;
+}
+
+export interface UniversalPreviewConfig {
+  playing: boolean;
+  activeType: 'audio' | 'sequence' | 'control' | null;
 }
 
 export interface SliderConfig {
@@ -176,7 +181,8 @@ export interface MusicModule {
   filterConfig?: FilterConfig;
   reverbConfig?: ReverbConfig;
   previewUtilConfig?: PreviewUtilConfig;
-  mixNodeConfig?: any;
+  universalPreviewConfig?: UniversalPreviewConfig;
+  mixNodeConfig?: MixNodeConfig;
   position: { x: number; y: number };
   pianoGenieConfig?: {};
   coconetHarmonizerConfig?: {};

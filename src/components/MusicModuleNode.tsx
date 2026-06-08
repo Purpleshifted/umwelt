@@ -1,9 +1,30 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { MusicModule, useMusicStore } from '@/store/musicStore';
-import { useAudioMapStore } from '@/store/audioMapStore';
-import { musicEngine } from '@/audio/MusicEngine';
+import { useMusicStore } from '@/store/musicStore';
+import { MusicModule, MusicModuleType } from '@/store/musicStore';
 import styles from './MusicModuleNode.module.css';
+import { musicEngine } from '@/audio/MusicEngine';
+import { getHandleDataType, getCableColor } from '@/utils/musicNodeTypes';
+import { useAudioMapStore } from '@/store/audioMapStore';
+
+// Custom TypedHandle wrapper to automatically apply color based on node type and handle id
+function TypedHandle({ type, position, id, className, style, nodeType }: any) {
+  const isSource = type === 'source';
+  const dataType = getHandleDataType(nodeType, id, isSource);
+  const color = getCableColor(dataType);
+  
+  return (
+    <div title={`Type: ${dataType.toUpperCase()}`} style={{ position: 'absolute', width: '100%', height: '100%', pointerEvents: 'none' }}>
+      <TypedHandle nodeType={module.type} 
+        type={type} 
+        position={position} 
+        id={id} 
+        className={className} 
+        style={{ ...style, background: color, border: `2px solid ${color}`, pointerEvents: 'auto' }} 
+      />
+    </div>
+  );
+}
 
 interface MusicModuleNodeProps {
   data: {
@@ -120,13 +141,13 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 ))}
               </select>
             </div>
-            <Handle type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
         {module.type === 'preview_util' && (
           <div className={styles.configArea}>
-            <Handle type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
             <div className={styles.field} style={{ textAlign: 'center', marginTop: '10px' }}>
               <button 
                 style={{ 
@@ -150,8 +171,8 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <div className={styles.field} style={{ textAlign: 'center', margin: '8px 0' }}>
               <span style={{ fontSize: '11px', color: '#ccc' }}>Seq → Freq Convert</span>
             </div>
-            <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: '50%' }} />
-            <Handle type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -168,7 +189,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 })}
               />
             </div>
-            <Handle type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -185,7 +206,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 })}
               />
             </div>
-            <Handle type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -196,7 +217,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
           <>
             <div className={styles.configArea}>
               <div className={styles.paramHandleRow} style={{ marginTop: '4px', marginBottom: '4px' }}>
-                <Handle type="target" position={Position.Left} id="valence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="valence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Valence (Neg-Pos)</span>
               </div>
               <div className={styles.field} style={{ marginBottom: '8px' }}>
@@ -211,7 +232,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               </div>
 
               <div className={styles.paramHandleRow} style={{ marginBottom: '4px' }}>
-                <Handle type="target" position={Position.Left} id="arousal" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="arousal" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Arousal (Calm-Exc)</span>
               </div>
               <div className={styles.field}>
@@ -231,7 +252,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <div className={styles.outputs}>
               <div className={styles.outRow}>
                 <span>Harmony Context</span>
-                <Handle type="source" position={Position.Right} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f59e0b' }} />
+                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f59e0b' }} />
               </div>
             </div>
           </>
@@ -261,22 +282,22 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 </select>
               </div>
               <div className={styles.paramHandleRow}>
-                <Handle type="target" position={Position.Left} id="tension" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="tension" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Tension (0-1)</span>
               </div>
               <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
-                <Handle type="target" position={Position.Left} id="rate" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="rate" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Rate (0-1)</span>
               </div>
               <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
-                <Handle type="target" position={Position.Left} id="key" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="key" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Key (0-1)</span>
               </div>
             </div>
             <div className={styles.outputs}>
               <div className={styles.outRow}>
                 <span>Chord Data</span>
-                <Handle type="source" position={Position.Right} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f59e0b' }} />
+                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f59e0b' }} />
               </div>
             </div>
           </>
@@ -321,12 +342,12 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 </select>
               </div>
               <div className={styles.paramHandleRow}>
-                <Handle type="target" position={Position.Left} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Harmony Context</span>
               </div>
               
               <div className={styles.paramHandleRow} style={{ marginTop: '8px', marginBottom: '8px' }}>
-                <Handle type="target" position={Position.Left} id="density" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="density" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                   <label style={{ fontSize: '10px' }}>Rhythmic Complexity</label>
                   <input
@@ -341,7 +362,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               </div>
 
               <div className={styles.paramHandleRow} style={{ marginTop: '8px', marginBottom: '8px' }}>
-                <Handle type="target" position={Position.Left} id="swingAmount" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="swingAmount" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                   <label style={{ fontSize: '10px' }}>Swing Amount</label>
                   <input
@@ -356,14 +377,14 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               </div>
 
               <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
-                <Handle type="target" position={Position.Left} id="temperature" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="temperature" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Temperature (0-1)</span>
               </div>
             </div>
             <div className={styles.outputs}>
               <div className={styles.outRow}>
                 <span>Sequence Output</span>
-                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#34d399' }} />
+                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#34d399' }} />
               </div>
             </div>
           </>
@@ -411,22 +432,22 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 </select>
               </div>
               <div className={styles.paramHandleRow}>
-                <Handle type="target" position={Position.Left} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Chord Data</span>
               </div>
               <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
-                <Handle type="target" position={Position.Left} id="rhythm" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="rhythm" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Rhythm (0-1)</span>
               </div>
               <div className={styles.paramHandleRow} style={{ marginTop: '8px' }}>
-                <Handle type="target" position={Position.Left} id="voicing" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="voicing" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Voicing (0-1)</span>
               </div>
             </div>
             <div className={styles.outputs}>
               <div className={styles.outRow}>
                 <span>Sequence Output</span>
-                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#818cf8' }} />
+                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#818cf8' }} />
               </div>
             </div>
           </>
@@ -437,7 +458,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
           <>
             <div className={styles.configArea}>
               <div className={styles.paramHandleRow}>
-                <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Sequence Input</span>
               </div>
             </div>
@@ -445,7 +466,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               {[0, 1, 2, 3].map((i) => (
                 <div className={styles.outRow} key={`voice_${i}`}>
                   <span>Voice {i}</span>
-                  <Handle type="source" position={Position.Right} id={`voice_${i}`} className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f472b6' }} />
+                  <TypedHandle nodeType={module.type} type="source" position={Position.Right} id={`voice_${i}`} className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f472b6' }} />
                 </div>
               ))}
             </div>
@@ -458,7 +479,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <div className={styles.configArea}>
               {[0, 1, 2].map((i) => (
                 <div className={styles.paramHandleRow} key={`in_${i}`} style={{ marginBottom: '8px' }}>
-                  <Handle type="target" position={Position.Left} id={`in_${i}`} className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                  <TypedHandle nodeType={module.type} type="target" position={Position.Left} id={`in_${i}`} className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                   <span style={{ fontSize: '10px' }}>Input {i}</span>
                 </div>
               ))}
@@ -466,7 +487,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <div className={styles.outputs}>
               <div className={styles.outRow}>
                 <span>Sequence Output</span>
-                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#34d399' }} />
+                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#34d399' }} />
               </div>
             </div>
           </>
@@ -493,14 +514,14 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 </select>
               </div>
               <div className={styles.paramHandleRow}>
-                <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Sequence Input</span>
               </div>
             </div>
             <div className={styles.outputs}>
               <div className={styles.outRow}>
                 <span>Sequence Output</span>
-                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#a78bfa' }} />
+                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#a78bfa' }} />
               </div>
             </div>
           </>
@@ -511,15 +532,15 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
           <>
             <div className={styles.configArea}>
               <div className={styles.paramHandleRow} style={{ marginBottom: '8px' }}>
-                <Handle type="target" position={Position.Left} id="seqA" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="seqA" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Sequence A</span>
               </div>
               <div className={styles.paramHandleRow} style={{ marginBottom: '8px' }}>
-                <Handle type="target" position={Position.Left} id="seqB" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="seqB" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <span style={{ fontSize: '10px' }}>Sequence B</span>
               </div>
               <div className={styles.paramHandleRow} style={{ marginTop: '8px', marginBottom: '8px' }}>
-                <Handle type="target" position={Position.Left} id="morphAmount" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="morphAmount" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                   <label style={{ fontSize: '10px' }}>Morph (A ↔ B)</label>
                   <input
@@ -536,7 +557,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <div className={styles.outputs}>
               <div className={styles.outRow}>
                 <span>Morphed Sequence</span>
-                <Handle type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#fb7185' }} />
+                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#fb7185' }} />
               </div>
             </div>
           </>
@@ -580,7 +601,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             >
               {module.scoreOutConfig?.isPlaying ? 'STOP AUDIO' : 'PLAY AUDIO'}
             </button>
-            <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
           </div>
         )}
 
@@ -597,7 +618,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               />
               Enable Master Clock (Sync Noisecraft)
             </label>
-            <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
           </div>
         )}
 
@@ -618,7 +639,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               <option value="D">Channel D</option>
             </select>
             <span style={{ fontSize: '10px', color: '#888' }}>Broadcasts to Audio Editor</span>
-            <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
           </div>
         )}
 
@@ -636,7 +657,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               style={{ width: '100%', marginBottom: '4px' }}
             />
             <span style={{ fontSize: '10px', color: '#888' }}>Routes Audio to Track</span>
-            <Handle type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '45%' }}>Audio In</span>
           </div>
         )}
@@ -666,11 +687,11 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               {module.playerOutConfig?.isPlaying ? 'Playing' : 'Stopped'}
             </button>
             <span style={{ fontSize: '10px', color: '#888' }}>Plays Seq on Track</span>
-            <Handle type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: '30%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: '30%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '25%' }}>Seq In</span>
-            <Handle type="target" position={Position.Left} id="instrument" className={styles.handle} style={{ top: '70%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="instrument" className={styles.handle} style={{ top: '70%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '65%' }}>Inst In</span>
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '70%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '70%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', right: '-45px', top: '65%' }}>Inst Out</span>
           </div>
         )}
@@ -701,9 +722,9 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               })}
             />
             <span style={{ fontSize: '10px', color: '#888' }}>Volume</span>
-            <Handle type="target" position={Position.Left} id="volume" className={styles.handle} style={{ top: '80%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="volume" className={styles.handle} style={{ top: '80%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '75%' }}>Volume</span>
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
           </div>
         )}
 
@@ -751,29 +772,29 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <div style={{ display: 'flex', gap: '4px', fontSize: '9px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                 <input type="range" className="nodrag" min="0.01" max="2" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.attack ?? 0.1} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, attack: parseFloat(e.target.value) } })} /> A
-                <Handle type="target" position={Position.Bottom} id="attack" className={styles.handle} style={{ left: '50%' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="attack" className={styles.handle} style={{ left: '50%' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                 <input type="range" className="nodrag" min="0.01" max="2" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.decay ?? 0.2} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, decay: parseFloat(e.target.value) } })} /> D
-                <Handle type="target" position={Position.Bottom} id="decay" className={styles.handle} style={{ left: '50%' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="decay" className={styles.handle} style={{ left: '50%' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                 <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.sustain ?? 0.5} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, sustain: parseFloat(e.target.value) } })} /> S
-                <Handle type="target" position={Position.Bottom} id="sustain" className={styles.handle} style={{ left: '50%' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="sustain" className={styles.handle} style={{ left: '50%' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                 <input type="range" className="nodrag" min="0.01" max="5" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.release ?? 1.0} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, release: parseFloat(e.target.value) } })} /> R
-                <Handle type="target" position={Position.Bottom} id="release" className={styles.handle} style={{ left: '50%' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="release" className={styles.handle} style={{ left: '50%' }} />
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px', marginTop: '4px' }}>
               <label>Gain (Vol):</label>
               <div style={{ position: 'relative', flex: 1 }}>
                 <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ width: '100%' }} value={module.polysynthConfig?.volume ?? 0.8} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, volume: parseFloat(e.target.value) } })} />
-                <Handle type="target" position={Position.Bottom} id="volume" className={styles.handle} style={{ left: '50%' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="volume" className={styles.handle} style={{ left: '50%' }} />
               </div>
             </div>
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -828,10 +849,10 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               <label>Gain (Vol):</label>
               <div style={{ position: 'relative', flex: 1 }}>
                 <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ width: '100%' }} value={module.oscillatorConfig?.volume ?? 0.8} onChange={(e) => updateModule(module.id, { oscillatorConfig: { ...module.oscillatorConfig!, volume: parseFloat(e.target.value) } })} />
-                <Handle type="target" position={Position.Bottom} id="volume" className={styles.handle} style={{ left: '50%' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="volume" className={styles.handle} style={{ left: '50%' }} />
               </div>
             </div>
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -852,8 +873,8 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 <input type="range" className="nodrag" min="0.01" max="5" step="0.01" style={{ width: '30px' }} value={module.adsrEnvelopeConfig?.release ?? 1.0} onChange={(e) => updateModule(module.id, { adsrEnvelopeConfig: { ...module.adsrEnvelopeConfig!, release: parseFloat(e.target.value) } })} /> R
               </div>
             </div>
-            <Handle type="target" position={Position.Left} id="in_instrument" className={styles.handle} style={{ top: '50%' }} />
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -876,16 +897,16 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <div style={{ position: 'relative' }}>
               <label style={{ fontSize: '9px' }}>Freq: {module.filterConfig?.frequency ?? 1000}Hz</label>
               <input type="range" className="nodrag" min="20" max="20000" step="1" style={{ width: '100%' }} value={module.filterConfig?.frequency ?? 1000} onChange={(e) => updateModule(module.id, { filterConfig: { ...module.filterConfig!, frequency: parseFloat(e.target.value) } })} />
-              <Handle type="target" position={Position.Bottom} id="frequency" className={styles.handle} style={{ left: '50%' }} />
+              <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="frequency" className={styles.handle} style={{ left: '50%' }} />
             </div>
             <div style={{ position: 'relative' }}>
               <label style={{ fontSize: '9px' }}>Q: {module.filterConfig?.Q ?? 1}</label>
               <input type="range" className="nodrag" min="0.1" max="20" step="0.1" style={{ width: '100%' }} value={module.filterConfig?.Q ?? 1} onChange={(e) => updateModule(module.id, { filterConfig: { ...module.filterConfig!, Q: parseFloat(e.target.value) } })} />
-              <Handle type="target" position={Position.Bottom} id="q" className={styles.handle} style={{ left: '50%' }} />
+              <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="q" className={styles.handle} style={{ left: '50%' }} />
             </div>
             
-            <Handle type="target" position={Position.Left} id="in_instrument" className={styles.handle} style={{ top: '50%' }} />
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -897,8 +918,8 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <label style={{ fontSize: '9px' }}>Wet: {module.reverbConfig?.wet ?? 0.5}</label>
             <input type="range" className="nodrag" min="0" max="1" step="0.01" value={module.reverbConfig?.wet ?? 0.5} onChange={(e) => updateModule(module.id, { reverbConfig: { ...module.reverbConfig!, wet: parseFloat(e.target.value) } })} />
             
-            <Handle type="target" position={Position.Left} id="in_instrument" className={styles.handle} style={{ top: '50%' }} />
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
           </div>
         )}
 
@@ -910,12 +931,55 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <label style={{ fontSize: '9px' }}>Vol B: {module.mixNodeConfig?.volB ?? 1.0}</label>
             <input type="range" className="nodrag" min="0" max="1" step="0.01" value={module.mixNodeConfig?.volB ?? 1.0} onChange={(e) => updateModule(module.id, { mixNodeConfig: { ...module.mixNodeConfig!, volB: parseFloat(e.target.value) } })} />
             
-            <Handle type="target" position={Position.Left} id="in_instrument_a" className={styles.handle} style={{ top: '30%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_instrument_a" className={styles.handle} style={{ top: '30%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '25%' }}>A</span>
-            <Handle type="target" position={Position.Left} id="in_instrument_b" className={styles.handle} style={{ top: '70%' }} />
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_instrument_b" className={styles.handle} style={{ top: '70%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '65%' }}>B</span>
-            <Handle type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
           </div>
+        )}
+
+        {/* ── Universal Preview Node ── */}
+        {module.type === 'universal_preview' && (
+          (() => {
+            const edges = useMusicStore.getState().edges;
+            const hasAudio = edges.some(e => e.target === module.id && e.targetHandle === 'audio_in');
+            const hasSeq = edges.some(e => e.target === module.id && e.targetHandle === 'seq_in');
+            const hasCtrl = edges.some(e => e.target === module.id && e.targetHandle === 'control_in');
+            
+            return (
+              <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                <div style={{ padding: '8px', background: '#222', borderRadius: '4px', textAlign: 'center', fontSize: '10px' }}>
+                  {hasAudio && <span style={{ color: '#f43f5e' }}>[Audio Detected]</span>}
+                  {hasSeq && !hasAudio && <span style={{ color: '#818cf8' }}>[Sequence Detected]</span>}
+                  {hasCtrl && !hasAudio && !hasSeq && <span style={{ color: '#34d399' }}>[Control Detected]</span>}
+                  {!hasAudio && !hasSeq && !hasCtrl && <span style={{ color: '#9ca3af' }}>[Awaiting Connection]</span>}
+                </div>
+                
+                <button
+                  className={styles.btn}
+                  style={{
+                    background: module.universalPreviewConfig?.playing ? '#ff6b6b' : '#333',
+                    color: 'white'
+                  }}
+                  onClick={() => {
+                    const isPlaying = !module.universalPreviewConfig?.playing;
+                    updateModule(module.id, { universalPreviewConfig: { ...module.universalPreviewConfig!, playing: isPlaying } });
+                    musicEngine.toggleUniversalPreview(module.id, isPlaying);
+                  }}
+                >
+                  {module.universalPreviewConfig?.playing ? 'Stop Preview' : 'Play / Test'}
+                </button>
+                
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '30%' }} />
+                <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '25%', color: '#f43f5e' }}>Aud</span>
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="seq_in" className={styles.handle} style={{ top: '50%' }} />
+                <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '45%', color: '#818cf8' }}>Seq</span>
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="control_in" className={styles.handle} style={{ top: '70%' }} />
+                <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '65%', color: '#34d399' }}>Ctrl</span>
+              </div>
+            );
+          })()
         )}
 
       </div>

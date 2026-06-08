@@ -26,6 +26,15 @@ import { SliderInputNode, KnobInputNode, ModuleOutputNode } from './InputNodes';
 import styles from './MusicLibraryScene.module.css';
 import { musicEngine } from '@/audio/MusicEngine';
 
+import { getHandleDataType, getCableColor } from '@/utils/musicNodeTypes';
+
+// Custom edge type to allow dynamic styling based on source handle type
+const edgeTypes = {
+  // We can just use the default edge but pass a style, 
+  // or we can define a custom edge if we want more complex things.
+  // For now, we will just apply a style in onConnect or defaultEdgeOptions.
+};
+
 const nodeTypes = {
   musicModule: (props: any) => {
     const { module } = props.data;
@@ -201,7 +210,8 @@ function Flow() {
       adsr_envelope: 'ADSR Envelope',
       filter: 'Filter',
       reverb: 'Reverb',
-      mix_node: 'Mix Node'
+      mix_node: 'Mix Node',
+      universal_preview: 'Universal Preview'
     };
     
     addModule({
@@ -233,7 +243,8 @@ function Flow() {
       filterConfig: type === 'filter' ? { type: 'lowpass', frequency: 1000, Q: 1 } : undefined,
       reverbConfig: type === 'reverb' ? { decay: 1.5, preDelay: 0.01, wet: 0.5 } : undefined,
       mixNodeConfig: type === 'mix_node' ? { volA: 1.0, volB: 1.0 } : undefined,
-      previewUtilConfig: type === 'preview_util' ? { playing: false } : undefined
+      previewUtilConfig: type === 'preview_util' ? { playing: false } : undefined,
+      universalPreviewConfig: type === 'universal_preview' ? { playing: false, activeType: null } : undefined
     });
     closeContextMenu();
   };
@@ -246,6 +257,17 @@ function Flow() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        isValidConnection={(connection) => {
+          const sourceNode = nodes.find(n => n.id === connection.source);
+          const targetNode = nodes.find(n => n.id === connection.target);
+          if (!sourceNode || !targetNode) return false;
+          
+          const sourceType = getHandleDataType(sourceNode.type as string, connection.sourceHandle || '', true);
+          const targetType = getHandleDataType(targetNode.type as string, connection.targetHandle || '', false);
+          
+          if (sourceType === 'any' || targetType === 'any') return true;
+          return sourceType === targetType;
+        }}
         onPaneContextMenu={handleContextMenu}
         nodeTypes={nodeTypes}
         fitView
@@ -318,7 +340,7 @@ function Flow() {
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('reverb', contextMenu.x, contextMenu.y)}>Reverb</button>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('mix_node', contextMenu.x, contextMenu.y)}>Mix Node</button>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('seq_to_freq', contextMenu.x, contextMenu.y)}>Seq → Freq Convert</button>
-            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('preview_util', contextMenu.x, contextMenu.y)}>Preview Utility</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('universal_preview', contextMenu.x, contextMenu.y)}>Universal Preview</button>
 
             <div style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Output</div>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('track_out', contextMenu.x, contextMenu.y)}>Track Out (Audio)</button>

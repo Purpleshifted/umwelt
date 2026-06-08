@@ -1820,7 +1820,7 @@ class MusicEngine {
     this.previewIntervals = [];
   }
 
-  public async togglePreviewUtil(previewNodeId: string, playing: boolean) {
+  public async toggleUniversalPreview(previewNodeId: string, playing: boolean) {
     if (!this.Tone) return;
     
     if (this.Tone.context.state !== 'running') {
@@ -1841,10 +1841,13 @@ class MusicEngine {
       return;
     }
 
-    const edge = state.edges.find(e => e.target === previewNodeId && e.targetHandle === 'audio_in');
+    const edgeAudio = state.edges.find(e => e.target === previewNodeId && e.targetHandle === 'audio_in');
+    const edgeSeq = state.edges.find(e => e.target === previewNodeId && e.targetHandle === 'seq_in');
+    const edgeCtrl = state.edges.find(e => e.target === previewNodeId && e.targetHandle === 'control_in');
+
+    const edge = edgeAudio || edgeSeq || edgeCtrl;
     if (!edge) {
-      // Auto turn off
-      setTimeout(() => useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } }), 100);
+      setTimeout(() => useMusicStore.getState().updateModule(previewNodeId, { universalPreviewConfig: { ...previewMod.universalPreviewConfig!, playing: false } }), 100);
       return;
     }
 
@@ -1911,7 +1914,7 @@ class MusicEngine {
 
     const chain = this.buildInstrumentChain(sourceId, results);
     if (!chain) {
-      setTimeout(() => useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } }), 100);
+      setTimeout(() => useMusicStore.getState().updateModule(previewNodeId, { universalPreviewConfig: { playing: false, activeType: null } }), 100);
       return;
     }
 
@@ -2012,7 +2015,7 @@ class MusicEngine {
         setTimeout(() => {
           part.stop();
           part.dispose();
-          useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
+          useMusicStore.getState().updateModule(previewNodeId, { universalPreviewConfig: { playing: false, activeType: null } });
           this.stopPreviewSynths();
         }, (totalDuration + 0.5) * 1000);
         
@@ -2030,7 +2033,7 @@ class MusicEngine {
             engine.playNote(instr, 60, this.Tone!.now(), 2, vol * 127);
             
             setTimeout(() => {
-              useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
+              useMusicStore.getState().updateModule(previewNodeId, { universalPreviewConfig: { playing: false, activeType: null } });
             }, 2000);
           });
         } else if (chain.triggerNode?.triggerAttackRelease) {
@@ -2039,13 +2042,13 @@ class MusicEngine {
              this.Tone.Transport.start();
           }
           setTimeout(() => {
-            useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
+            useMusicStore.getState().updateModule(previewNodeId, { universalPreviewConfig: { playing: false, activeType: null } });
             this.stopPreviewSynths();
           }, 3000);
         } else {
           // Fallback: Just stop it after 3s if no triggerNode
           setTimeout(() => {
-            useMusicStore.getState().updateModule(previewNodeId, { previewUtilConfig: { playing: false } });
+            useMusicStore.getState().updateModule(previewNodeId, { universalPreviewConfig: { playing: false, activeType: null } });
             this.stopPreviewSynths();
           }, 3000);
         }
