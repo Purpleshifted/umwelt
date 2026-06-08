@@ -14,15 +14,14 @@ function TypedHandle({ type, position, id, className, style, nodeType }: any) {
   const color = getCableColor(dataType);
   
   return (
-    <div title={`Type: ${dataType.toUpperCase()}`} style={{ position: 'absolute', width: '100%', height: '100%', pointerEvents: 'none' }}>
-      <Handle 
-        type={type} 
-        position={position} 
-        id={id} 
-        className={className} 
-        style={{ ...style, background: color, border: `2px solid ${color}`, pointerEvents: 'auto' }} 
-      />
-    </div>
+    <Handle 
+      type={type} 
+      position={position} 
+      id={id} 
+      className={className} 
+      style={{ ...style, background: color, border: `2px solid ${color}` }} 
+      title={`Type: ${dataType.toUpperCase()}`}
+    />
   );
 }
 

@@ -85,7 +85,19 @@ function Flow() {
 
   const onConnect = useCallback((params: any) => {
     setEdges((eds) => {
-      const newEdge = { ...params, id: `e_${params.source}_${params.sourceHandle}_${params.target}_${params.targetHandle}_${Date.now()}` };
+      const nodes = useMusicStore.getState().modules;
+      const sourceNode = nodes.find(n => n.id === params.source);
+      let color = '#fff';
+      if (sourceNode) {
+         const dataType = getHandleDataType(sourceNode.type, params.sourceHandle || '', true);
+         color = getCableColor(dataType);
+      }
+      const newEdge = { 
+        ...params, 
+        id: `e_${params.source}_${params.sourceHandle}_${params.target}_${params.targetHandle}_${Date.now()}`,
+        style: { stroke: color, strokeWidth: 3 },
+        animated: true
+      };
       return [...eds, newEdge];
     });
   }, [setEdges]);
@@ -149,7 +161,8 @@ function Flow() {
             id: `e_${idMap.get(e.source)}_${e.sourceHandle}_${idMap.get(e.target)}_${e.targetHandle}_${Date.now()}`,
             source: idMap.get(e.source)!,
             target: idMap.get(e.target)!,
-            selected: false
+            selected: false,
+            animated: true
           }]);
         });
       }
