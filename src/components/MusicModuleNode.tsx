@@ -15,7 +15,7 @@ function TypedHandle({ type, position, id, className, style, nodeType }: any) {
   
   return (
     <div title={`Type: ${dataType.toUpperCase()}`} style={{ position: 'absolute', width: '100%', height: '100%', pointerEvents: 'none' }}>
-      <TypedHandle nodeType={module.type} 
+      <Handle 
         type={type} 
         position={position} 
         id={id} 
