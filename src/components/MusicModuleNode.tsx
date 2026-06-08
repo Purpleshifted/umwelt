@@ -28,8 +28,8 @@ function TypedHandle({ type, position, id, className, style, nodeType }: any) {
 interface MusicModuleNodeProps {
   data: {
     module: MusicModule;
-    selected?: boolean;
   };
+  selected?: boolean;
 }
 
 const BORDER_COLORS: Record<string, string> = {
@@ -51,8 +51,8 @@ function getBorderStyle(type: string): React.CSSProperties | undefined {
   return undefined;
 }
 
-export default function MusicModuleNode({ data }: MusicModuleNodeProps) {
-  const { module, selected } = data;
+export default function MusicModuleNode({ data, selected }: MusicModuleNodeProps) {
+  const { module } = data;
   const { updateModule, removeModule } = useMusicStore();
   const { streams } = useAudioMapStore();
 
