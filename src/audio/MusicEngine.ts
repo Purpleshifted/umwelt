@@ -295,7 +295,7 @@ class MusicEngine {
           this.vae.initialize(),
         ]);
         this.initialized = true;
-        console.log('[MusicEngine] Magenta (RNN + VAE) initialized in main thread');
+        void('[MusicEngine] Magenta (RNN + VAE) initialized in main thread');
       } catch (err) {
         console.error('[MusicEngine] Magenta initialization failed', err);
         // Only set initialized if rnn actually finished loading its weights.
@@ -303,9 +303,9 @@ class MusicEngine {
         try {
           if (this.rnn && (this.rnn as any).isInitialized?.()) {
             this.initialized = true;
-            console.warn('[MusicEngine] Partial init — RNN only (VAE failed)');
+            void('[MusicEngine] Partial init — RNN only (VAE failed)');
           } else {
-            console.warn('[MusicEngine] Magenta not usable — falling back to procedural throughout');
+            void('[MusicEngine] Magenta not usable — falling back to procedural throughout');
           }
         } catch { /* ignore */ }
       }
@@ -535,8 +535,8 @@ class MusicEngine {
     // One-time DAG composition log
     if (dagCycle === 0) {
       const summary = dagModules.map(m => `${m.type}("${m.name}")`).join(', ');
-      console.log(`[MusicEngine] DAG modules (${dagModules.length}): ${summary}`);
-      console.log(`[MusicEngine] Edges (${musicState.edges.length}):`, musicState.edges.map((e: any) => `${e.source?.slice(-8)}[${e.sourceHandle}]→${e.target?.slice(-8)}[${e.targetHandle}]`).join(', '));
+      // [MusicEngine] DAG modules log silenced
+      // [MusicEngine] Edges log silenced
     }
 
     // Topological order
@@ -862,7 +862,7 @@ class MusicEngine {
         );
 
         if (!melodyResult || !melodyResult.notes || melodyResult.notes.length === 0) {
-          console.warn('[MusicEngine] Magenta returned empty result, using seed pitch fallback');
+          void('[MusicEngine] Magenta returned empty result, using seed pitch fallback');
           const fallbackPitches: number[] = [];
           const fallbackGates: boolean[] = [];
           for (let i = 0; i < seqLength; i++) {
@@ -1142,7 +1142,7 @@ class MusicEngine {
       
       results.set(mod.id, { pitches, gates });
     } catch(e) {
-      console.warn('[MusicEngine] VAE interpolation failed', e);
+      // [MusicEngine] VAE interpolation failed — silenced
       results.set(mod.id, morphAmount < 0.5 ? seqA : seqB);
     }
   }
@@ -1698,7 +1698,7 @@ class MusicEngine {
         const warnKey = `_aiSeqWarn_${mod.id}`;
         const now = Date.now();
         if (!(this as any)[warnKey] || now - (this as any)[warnKey] > 5000) {
-          console.warn(`[MusicEngine] ai_seq_out "${mod.name}": no sequence source found (no edge, no fallback generator).`);
+          void(`[MusicEngine] ai_seq_out "${mod.name}": no sequence source found (no edge, no fallback generator).`);
           (this as any)[warnKey] = now;
         }
         return;
@@ -1729,7 +1729,7 @@ class MusicEngine {
       const logKey = `_aiSeqLog_${mod.id}`;
       const now = Date.now();
       if (!(this as any)[logKey] || now - (this as any)[logKey] > 3000) {
-        // console.log(`[MusicEngine] ai_seq_out "${mod.name}" → NoiseCraft: ${monoSeq.pitches.length} steps, pitches=[${monoSeq.pitches.slice(0, 4).join(',')}...]`);
+        // void(`[MusicEngine] ai_seq_out "${mod.name}" → NoiseCraft: ${monoSeq.pitches.length} steps, pitches=[${monoSeq.pitches.slice(0, 4).join(',')}...]`);
         (this as any)[logKey] = now;
       }
       this.sendSequenceToAI(mod.id, { pitches: monoSeq.pitches, gates: monoSeq.gates });
@@ -2434,7 +2434,7 @@ class MusicEngine {
       try {
         await this.Tone.start();
       } catch (e) {
-        console.warn('Failed to start Tone.js context:', e);
+        // silenced: Failed to start Tone.js context
       }
     }
 

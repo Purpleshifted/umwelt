@@ -471,8 +471,8 @@
       import { createMappingStorage } from "/public/mapping-storage.js";
       import { GlobalHarmonicPlacer } from "/public/harmonic-placer.js";
 
-      console.log("[Init] ===== SCRIPT STARTING =====");
-      console.log("[Init] All imports loaded successfully");
+      void("[Init] ===== SCRIPT STARTING =====");
+      void("[Init] All imports loaded successfully");
 
       // Prevent browser back navigation (swipe gestures) from reloading the page
       // This fixes the issue where touchpad swipe-left gestures cause page reloads
@@ -482,7 +482,7 @@
 
         // Listen for popstate events (triggered by back/forward navigation or swipe gestures)
         window.addEventListener("popstate", function (event) {
-          console.log(
+          void(
             "[Navigation] Back navigation detected, preventing reload..."
           );
           // Push the state back to prevent navigation
@@ -532,7 +532,7 @@
           { passive: false }
         );
 
-        console.log("[Navigation] Back navigation prevention enabled");
+        void("[Navigation] Back navigation prevention enabled");
       })();
 
       // Dummy storage fallback if mapping-storage.js is not available
@@ -550,9 +550,9 @@
 
       // Wrap main code in try-catch to catch initialization errors
       try {
-        console.log("[Init] Entering try block...");
+        void("[Init] Entering try block...");
 
-        console.log("[Init] Defining AVAILABLE_STREAMS...");
+        void("[Init] Defining AVAILABLE_STREAMS...");
         // Global streams (different from Individual)
         const AVAILABLE_STREAMS = [
           "entropy",
@@ -578,7 +578,7 @@
           { value: "average", label: "Average" },
         ];
 
-        console.log("[Init] Defining StreamNodeMapper class...");
+        void("[Init] Defining StreamNodeMapper class...");
         // Stream-to-Node Mapping Manager (now uses MappingStorage module)
         class StreamNodeMapper {
           constructor(filename = "glb_audio_map.ncft") {
@@ -599,14 +599,14 @@
                   const mappingsData = await mappingsResponse.json();
                   if (Array.isArray(mappingsData) && mappingsData.length > 0) {
                     this.mappings = mappingsData;
-                    console.log(
+                    void(
                       `[MappingStorage] Loaded ${this.mappings.length} mappings from global-workspace-mappings.json`
                     );
                     return; // Successfully loaded, exit early
                   }
                 }
               } catch (e) {
-                console.warn(
+                void(
                   "[MappingStorage] Failed to load from global-workspace-mappings.json, trying other sources:",
                   e
                 );
@@ -618,7 +618,7 @@
                 const projectData = await response.json();
                 this.mappings = await this.storage.loadMappings(projectData);
                 if (this.mappings.length > 0) {
-                  console.log(
+                  void(
                     `[MappingStorage] Loaded ${this.mappings.length} mappings from project file`
                   );
                   return; // Successfully loaded, exit early
@@ -628,14 +628,14 @@
               // Final fallback: localStorage
               this.mappings = this.storage.loadFromLocalStorage();
               if (this.mappings.length > 0) {
-                console.log(
+                void(
                   `[MappingStorage] Loaded ${this.mappings.length} mappings from localStorage`
                 );
               } else {
-                console.log(`[MappingStorage] No mappings found in any source`);
+                void(`[MappingStorage] No mappings found in any source`);
               }
             } catch (e) {
-              console.warn("Failed to load mappings, using localStorage:", e);
+              void("Failed to load mappings, using localStorage:", e);
               this.mappings = this.storage.loadFromLocalStorage();
             }
           }
@@ -661,7 +661,7 @@
 
               if (response.ok) {
                 const result = await response.json();
-                console.log(
+                void(
                   `[StreamNodeMapper] Successfully saved ${this.mappings.length} mappings to global-workspace-mappings.json`
                 );
                 return true;
@@ -697,11 +697,11 @@
 
           async importMappings(file) {
             try {
-              console.log(
+              void(
                 `[StreamNodeMapper] Starting import for file: ${file.name}`
               );
               const imported = await this.storage.importFromJSON(file);
-              console.log(
+              void(
                 `[StreamNodeMapper] Parsed ${
                   imported?.length || 0
                 } mappings from file`
@@ -712,7 +712,7 @@
               }
 
               if (imported.length === 0) {
-                console.warn("[StreamNodeMapper] No mappings found in file");
+                void("[StreamNodeMapper] No mappings found in file");
                 return false;
               }
 
@@ -726,7 +726,7 @@
                   Array.isArray(m.streams) &&
                   m.streams.length > 0;
                 if (!isValid) {
-                  console.warn("[StreamNodeMapper] Invalid mapping found:", m);
+                  void("[StreamNodeMapper] Invalid mapping found:", m);
                 }
                 return isValid;
               });
@@ -735,15 +735,15 @@
                 throw new Error("No valid mappings found in file");
               }
 
-              console.log(
+              void(
                 `[StreamNodeMapper] ${validMappings.length} valid mappings out of ${imported.length}`
               );
               this.mappings = validMappings;
               this.saveToStorage();
-              console.log(
+              void(
                 `[StreamNodeMapper] Successfully imported and saved ${this.mappings.length} mappings`
               );
-              console.log(`[StreamNodeMapper] Mappings:`, this.mappings);
+              void(`[StreamNodeMapper] Mappings:`, this.mappings);
               return true;
             } catch (e) {
               console.error("[StreamNodeMapper] Failed to import mappings:", e);
@@ -843,7 +843,7 @@
 
             // Debug logging for multiple stream operations
             if (streamValues.length > 1 && op !== "none") {
-              console.log(
+              void(
                 `[StreamMapper] Operation: ${op}, Streams: ${
                   streamValues.length
                 }, Result: ${result.toFixed(4)}`
@@ -872,11 +872,11 @@
           }
         }
 
-        console.log("[Init] ===== STARTING PARTICLE INITIALIZATION =====");
+        void("[Init] ===== STARTING PARTICLE INITIALIZATION =====");
         // Create particle system (standalone module)
         // Note: innerRadius/outerRadius are ONLY for signal generation (sound effects)
         // Gravity works at ALL distances regardless of these radii
-        console.log("[Particle Init] Step 1: Creating ParticleSystem...");
+        void("[Particle Init] Step 1: Creating ParticleSystem...");
         let particleSystem;
         try {
           particleSystem = new ParticleSystem({
@@ -885,15 +885,15 @@
             G: 500, // Realistic gravitational constant (reduced from 10000)
             minDistance: 3, // Minimum distance for numerical stability
           });
-          console.log(
+          void(
             "[Particle Init] ✓ ParticleSystem created:",
             particleSystem
           );
-          console.log(
+          void(
             "[Particle Init]   signalGenerator:",
             particleSystem?.signalGenerator
           );
-          console.log(
+          void(
             "[Particle Init]   signalGenerator.particles:",
             particleSystem?.signalGenerator?.particles
           );
@@ -906,7 +906,7 @@
         }
 
         // Initialize modular pattern assignment manager
-        console.log("[Particle Init] Step 2: Creating pattern manager...");
+        void("[Particle Init] Step 2: Creating pattern manager...");
         let patternManager;
         try {
           patternManager = createPatternAssignmentManager({
@@ -914,7 +914,7 @@
             key: "C",
             scale: "major",
           });
-          console.log("[Particle Init] ✓ Pattern manager created");
+          void("[Particle Init] ✓ Pattern manager created");
         } catch (e) {
           console.error(
             "[Particle Init] ✗ Failed to create pattern manager:",
@@ -933,7 +933,7 @@
           Math.random() * availableScales.length
         );
         let currentScale = availableScales[randomScaleIndex];
-        console.log(
+        void(
           `[Music Theory] Using scale: ${currentScale} (randomized for variety)`
         );
 
@@ -948,7 +948,7 @@
         // Central particle - reduced mass so it moves more visibly
         const centralMass = 100; // Reduced from 500 - allows visible interaction
 
-        console.log("[Particle Init] Step 3: Adding particles...");
+        void("[Particle Init] Step 3: Adding particles...");
 
         // Start with a single particle with random note assignment
         // All particles start with [0,0,...,0] pattern and get assigned when added
@@ -957,7 +957,7 @@
           // Generate random note for initial particle
           const randomNote = Math.floor(Math.random() * 12);
 
-          console.log(
+          void(
             "[Particle Init]   Adding particle 0 with random note:",
             randomNote
           );
@@ -968,8 +968,8 @@
             randomNote,
             centralMass
           );
-          console.log("[Particle Init]   ✓ Particle 0 added:", particle0);
-          console.log(
+          void("[Particle Init]   ✓ Particle 0 added:", particle0);
+          void(
             "[Particle Init]   Current particles:",
             particleSystem.getParticles().length
           );
@@ -1003,13 +1003,13 @@
               };
               harmonicPlacer.addAssignment(noteIndex, position);
 
-              console.log(
+              void(
                 `[Particle Init] Assigned initial particle (note: ${noteIndex}, tone: ${particle0.tone}) to ${voice} step ${column}`
               );
             }
           }
 
-          console.log(
+          void(
             "[Particle Init] ✓ Initial particle added successfully with empty pattern"
           );
         } catch (e) {
@@ -1214,7 +1214,7 @@
         function addNewParticle() {
           const particles = particleSystem.getParticles();
           if (particles.length >= 36) {
-            console.warn("[Particle] Maximum 36 particles reached");
+            void("[Particle] Maximum 36 particles reached");
             return;
           }
 
@@ -1292,11 +1292,11 @@
                 // Add assignment to harmonic placer
                 harmonicPlacer.addAssignment(noteIndex, position);
 
-                console.log(
+                void(
                   `[Particle] Assigned particle ${newParticle.id} (note: ${noteIndex}, tone: ${newParticle.tone}) to ${voice} step ${column}`
                 );
               } else {
-                console.warn(
+                void(
                   `[Particle] Failed to assign position for particle ${newParticle.id}, position: ${position}`
                 );
               }
@@ -1308,7 +1308,7 @@
               throw e; // Re-throw to be caught by outer try-catch
             }
           } else {
-            console.warn(
+            void(
               `[Particle] Invalid note index ${noteIndex} for particle ${newParticle.id} (tone: ${newParticle.tone})`
             );
           }
@@ -1325,7 +1325,7 @@
                 });
               window.patternPipeline = patternPipeline;
             } catch (e) {
-              console.warn("[Particle] Failed to create pattern pipeline:", e);
+              void("[Particle] Failed to create pattern pipeline:", e);
               // Continue without pattern pipeline - not critical
             }
           }
@@ -1379,7 +1379,7 @@
               0
             );
 
-            console.log(
+            void(
               `[Global Sequencer] Particle ${newParticle.id} added (note: ${randomNote}), updating patterns:`,
               {
                 totalParticles: allParticles.length,
@@ -1422,7 +1422,7 @@
             particleCountEl.textContent = updatedParticles.length.toString();
           }
 
-          console.log(
+          void(
             `[Particle] Added particle ${newParticle.id} with note ${randomNote}, total: ${updatedParticles.length}`
           );
         }
@@ -1430,7 +1430,7 @@
         function removeLastParticle() {
           const particles = particleSystem.getParticles();
           if (particles.length <= 1) {
-            console.warn("[Particle] Cannot remove last particle");
+            void("[Particle] Cannot remove last particle");
             return;
           }
 
@@ -1490,7 +1490,7 @@
             particleCountEl.textContent = updatedParticles.length.toString();
           }
 
-          console.log(
+          void(
             `[Particle] Removed particle ${removedId}, remaining: ${updatedParticles.length}`
           );
         }
@@ -1504,15 +1504,15 @@
         let previousSequencerPattern = window.previousSequencerPattern;
 
         // Debug: Verify particles are created and log note profiles
-        console.log(
+        void(
           `Particle system initialized with ${particles.length} particles:`,
           particles
         );
-        console.log(
+        void(
           "Particle positions:",
           particles.map((p) => ({ id: p.id, x: p.position.x, y: p.position.y }))
         );
-        console.log("Particle note profiles:", {
+        void("Particle note profiles:", {
           0: particle0.sequencerPattern,
           activeNotes: {
             0: particle0.getActiveNoteIndex(),
@@ -1531,7 +1531,7 @@
           console.error("  getParticles() returned:", particles);
 
           // Emergency reinitialize if needed
-          console.warn("⚠️ Attempting emergency particle reinitialization...");
+          void("⚠️ Attempting emergency particle reinitialization...");
           try {
             const randomNote = Math.floor(Math.random() * 12);
             const emergency0 = particleSystem.addParticle(
@@ -1544,20 +1544,20 @@
             emergency0.sequencerPattern = new Array(12).fill(0);
             emergency0.velocity = { x: 0, y: 0 };
             const emergencyParticles = particleSystem.getParticles();
-            console.log(
+            void(
               `Emergency reinit result: ${emergencyParticles.length} particles`
             );
           } catch (e) {
             console.error("Emergency reinit failed:", e);
           }
         } else {
-          console.log(
+          void(
             "✓ Particles initialized successfully, starting animation loop"
           );
           // Double-check particles are accessible
           const verifyParticles = particleSystem.getParticles();
           if (verifyParticles.length !== particles.length) {
-            console.warn(
+            void(
               `⚠️ Particle count mismatch: initialized ${particles.length}, getParticles() returned ${verifyParticles.length}`
             );
           }
@@ -1684,13 +1684,13 @@
             window.reverbInputGain.gain.value = 0; // No reverb initially (self audio)
 
             isSpatialAudioEnabled = true;
-            console.log(
+            void(
               "[SpatialAudio] Processor initialized with MediaStream"
             );
-            console.log(
+            void(
               "[SpatialAudio] Audio pipeline connected - self audio playing"
             );
-            console.log(
+            void(
               "[SpatialAudio] Using background-audio-post-processing.js + spatial-audio-processor.js"
             );
 
@@ -1713,7 +1713,7 @@
         // Listen for audio stream from NoiseCraft iframe
         window.addEventListener("message", (event) => {
           if (event.data?.type === "noiseCraft:audioStreamReady") {
-            console.log(
+            void(
               "[Main] Received audio stream ready notification from NoiseCraft"
             );
 
@@ -1730,12 +1730,12 @@
                     44100;
 
                   if (iframeStream) {
-                    console.log(
+                    void(
                       "[Main] Successfully accessed MediaStream from iframe"
                     );
                     initializeSpatialProcessor(iframeStream, sampleRate);
                   } else {
-                    console.warn(
+                    void(
                       "[Main] MediaStream not found on iframe window, retrying..."
                     );
                     // Retry after a short delay
@@ -1760,7 +1760,7 @@
               }
             }
           } else if (event.data?.type === "noiseCraft:audioStreamStopped") {
-            console.log("[Main] Audio stream stopped");
+            void("[Main] Audio stream stopped");
             if (mediaStreamSource) {
               try {
                 mediaStreamSource.disconnect();
@@ -1821,7 +1821,7 @@
             );
             populateNodeSelectors();
           } catch (e) {
-            console.warn("Failed to load project nodes:", e);
+            void("Failed to load project nodes:", e);
           }
         }
 
@@ -2070,7 +2070,7 @@
             iframe.contentWindow.browseModeActive = true;
             iframe.contentWindow.browseModeMappingId = mappingId;
 
-            console.log(
+            void(
               `[Browse] Browse mode activated for mapping: ${mappingId}`
             );
 
@@ -2099,7 +2099,7 @@
               if (statusEl.textContent.includes("Browse mode")) {
                 statusEl.textContent = "Ready. Click Start to begin.";
               }
-              console.log(`[Browse] Browse mode timeout - deactivated`);
+              void(`[Browse] Browse mode timeout - deactivated`);
             }, 30000);
 
             // Store timeout ID for cleanup
@@ -2244,15 +2244,15 @@
             return;
           }
           container.innerHTML = "";
-          console.log(
+          void(
             `[renderMappings] Rendering ${streamMapper.mappings.length} mappings`
           );
           if (streamMapper.mappings.length === 0) {
-            console.warn("[renderMappings] No mappings to render!");
+            void("[renderMappings] No mappings to render!");
             return;
           }
           streamMapper.mappings.forEach((mapping, index) => {
-            console.log(
+            void(
               `[renderMappings] Rendering mapping ${index + 1}:`,
               mapping
             );
@@ -2268,7 +2268,7 @@
               );
             }
           });
-          console.log(
+          void(
             `[renderMappings] Completed rendering ${container.children.length} mapping elements`
           );
         }
@@ -2320,12 +2320,12 @@
           const file = e.target.files[0];
           if (file) {
             try {
-              console.log(`[Import] Attempting to import file: ${file.name}`);
+              void(`[Import] Attempting to import file: ${file.name}`);
               const success = await streamMapper.importMappings(file);
               if (success) {
                 renderMappings();
                 statusEl.textContent = `Imported ${streamMapper.mappings.length} mappings`;
-                console.log(
+                void(
                   `[Import] Successfully imported ${streamMapper.mappings.length} mappings`
                 );
                 setTimeout(() => {
@@ -2511,7 +2511,7 @@
                 (!particleSystem.signalGenerator.particles ||
                   particleSystem.signalGenerator.particles.length === 0)
               ) {
-                console.warn("⚠️ Attempting to reinitialize particles...");
+                void("⚠️ Attempting to reinitialize particles...");
                 // Don't reinitialize here - let the user know there's a problem
               }
 
@@ -2702,7 +2702,7 @@
                     const totalActiveNotes = particles.filter(
                       (p) => p.getActiveNoteIndex() >= 0
                     ).length;
-                    console.warn(
+                    void(
                       `[Global Sequencer] ⚠️ All patterns are empty! Total particles: ${totalActiveNotes}`
                     );
                   }
@@ -2786,7 +2786,7 @@
                   },
                   "*"
                 );
-                console.log("Auto-save enabled for glb_audio_map.ncft");
+                void("Auto-save enabled for glb_audio_map.ncft");
               }, 500);
             }
           });
@@ -2808,14 +2808,14 @@
           } else if (event.data?.type === "noiseCraft:saveStatus") {
             // Handle save status updates from iframe
             if (event.data.status === "saved") {
-              console.log(`✓ Auto-saved ${event.data.filename}`);
+              void(`✓ Auto-saved ${event.data.filename}`);
               // When project is saved, we should embed mappings into it
               // Note: Mappings are loaded from project file on load, so they persist
               // Save mappings to localStorage as backup
               streamMapper.saveToStorage();
             } else if (event.data.status === "error") {
               const errorMsg = event.data.error || "Unknown error";
-              console.warn(
+              void(
                 `✗ Failed to save ${event.data.filename}:`,
                 errorMsg
               );
@@ -2838,7 +2838,7 @@
               if (projectMappings && projectMappings.length > 0) {
                 streamMapper.mappings = projectMappings;
                 renderMappings();
-                console.log(
+                void(
                   `Loaded ${projectMappings.length} mappings from project file`
                 );
               }
@@ -2883,7 +2883,7 @@
             }
           } else if (event.data?.type === "noiseCraft:nodeSelection") {
             // Handle node selection from NoiseCraft editor
-            console.log("Node selection received:", event.data);
+            void("Node selection received:", event.data);
 
             // Extract data from event with safe defaults - declare all variables at once
             const eventData = event.data || {};
@@ -2895,7 +2895,7 @@
 
             // Only allow Const and Knob nodes
             if (nodeType && nodeType !== "Const" && nodeType !== "Knob") {
-              console.log(
+              void(
                 `Node type ${nodeType} is not selectable. Only Const and Knob nodes can be mapped.`
               );
               return;
@@ -2905,7 +2905,7 @@
               const firstNodeId = String(nodeIds[0]);
               const displayType = nodeType || "unknown";
               const displayName = nodeName || "unnamed";
-              console.log(
+              void(
                 `Processing node selection: ID=${firstNodeId}, type=${displayType}, name=${displayName}`
               );
 
@@ -2925,7 +2925,7 @@
                   name: nodeName || nodeType,
                   params: {},
                 };
-                console.log(`Created new node entry:`, selectedNode);
+                void(`Created new node entry:`, selectedNode);
               }
 
               // Check if browse mode is active - ONLY process selection if browse mode is on
@@ -2940,7 +2940,7 @@
               ) {
                 targetMappingId = iframe.contentWindow.browseModeMappingId;
                 browseModeWasActive = true;
-                console.log(
+                void(
                   `[Browse] Browse mode active, target mapping: ${targetMappingId}`
                 );
 
@@ -2969,7 +2969,7 @@
                 }
               } else {
                 // Browse mode is NOT active - ignore this selection
-                console.log(
+                void(
                   `[Browse] Node selection ignored - browse mode is not active`
                 );
                 return; // Exit early - don't update any mappings
@@ -2977,7 +2977,7 @@
 
               // Only proceed if browse mode was active
               if (!browseModeWasActive || !targetMappingId) {
-                console.log(
+                void(
                   `[Browse] Skipping node selection - browse mode was not active`
                 );
                 return;
@@ -3082,7 +3082,7 @@
                 }
               } else {
                 // Target mapping not found - this shouldn't happen if browse mode was active
-                console.warn(
+                void(
                   `Target mapping ${targetMappingId} not found, but browse mode was active`
                 );
                 // Don't create a new mapping - user must click Browse button first
@@ -3109,7 +3109,7 @@
         );
         if (btnAddParticle) {
           btnAddParticle.addEventListener("click", () => {
-            console.log("[Button] Add particle clicked");
+            void("[Button] Add particle clicked");
             try {
               addNewParticle();
             } catch (error) {
@@ -3125,11 +3125,11 @@
             }
           });
         } else {
-          console.warn("[Button] btn-add-particle not found in DOM");
+          void("[Button] btn-add-particle not found in DOM");
         }
         if (btnRemoveParticle) {
           btnRemoveParticle.addEventListener("click", () => {
-            console.log("[Button] Remove particle clicked");
+            void("[Button] Remove particle clicked");
             try {
               removeLastParticle();
             } catch (error) {
@@ -3137,7 +3137,7 @@
             }
           });
         } else {
-          console.warn("[Button] btn-remove-particle not found in DOM");
+          void("[Button] btn-remove-particle not found in DOM");
         }
 
         btnStart.addEventListener("click", () => {
@@ -3164,7 +3164,7 @@
               return;
             }
 
-            console.log("[Save] Ctrl+S pressed, saving mappings...");
+            void("[Save] Ctrl+S pressed, saving mappings...");
             const success = await streamMapper.saveToJSONFile();
 
             if (success) {
@@ -3192,7 +3192,7 @@
         });
 
         // Start animation loop (variables already initialized above)
-        console.log("Starting animation loop...");
+        void("Starting animation loop...");
 
         // Verify particle system before starting animation
         const initialParticles = particleSystem.getParticles();
@@ -3207,7 +3207,7 @@
             particleSystem.signalGenerator?.particles
           );
         } else {
-          console.log(
+          void(
             `✓ Animation starting with ${initialParticles.length} particles`
           );
         }

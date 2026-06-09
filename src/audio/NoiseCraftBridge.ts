@@ -185,7 +185,7 @@ export class NoiseCraftBridge {
     
     switch (e.data.type) {
       case 'noiseCraft:audioStreamReady':
-        console.log('[NoiseCraft Bridge] Audio stream ready, connecting analyser...');
+        void('[NoiseCraft Bridge] Audio stream ready, connecting analyser...');
         this.tryConnectAnalyser();
         // Enable auto-save
         if (this.iframe?.contentWindow) {
@@ -198,7 +198,7 @@ export class NoiseCraftBridge {
         break;
         
       case 'noiseCraft:audioStreamStopped':
-        console.log('[NoiseCraft Bridge] Audio stream stopped');
+        void('[NoiseCraft Bridge] Audio stream stopped');
         this.disconnectAnalyser();
         this._isPlaying = false;
         break;
@@ -285,7 +285,7 @@ export class NoiseCraftBridge {
       
       if (!stream || !ncAudioCtx) {
         if (retryCount < 30) {
-          console.log(`[NoiseCraft Bridge] MediaStream not ready, retrying (${retryCount}/30)...`);
+          void(`[NoiseCraft Bridge] MediaStream not ready, retrying (${retryCount}/30)...`);
           this.analyserRetryTimer = setTimeout(() => this.tryConnectAnalyser(retryCount + 1), 500);
         }
         return;
@@ -310,7 +310,7 @@ export class NoiseCraftBridge {
       
       this._isConnected = true;
       this._isPlaying = true;
-      console.log('[NoiseCraft Bridge] ✓ Analyser connected to audio stream');
+      void('[NoiseCraft Bridge] ✓ Analyser connected to audio stream');
     } catch (err) {
       console.error('[NoiseCraft Bridge] Failed to connect analyser:', err);
       if (retryCount < 30) {
@@ -355,7 +355,7 @@ export class NoiseCraftBridge {
    */
   startAudio(): void {
     this.postMessage({ type: 'noiseCraft:play' });
-    console.log('[NoiseCraft Bridge] Sent play command');
+    void('[NoiseCraft Bridge] Sent play command');
   }
 
   /**

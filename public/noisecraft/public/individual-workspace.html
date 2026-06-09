@@ -645,7 +645,7 @@
 
         // Listen for popstate events (triggered by back/forward navigation or swipe gestures)
         window.addEventListener('popstate', function(event) {
-          console.log('[Navigation] Back navigation detected, preventing reload...');
+          void('[Navigation] Back navigation detected, preventing reload...');
           // Push the state back to prevent navigation
           history.pushState(null, null, location.href);
           // Optionally show a message to the user
@@ -684,7 +684,7 @@
           }
         }, { passive: false });
 
-        console.log('[Navigation] Back navigation prevention enabled');
+        void('[Navigation] Back navigation prevention enabled');
       })();
 
       // Wrap main code in try-catch to catch initialization errors
@@ -730,11 +730,11 @@
             try {
               this.mappings = JSON.parse(stored);
               if (this.mappings.length > 0) {
-                console.log(`[MappingStorage] Loaded ${this.mappings.length} mappings from localStorage`);
+                void(`[MappingStorage] Loaded ${this.mappings.length} mappings from localStorage`);
                 return;
               }
             } catch (e) {
-              console.warn("Failed to load mappings from storage", e);
+              void("Failed to load mappings from storage", e);
               this.mappings = [];
             }
           }
@@ -748,11 +748,11 @@
                 if (Array.isArray(defaultMappings) && defaultMappings.length > 0) {
                   this.mappings = defaultMappings;
                   this.saveToStorage();
-                  console.log(`[MappingStorage] Loaded ${this.mappings.length} default mappings from individual-workspace-mappings.json`);
+                  void(`[MappingStorage] Loaded ${this.mappings.length} default mappings from individual-workspace-mappings.json`);
                 }
               }
             } catch (e) {
-              console.warn("Failed to load default mappings file:", e);
+              void("Failed to load default mappings file:", e);
             }
           }
         }
@@ -860,7 +860,7 @@
 
           // Debug logging for multiple stream operations
           if (streamValues.length > 1 && op !== "none") {
-            console.log(`[StreamMapper] Operation: ${op}, Streams: ${streamValues.length}, Result: ${result.toFixed(4)}`);
+            void(`[StreamMapper] Operation: ${op}, Streams: ${streamValues.length}, Result: ${result.toFixed(4)}`);
           }
 
           return result;
@@ -900,7 +900,7 @@
       const availableScales = Object.keys(SCALES);
       const randomScaleIndex = Math.floor(Math.random() * availableScales.length);
       let currentScale = availableScales[randomScaleIndex];
-      console.log(`[Music Theory] Using scale: ${currentScale} (randomized for variety)`);
+      void(`[Music Theory] Using scale: ${currentScale} (randomized for variety)`);
 
       // Expose music theory functions globally for particle system
       window.generateHarmoniousPattern = generateHarmoniousPattern;
@@ -921,7 +921,7 @@
       const defaultTriad = 'C Major'; // [0, 4, 7] = C, E, G
       const chordTones = CHORD_TONES[defaultTriad]; // [0, 4, 7]
 
-      console.log('Generating initial triad:', defaultTriad, 'with tones:', chordTones);
+      void('Generating initial triad:', defaultTriad, 'with tones:', chordTones);
 
       // Generate patterns directly for each chord tone to ensure proper triad
       const createPatternFromNote = (noteIndex) => {
@@ -947,9 +947,9 @@
         particle1: particle1.sequencerPattern.findIndex(v => v === 1),
         particle2: particle2.sequencerPattern.findIndex(v => v === 1),
       };
-      console.log('✓ Initial triad assigned:', assignedNotes);
-      console.log('  Expected:', chordTones);
-      console.log('  Match:',
+      void('✓ Initial triad assigned:', assignedNotes);
+      void('  Expected:', chordTones);
+      void('  Match:',
         assignedNotes.particle0 === chordTones[0] &&
         assignedNotes.particle1 === chordTones[1] &&
         assignedNotes.particle2 === chordTones[2] ? 'YES ✓' : 'NO ✗'
@@ -996,9 +996,9 @@
       let previousSequencerPattern = null;
 
       // Debug: Verify particles are created and log note profiles
-      console.log(`Particle system initialized with ${particles.length} particles:`, particles);
-      console.log('Particle positions:', particles.map(p => ({ id: p.id, x: p.position.x, y: p.position.y })));
-      console.log('Particle note profiles:', {
+      void(`Particle system initialized with ${particles.length} particles:`, particles);
+      void('Particle positions:', particles.map(p => ({ id: p.id, x: p.position.x, y: p.position.y })));
+      void('Particle note profiles:', {
         0: particle0.sequencerPattern,
         1: particle1.sequencerPattern,
         2: particle2.sequencerPattern,
@@ -1013,7 +1013,7 @@
       if (particles.length === 0) {
         console.error("CRITICAL: No particles were created!");
       } else {
-        console.log("✓ Particles initialized successfully, starting animation loop");
+        void("✓ Particles initialized successfully, starting animation loop");
       }
 
       // Expose particle system globally for integration
@@ -1093,7 +1093,7 @@
           );
           populateNodeSelectors();
         } catch (e) {
-          console.warn("Failed to load project nodes:", e);
+          void("Failed to load project nodes:", e);
         }
       }
 
@@ -1472,7 +1472,7 @@
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
 
-          console.log(`✓ Exported ${mappings.length} mappings to file`);
+          void(`✓ Exported ${mappings.length} mappings to file`);
           statusEl.textContent = `Exported ${mappings.length} mappings`;
         } catch (e) {
           console.error("Failed to export mappings:", e);
@@ -1508,7 +1508,7 @@
             streamMapper.saveToStorage();
             renderMappings();
 
-            console.log(`✓ Imported ${validMappings.length} mappings from file`);
+            void(`✓ Imported ${validMappings.length} mappings from file`);
             statusEl.textContent = `Imported ${validMappings.length} mappings`;
 
             // Reset file input
@@ -1534,9 +1534,9 @@
       if (!iframe) {
         console.error("[Init] NoiseCraft iframe not found in DOM!");
       } else {
-        console.log("[Init] NoiseCraft iframe found:", iframe);
-        console.log("[Init] Iframe src:", iframe.src);
-        console.log("[Init] Container dimensions:", {
+        void("[Init] NoiseCraft iframe found:", iframe);
+        void("[Init] Iframe src:", iframe.src);
+        void("[Init] Container dimensions:", {
           width: iframe.offsetWidth,
           height: iframe.offsetHeight,
           parent: iframe.parentElement?.id
@@ -1625,15 +1625,15 @@
       function sendToNoiseCraft(params) {
         // Debug logging to identify why params aren't being sent
         if (!iframe) {
-          console.warn('[sendToNoiseCraft] Iframe not available');
+          void('[sendToNoiseCraft] Iframe not available');
           return;
         }
         if (!noisecraftReady) {
-          console.warn('[sendToNoiseCraft] NoiseCraft not ready (noisecraftReady =', noisecraftReady, ')');
+          void('[sendToNoiseCraft] NoiseCraft not ready (noisecraftReady =', noisecraftReady, ')');
           return;
         }
         if (!params.length) {
-          console.warn('[sendToNoiseCraft] No params to send. Mappings:', streamMapper.mappings.length,
+          void('[sendToNoiseCraft] No params to send. Mappings:', streamMapper.mappings.length,
                        'Enabled:', streamMapper.mappings.filter(m => m.enabled).length);
           return;
         }
@@ -1649,7 +1649,7 @@
 
         // Debug: Log first few params being sent (throttled to avoid spam)
         if (!window._lastParamLogTime || Date.now() - window._lastParamLogTime > 2000) {
-          console.log('[sendToNoiseCraft] Sending', smoothedParams.length, 'params:',
+          void('[sendToNoiseCraft] Sending', smoothedParams.length, 'params:',
                      smoothedParams.slice(0, 3).map(p => `${p.nodeId}.${p.paramName}=${p.value.toFixed(3)}`));
           window._lastParamLogTime = Date.now();
         }
@@ -1729,7 +1729,7 @@
         const particles = particleSystem.getParticles();
 
         if (!particles || particles.length === 0) {
-          console.warn("No particles found in system - particles:", particles);
+          void("No particles found in system - particles:", particles);
           // Draw empty canvas
           const canvas = document.getElementById("particle-canvas");
           if (canvas) {
@@ -1808,11 +1808,11 @@
 
             // Debug: Log params generation (throttled)
             if (!window._lastParamGenLogTime || Date.now() - window._lastParamGenLogTime > 5000) {
-              console.log('[Update] Generated', params.length, 'params from',
+              void('[Update] Generated', params.length, 'params from',
                          streamMapper.mappings.length, 'mappings',
                          '(' + streamMapper.mappings.filter(m => m.enabled).length + ' enabled)');
               if (params.length > 0) {
-                console.log('[Update] Sample params:', params.slice(0, 2));
+                void('[Update] Sample params:', params.slice(0, 2));
               }
               window._lastParamGenLogTime = Date.now();
             }
@@ -1932,7 +1932,7 @@
               // This ensures we clear baritone/tenor when particle becomes alone
               if (patternChanged || innerParticlesChanged) {
                 const isAlone = innerParticleObjects.length === 0;
-                console.log(`[Sequencer] Updating patterns - ${isAlone ? 'ALONE (single tone)' : `CHORD (${innerParticleObjects.length + 1} notes)`}:`, sequencerPattern);
+                void(`[Sequencer] Updating patterns - ${isAlone ? 'ALONE (single tone)' : `CHORD (${innerParticleObjects.length + 1} notes)`}:`, sequencerPattern);
 
                 // Update each sequencer (bass, baritone, tenor) - optimized with requestAnimationFrame
                 // Use 4-step sequencers for faster cycling and more continuous sound
@@ -2341,8 +2341,8 @@
         // Function to initialize NoiseCraft when iframe is ready
         const initializeNoiseCraft = async () => {
           try {
-            console.log('[Iframe] Initializing NoiseCraft...');
-            console.log('[Iframe] Iframe dimensions:', {
+            void('[Iframe] Initializing NoiseCraft...');
+            void('[Iframe] Iframe dimensions:', {
               width: iframe.offsetWidth,
               height: iframe.offsetHeight,
               clientWidth: iframe.clientWidth,
@@ -2350,7 +2350,7 @@
             });
             statusEl.textContent = "Ready. Click Start to begin.";
             noisecraftReady = true;
-            console.log('[Iframe] noisecraftReady set to true');
+            void('[Iframe] noisecraftReady set to true');
             await loadProjectNodes();
             renderMappings();
 
@@ -2363,7 +2363,7 @@
                   enabled: true,
                   filename: "indiv_audio_map_v2.ncft"
                 }, "*");
-                console.log("Auto-save enabled for indiv_audio_map_v2.ncft");
+                void("Auto-save enabled for indiv_audio_map_v2.ncft");
               }, 500);
             }
           } catch (err) {
@@ -2381,35 +2381,35 @@
         // Check if iframe is already loaded (might load before event listener is attached)
         try {
           if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
-            console.log('[Iframe] Iframe already loaded, initializing immediately');
+            void('[Iframe] Iframe already loaded, initializing immediately');
             initializeNoiseCraft();
           } else {
             // Wait for load event
             iframe.addEventListener("load", async () => {
-              console.log('[Iframe] Load event fired');
+              void('[Iframe] Load event fired');
               await initializeNoiseCraft();
             });
 
             // Fallback: if load event doesn't fire within 5 seconds, set ready anyway
             setTimeout(() => {
               if (!noisecraftReady) {
-                console.warn('[Iframe] Load event did not fire, setting ready flag anyway');
+                void('[Iframe] Load event did not fire, setting ready flag anyway');
                 noisecraftReady = true;
               }
             }, 5000);
           }
         } catch (e) {
           // Cross-origin or other error accessing contentDocument
-          console.warn('[Iframe] Cannot access contentDocument, using load event only:', e);
+          void('[Iframe] Cannot access contentDocument, using load event only:', e);
           iframe.addEventListener("load", async () => {
-            console.log('[Iframe] Load event fired');
+            void('[Iframe] Load event fired');
             await initializeNoiseCraft();
           });
 
           // Fallback timeout
           setTimeout(() => {
             if (!noisecraftReady) {
-              console.warn('[Iframe] Load event did not fire, setting ready flag anyway');
+              void('[Iframe] Load event did not fire, setting ready flag anyway');
               noisecraftReady = true;
             }
           }, 5000);
@@ -2424,7 +2424,7 @@
                 enabled: true,
                 filename: "indiv_audio_map_v2.ncft"
               }, "*");
-              console.log("Auto-save enabled for indiv_audio_map_v2.ncft");
+              void("Auto-save enabled for indiv_audio_map_v2.ncft");
             }, 500);
           }
         });
@@ -2446,15 +2446,15 @@
         } else if (event.data?.type === "noiseCraft:saveStatus") {
           // Handle save status updates from iframe
           if (event.data.status === "saved") {
-            console.log(`✓ Auto-saved ${event.data.filename}`);
+            void(`✓ Auto-saved ${event.data.filename}`);
             // Optionally update UI to show save status
           } else if (event.data.status === "error") {
             const errorMsg = event.data.error || "Unknown error";
-            console.warn(`✗ Failed to save ${event.data.filename}:`, errorMsg);
+            void(`✗ Failed to save ${event.data.filename}:`, errorMsg);
           }
         } else if (event.data?.type === "noiseCraft:nodeSelection") {
           // Handle node selection from NoiseCraft editor
-          console.log("Node selection received:", event.data);
+          void("Node selection received:", event.data);
 
           // Extract data from event with safe defaults - declare all variables at once
           const eventData = event.data || {};
@@ -2464,7 +2464,7 @@
 
           // Only allow Const and Knob nodes
           if (nodeType && nodeType !== 'Const' && nodeType !== 'Knob') {
-            console.log(`Node type ${nodeType} is not selectable. Only Const and Knob nodes can be mapped.`);
+            void(`Node type ${nodeType} is not selectable. Only Const and Knob nodes can be mapped.`);
             return;
           }
 
@@ -2472,7 +2472,7 @@
             const firstNodeId = String(nodeIds[0]);
             const displayType = nodeType || 'unknown';
             const displayName = nodeName || 'unnamed';
-            console.log(`Processing node selection: ID=${firstNodeId}, type=${displayType}, name=${displayName}`);
+            void(`Processing node selection: ID=${firstNodeId}, type=${displayType}, name=${displayName}`);
 
             let selectedNode = availableNodes.find((n) => n.id === firstNodeId);
 
@@ -2484,7 +2484,7 @@
                 name: nodeName || nodeType,
                 params: {},
               };
-              console.log(`Created new node entry:`, selectedNode);
+              void(`Created new node entry:`, selectedNode);
             }
 
             // Check if browse mode is active - ONLY process selection if browse mode is on
@@ -2495,19 +2495,19 @@
             if (iframe && iframe.contentWindow && iframe.contentWindow.browseModeMappingId) {
               targetMappingId = iframe.contentWindow.browseModeMappingId;
               browseModeWasActive = true;
-              console.log(`Browse mode active, target mapping: ${targetMappingId}`);
+              void(`Browse mode active, target mapping: ${targetMappingId}`);
               // Disable browse mode
               iframe.contentWindow.browseModeActive = false;
               iframe.contentWindow.browseModeMappingId = null;
             } else {
               // Browse mode is NOT active - ignore this selection
-              console.log(`Node selection ignored - browse mode is not active`);
+              void(`Node selection ignored - browse mode is not active`);
               return; // Exit early - don't update any mappings
             }
 
             // Only proceed if browse mode was active
             if (!browseModeWasActive || !targetMappingId) {
-              console.log(`Skipping node selection - browse mode was not active`);
+              void(`Skipping node selection - browse mode was not active`);
               return;
             }
 
@@ -2576,7 +2576,7 @@
               }
             } else {
               // Target mapping not found - this shouldn't happen if browse mode was active
-              console.warn(`Target mapping ${targetMappingId} not found, but browse mode was active`);
+              void(`Target mapping ${targetMappingId} not found, but browse mode was active`);
               // Don't create a new mapping - user must click Browse button first
             }
 
@@ -2604,7 +2604,7 @@
       setupIndividualViewControls();
 
       // Start animation loop (variables already initialized above)
-      console.log("Starting animation loop...");
+      void("Starting animation loop...");
       animate();
 
       } catch (error) {

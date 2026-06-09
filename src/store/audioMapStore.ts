@@ -221,6 +221,7 @@ export const useAudioMapStore = create<AudioMapState>()(
   }
 }), {
   name: 'umwelt-audio-map-storage',
+  version: 2,
   partialize: (state) => ({ streams: state.streams, mappings: state.mappings }),
 }));
 

@@ -80,7 +80,7 @@ function Flow() {
     musicEngine.initialize().then(() => {
       musicEngine.initialize();
     }).catch(err => {
-      console.warn('[MusicEngine] Initialization error caught in UI:', err);
+      // [MusicEngine] Initialization error caught in UI — silenced
       musicEngine.initialize();
     });
     return () => {

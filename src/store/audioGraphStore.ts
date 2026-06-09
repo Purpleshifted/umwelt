@@ -477,5 +477,6 @@ export const useAudioGraphStore = create<AudioGraphState>()(
   },
 }), {
   name: 'umwelt-audiograph-storage',
+  version: 2,
   partialize: (state) => ({ nodes: state.nodes, edges: state.edges }),
 }));

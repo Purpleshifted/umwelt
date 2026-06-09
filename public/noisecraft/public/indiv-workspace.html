@@ -642,8 +642,8 @@
       import { createPatternAssignmentManager } from "/public/pattern-assignment.js";
       import { createMappingStorage } from "/public/mapping-storage.js";
 
-      console.log("[Init] ===== SCRIPT STARTING =====");
-      console.log("[Init] All imports loaded successfully");
+      void("[Init] ===== SCRIPT STARTING =====");
+      void("[Init] All imports loaded successfully");
 
       // Dummy storage fallback if mapping-storage.js is not available
       function createDummyStorage() {
@@ -660,9 +660,9 @@
 
       // Wrap main code in try-catch to catch initialization errors
       try {
-        console.log("[Init] Entering try block...");
+        void("[Init] Entering try block...");
 
-        console.log("[Init] Defining AVAILABLE_STREAMS...");
+        void("[Init] Defining AVAILABLE_STREAMS...");
         // Available streams
         const AVAILABLE_STREAMS = [
           "attraction",
@@ -688,7 +688,7 @@
           { value: "average", label: "Average" },
         ];
 
-        console.log("[Init] Defining StreamNodeMapper class...");
+        void("[Init] Defining StreamNodeMapper class...");
         // Stream-to-Node Mapping Manager (now uses MappingStorage module)
         class StreamNodeMapper {
           constructor(filename = "indiv_audio_map_v2.ncft") {
@@ -699,7 +699,7 @@
           }
 
           async loadMappings() {
-            console.log(
+            void(
               "[MappingStorage] Loading mappings from default-individual-mappings.json..."
             );
             try {
@@ -713,12 +713,12 @@
                   this.mappings = defaultMappings;
                   // Also save to localStorage as backup
                   this.storage.saveToLocalStorage(this.mappings);
-                  console.log(
+                  void(
                     `[MappingStorage] ✓ Loaded ${this.mappings.length} mappings from default-individual-mappings.json`
                   );
                   return;
                 } else {
-                  console.warn(
+                  void(
                     "[MappingStorage] default-individual-mappings.json is not a valid array"
                   );
                 }
@@ -729,14 +729,14 @@
               }
 
               // Fallback to localStorage if file not found
-              console.log("[MappingStorage] Falling back to localStorage...");
+              void("[MappingStorage] Falling back to localStorage...");
               this.mappings = this.storage.loadFromLocalStorage();
               if (this.mappings.length > 0) {
-                console.log(
+                void(
                   `[MappingStorage] ✓ Loaded ${this.mappings.length} mappings from localStorage (backup)`
                 );
               } else {
-                console.warn(
+                void(
                   "[MappingStorage] No mappings found in localStorage either"
                 );
                 this.mappings = [];
@@ -746,7 +746,7 @@
               // Final fallback to localStorage
               this.mappings = this.storage.loadFromLocalStorage();
               if (this.mappings.length === 0) {
-                console.warn(
+                void(
                   "[MappingStorage] No mappings available, starting with empty array"
                 );
                 this.mappings = [];
@@ -773,19 +773,19 @@
 
               if (response.ok) {
                 const result = await response.json();
-                console.log(
+                void(
                   `[MappingStorage] ✓ Saved ${this.mappings.length} mappings to default-individual-mappings.json`
                 );
               } else {
                 const errorText = await response.text();
-                console.warn(
+                void(
                   `[MappingStorage] ⚠️ Failed to save to server (${response.status}):`,
                   errorText,
                   "- saved to localStorage only"
                 );
               }
             } catch (e) {
-              console.warn(
+              void(
                 "[MappingStorage] ⚠️ Error saving to server:",
                 e,
                 "- saved to localStorage only"
@@ -811,11 +811,11 @@
 
           async importMappings(file) {
             try {
-              console.log(
+              void(
                 `[StreamNodeMapper] Starting import for file: ${file.name}`
               );
               const imported = await this.storage.importFromJSON(file);
-              console.log(
+              void(
                 `[StreamNodeMapper] Parsed ${
                   imported?.length || 0
                 } mappings from file`
@@ -826,7 +826,7 @@
               }
 
               if (imported.length === 0) {
-                console.warn("[StreamNodeMapper] No mappings found in file");
+                void("[StreamNodeMapper] No mappings found in file");
                 return false;
               }
 
@@ -840,7 +840,7 @@
                   Array.isArray(m.streams) &&
                   m.streams.length > 0;
                 if (!isValid) {
-                  console.warn("[StreamNodeMapper] Invalid mapping found:", m);
+                  void("[StreamNodeMapper] Invalid mapping found:", m);
                 }
                 return isValid;
               });
@@ -849,15 +849,15 @@
                 throw new Error("No valid mappings found in file");
               }
 
-              console.log(
+              void(
                 `[StreamNodeMapper] ${validMappings.length} valid mappings out of ${imported.length}`
               );
               this.mappings = validMappings;
               this.saveToStorage();
-              console.log(
+              void(
                 `[StreamNodeMapper] Successfully imported and saved ${this.mappings.length} mappings`
               );
-              console.log(`[StreamNodeMapper] Mappings:`, this.mappings);
+              void(`[StreamNodeMapper] Mappings:`, this.mappings);
               return true;
             } catch (e) {
               console.error("[StreamNodeMapper] Failed to import mappings:", e);
@@ -957,7 +957,7 @@
 
             // Debug logging for multiple stream operations
             if (streamValues.length > 1 && op !== "none") {
-              console.log(
+              void(
                 `[StreamMapper] Operation: ${op}, Streams: ${
                   streamValues.length
                 }, Result: ${result.toFixed(4)}`
@@ -986,11 +986,11 @@
           }
         }
 
-        console.log("[Init] ===== STARTING PARTICLE INITIALIZATION =====");
+        void("[Init] ===== STARTING PARTICLE INITIALIZATION =====");
         // Create particle system (standalone module)
         // Note: innerRadius/outerRadius are ONLY for signal generation (sound effects)
         // Gravity works at ALL distances regardless of these radii
-        console.log("[Particle Init] Step 1: Creating ParticleSystem...");
+        void("[Particle Init] Step 1: Creating ParticleSystem...");
         let particleSystem;
         try {
           particleSystem = new ParticleSystem({
@@ -999,15 +999,15 @@
             G: 500, // Realistic gravitational constant (reduced from 10000)
             minDistance: 3, // Minimum distance for numerical stability
           });
-          console.log(
+          void(
             "[Particle Init] ✓ ParticleSystem created:",
             particleSystem
           );
-          console.log(
+          void(
             "[Particle Init]   signalGenerator:",
             particleSystem?.signalGenerator
           );
-          console.log(
+          void(
             "[Particle Init]   signalGenerator.particles:",
             particleSystem?.signalGenerator?.particles
           );
@@ -1020,7 +1020,7 @@
         }
 
         // Initialize modular pattern assignment manager
-        console.log("[Particle Init] Step 2: Creating pattern manager...");
+        void("[Particle Init] Step 2: Creating pattern manager...");
         let patternManager;
         try {
           patternManager = createPatternAssignmentManager({
@@ -1028,7 +1028,7 @@
             key: "C",
             scale: "major",
           });
-          console.log("[Particle Init] ✓ Pattern manager created");
+          void("[Particle Init] ✓ Pattern manager created");
         } catch (e) {
           console.error(
             "[Particle Init] ✗ Failed to create pattern manager:",
@@ -1047,7 +1047,7 @@
           Math.random() * availableScales.length
         );
         let currentScale = availableScales[randomScaleIndex];
-        console.log(
+        void(
           `[Music Theory] Using scale: ${currentScale} (randomized for variety)`
         );
 
@@ -1059,7 +1059,7 @@
         // Central particle - reduced mass so it moves more visibly
         const centralMass = 100; // Reduced from 500 - allows visible interaction
 
-        console.log("[Particle Init] Step 3: Adding particles...");
+        void("[Particle Init] Step 3: Adding particles...");
 
         // Generate initial chord using modular pattern manager
         const defaultTriad = "C Major"; // [0, 4, 7] = C, E, G
@@ -1071,7 +1071,7 @@
 
         let particle0, particle1, particle2;
         try {
-          console.log("[Particle Init]   Adding particle 0...");
+          void("[Particle Init]   Adding particle 0...");
           particle0 = particleSystem.addParticle(
             0,
             centerX,
@@ -1079,8 +1079,8 @@
             0,
             centralMass
           );
-          console.log("[Particle Init]   ✓ Particle 0 added:", particle0);
-          console.log(
+          void("[Particle Init]   ✓ Particle 0 added:", particle0);
+          void(
             "[Particle Init]   Current particles:",
             particleSystem.getParticles().length
           );
@@ -1107,7 +1107,7 @@
             patternManager.assignPattern(0, particle0.sequencerPattern);
           }
 
-          console.log("[Particle Init]   Adding particle 1...");
+          void("[Particle Init]   Adding particle 1...");
           particle1 = particleSystem.addParticle(
             1,
             centerX + moonDistance,
@@ -1115,8 +1115,8 @@
             4,
             moonMass
           );
-          console.log("[Particle Init]   ✓ Particle 1 added:", particle1);
-          console.log(
+          void("[Particle Init]   ✓ Particle 1 added:", particle1);
+          void(
             "[Particle Init]   Current particles:",
             particleSystem.getParticles().length
           );
@@ -1131,7 +1131,7 @@
             patternManager.assignPattern(1, particle1.sequencerPattern);
           }
 
-          console.log("[Particle Init]   Adding particle 2...");
+          void("[Particle Init]   Adding particle 2...");
           particle2 = particleSystem.addParticle(
             2,
             centerX,
@@ -1139,8 +1139,8 @@
             7,
             moonMass
           );
-          console.log("[Particle Init]   ✓ Particle 2 added:", particle2);
-          console.log(
+          void("[Particle Init]   ✓ Particle 2 added:", particle2);
+          void(
             "[Particle Init]   Current particles:",
             particleSystem.getParticles().length
           );
@@ -1155,7 +1155,7 @@
             patternManager.assignPattern(2, particle2.sequencerPattern);
           }
 
-          console.log("[Particle Init] ✓ All 3 particles added successfully");
+          void("[Particle Init] ✓ All 3 particles added successfully");
         } catch (e) {
           console.error("[Particle Init] ✗ Failed to add particles:", e);
           console.error("[Particle Init]   Error stack:", e.stack);
@@ -1168,8 +1168,8 @@
           particle1: particle1.sequencerPattern.findIndex((v) => v === 1),
           particle2: particle2.sequencerPattern.findIndex((v) => v === 1),
         };
-        console.log("✓ Initial triad assigned:", assignedNotes);
-        console.log("  Expected:", chordTones);
+        void("✓ Initial triad assigned:", assignedNotes);
+        void("  Expected:", chordTones);
 
         // Set velocities for stable orbital motion
         // Central particle starts with small velocity (will move due to lighter mass)
@@ -1212,15 +1212,15 @@
         let previousSequencerPattern = null;
 
         // Debug: Verify particles are created and log note profiles
-        console.log(
+        void(
           `Particle system initialized with ${particles.length} particles:`,
           particles
         );
-        console.log(
+        void(
           "Particle positions:",
           particles.map((p) => ({ id: p.id, x: p.position.x, y: p.position.y }))
         );
-        console.log("Particle note profiles:", {
+        void("Particle note profiles:", {
           0: particle0.sequencerPattern,
           1: particle1.sequencerPattern,
           2: particle2.sequencerPattern,
@@ -1243,7 +1243,7 @@
           console.error("  getParticles() returned:", particles);
 
           // Emergency reinitialize if needed
-          console.warn("⚠️ Attempting emergency particle reinitialization...");
+          void("⚠️ Attempting emergency particle reinitialization...");
           try {
             const emergency0 = particleSystem.addParticle(
               0,
@@ -1267,20 +1267,20 @@
               moonMass
             );
             const emergencyParticles = particleSystem.getParticles();
-            console.log(
+            void(
               `Emergency reinit result: ${emergencyParticles.length} particles`
             );
           } catch (e) {
             console.error("Emergency reinit failed:", e);
           }
         } else {
-          console.log(
+          void(
             "✓ Particles initialized successfully, starting animation loop"
           );
           // Double-check particles are accessible
           const verifyParticles = particleSystem.getParticles();
           if (verifyParticles.length !== particles.length) {
-            console.warn(
+            void(
               `⚠️ Particle count mismatch: initialized ${particles.length}, getParticles() returned ${verifyParticles.length}`
             );
           }
@@ -1407,13 +1407,13 @@
             window.reverbInputGain.gain.value = 0; // No reverb initially (self audio)
 
             isSpatialAudioEnabled = true;
-            console.log(
+            void(
               "[SpatialAudio] Processor initialized with MediaStream"
             );
-            console.log(
+            void(
               "[SpatialAudio] Audio pipeline connected - self audio playing"
             );
-            console.log(
+            void(
               "[SpatialAudio] Using background-audio-post-processing.js + spatial-audio-processor.js"
             );
 
@@ -1547,7 +1547,7 @@
               const reverbLevel = window.reverbMix
                 ? window.reverbMix.gain.value.toFixed(2)
                 : "N/A";
-              console.log(
+              void(
                 `[SpatialAudio] Pan: ${targetPan.toFixed(
                   2
                 )}, Gain: ${targetGain.toFixed(
@@ -1592,7 +1592,7 @@
         // Listen for audio stream from NoiseCraft iframe
         window.addEventListener("message", (event) => {
           if (event.data?.type === "noiseCraft:audioStreamReady") {
-            console.log(
+            void(
               "[Main] Received audio stream ready notification from NoiseCraft"
             );
 
@@ -1609,12 +1609,12 @@
                     44100;
 
                   if (iframeStream) {
-                    console.log(
+                    void(
                       "[Main] Successfully accessed MediaStream from iframe"
                     );
                     initializeSpatialProcessor(iframeStream, sampleRate);
                   } else {
-                    console.warn(
+                    void(
                       "[Main] MediaStream not found on iframe window, retrying..."
                     );
                     // Retry after a short delay
@@ -1639,7 +1639,7 @@
               }
             }
           } else if (event.data?.type === "noiseCraft:audioStreamStopped") {
-            console.log("[Main] Audio stream stopped");
+            void("[Main] Audio stream stopped");
             if (mediaStreamSource) {
               try {
                 mediaStreamSource.disconnect();
@@ -1701,7 +1701,7 @@
             );
             populateNodeSelectors();
           } catch (e) {
-            console.warn("Failed to load project nodes:", e);
+            void("Failed to load project nodes:", e);
           }
         }
 
@@ -1950,7 +1950,7 @@
             iframe.contentWindow.browseModeActive = true;
             iframe.contentWindow.browseModeMappingId = mappingId;
 
-            console.log(
+            void(
               `[Browse] Browse mode activated for mapping: ${mappingId}`
             );
 
@@ -1979,7 +1979,7 @@
               if (statusEl.textContent.includes("Browse mode")) {
                 statusEl.textContent = "Ready. Click Start to begin.";
               }
-              console.log(`[Browse] Browse mode timeout - deactivated`);
+              void(`[Browse] Browse mode timeout - deactivated`);
             }, 30000);
 
             // Store timeout ID for cleanup
@@ -2118,7 +2118,7 @@
                 enabled,
                 streams,
               });
-              console.log(
+              void(
                 `[Mapping] Updated mapping ${mappingId} (node: ${nodeId}, param: ${paramName})`
               );
             } else {
@@ -2129,7 +2129,7 @@
                 enabled,
                 streams,
               });
-              console.log(
+              void(
                 `[Mapping] Added new mapping ${mappingId} (node: ${nodeId}, param: ${paramName})`
               );
             }
@@ -2145,15 +2145,15 @@
             return;
           }
           container.innerHTML = "";
-          console.log(
+          void(
             `[renderMappings] Rendering ${streamMapper.mappings.length} mappings`
           );
           if (streamMapper.mappings.length === 0) {
-            console.warn("[renderMappings] No mappings to render!");
+            void("[renderMappings] No mappings to render!");
             return;
           }
           streamMapper.mappings.forEach((mapping, index) => {
-            console.log(
+            void(
               `[renderMappings] Rendering mapping ${index + 1}:`,
               mapping
             );
@@ -2169,7 +2169,7 @@
               );
             }
           });
-          console.log(
+          void(
             `[renderMappings] Completed rendering ${container.children.length} mapping elements`
           );
         }
@@ -2221,12 +2221,12 @@
           const file = e.target.files[0];
           if (file) {
             try {
-              console.log(`[Import] Attempting to import file: ${file.name}`);
+              void(`[Import] Attempting to import file: ${file.name}`);
               const success = await streamMapper.importMappings(file);
               if (success) {
                 renderMappings();
                 statusEl.textContent = `Imported ${streamMapper.mappings.length} mappings`;
-                console.log(
+                void(
                   `[Import] Successfully imported ${streamMapper.mappings.length} mappings`
                 );
                 setTimeout(() => {
@@ -2412,7 +2412,7 @@
                 (!particleSystem.signalGenerator.particles ||
                   particleSystem.signalGenerator.particles.length === 0)
               ) {
-                console.warn("⚠️ Attempting to reinitialize particles...");
+                void("⚠️ Attempting to reinitialize particles...");
                 // Don't reinitialize here - let the user know there's a problem
               }
 
@@ -2585,7 +2585,7 @@
                   // still use NoiseCraft node parameters (but this is less effective)
                   // Only warn once to avoid spam
                   if (!window._spatialWarningShown) {
-                    console.warn(
+                    void(
                       "[Audio] Web Audio API spatialization not enabled, using NoiseCraft node parameters"
                     );
                     window._spatialWarningShown = true;
@@ -2675,7 +2675,7 @@
                         !window._lastPatternUpdateLog ||
                         Date.now() - window._lastPatternUpdateLog > 2000
                       ) {
-                        console.log(
+                        void(
                           `[Sequencer] Updating patterns - ${
                             isAlone
                               ? "ALONE (single tone)"
@@ -3148,7 +3148,7 @@
                   },
                   "*"
                 );
-                console.log("Auto-save enabled for indiv_audio_map_v2.ncft");
+                void("Auto-save enabled for indiv_audio_map_v2.ncft");
               }, 500);
             }
           });
@@ -3170,14 +3170,14 @@
           } else if (event.data?.type === "noiseCraft:saveStatus") {
             // Handle save status updates from iframe
             if (event.data.status === "saved") {
-              console.log(`✓ Auto-saved ${event.data.filename}`);
+              void(`✓ Auto-saved ${event.data.filename}`);
               // When project is saved, we should embed mappings into it
               // Note: Mappings are loaded from project file on load, so they persist
               // Save mappings to localStorage as backup
               streamMapper.saveToStorage();
             } else if (event.data.status === "error") {
               const errorMsg = event.data.error || "Unknown error";
-              console.warn(
+              void(
                 `✗ Failed to save ${event.data.filename}:`,
                 errorMsg
               );
@@ -3195,7 +3195,7 @@
             // Project loaded, try to load mappings from it
             // Only load if we don't already have mappings (to prevent overwriting user changes)
             if (event.data.projectData && streamMapper.mappings.length === 0) {
-              console.log(
+              void(
                 "[Mapping] Project loaded, checking for embedded mappings..."
               );
               const projectMappings = streamMapper.storage.loadFromProjectFile(
@@ -3204,22 +3204,22 @@
               if (projectMappings && projectMappings.length > 0) {
                 streamMapper.mappings = projectMappings;
                 renderMappings();
-                console.log(
+                void(
                   `[Mapping] Loaded ${projectMappings.length} mappings from project file`
                 );
               } else {
-                console.log(
+                void(
                   "[Mapping] No mappings found in project file, using default sources"
                 );
               }
             } else if (streamMapper.mappings.length > 0) {
-              console.log(
+              void(
                 `[Mapping] Skipping project file mappings - already have ${streamMapper.mappings.length} mappings loaded`
               );
             }
           } else if (event.data?.type === "noiseCraft:nodeSelection") {
             // Handle node selection from NoiseCraft editor
-            console.log("Node selection received:", event.data);
+            void("Node selection received:", event.data);
 
             // Extract data from event with safe defaults - declare all variables at once
             const eventData = event.data || {};
@@ -3231,7 +3231,7 @@
 
             // Only allow Const and Knob nodes
             if (nodeType && nodeType !== "Const" && nodeType !== "Knob") {
-              console.log(
+              void(
                 `Node type ${nodeType} is not selectable. Only Const and Knob nodes can be mapped.`
               );
               return;
@@ -3241,7 +3241,7 @@
               const firstNodeId = String(nodeIds[0]);
               const displayType = nodeType || "unknown";
               const displayName = nodeName || "unnamed";
-              console.log(
+              void(
                 `Processing node selection: ID=${firstNodeId}, type=${displayType}, name=${displayName}`
               );
 
@@ -3261,7 +3261,7 @@
                   name: nodeName || nodeType,
                   params: {},
                 };
-                console.log(`Created new node entry:`, selectedNode);
+                void(`Created new node entry:`, selectedNode);
               }
 
               // Check if browse mode is active - ONLY process selection if browse mode is on
@@ -3276,7 +3276,7 @@
               ) {
                 targetMappingId = iframe.contentWindow.browseModeMappingId;
                 browseModeWasActive = true;
-                console.log(
+                void(
                   `[Browse] Browse mode active, target mapping: ${targetMappingId}`
                 );
 
@@ -3305,7 +3305,7 @@
                 }
               } else {
                 // Browse mode is NOT active - ignore this selection
-                console.log(
+                void(
                   `[Browse] Node selection ignored - browse mode is not active`
                 );
                 return; // Exit early - don't update any mappings
@@ -3313,7 +3313,7 @@
 
               // Only proceed if browse mode was active
               if (!browseModeWasActive || !targetMappingId) {
-                console.log(
+                void(
                   `[Browse] Skipping node selection - browse mode was not active`
                 );
                 return;
@@ -3418,7 +3418,7 @@
                 }
               } else {
                 // Target mapping not found - this shouldn't happen if browse mode was active
-                console.warn(
+                void(
                   `Target mapping ${targetMappingId} not found, but browse mode was active`
                 );
                 // Don't create a new mapping - user must click Browse button first
@@ -3450,7 +3450,7 @@
         setupIndividualViewControls();
 
         // Start animation loop (variables already initialized above)
-        console.log("Starting animation loop...");
+        void("Starting animation loop...");
 
         // Verify particle system before starting animation
         const initialParticles = particleSystem.getParticles();
@@ -3465,7 +3465,7 @@
             particleSystem.signalGenerator?.particles
           );
         } else {
-          console.log(
+          void(
             `✓ Animation starting with ${initialParticles.length} particles`
           );
         }

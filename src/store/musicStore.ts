@@ -336,6 +336,7 @@ export const useMusicStore = create<MusicState>()(
     }),
     {
       name: 'umwelt-music-storage',
+      version: 2,
       partialize: (state) => Object.fromEntries(
         Object.entries(state).filter(([key]) => !['nodeOutputs'].includes(key))
       ),

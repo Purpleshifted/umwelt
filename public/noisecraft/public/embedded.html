@@ -455,12 +455,12 @@
               try {
                 // loadProjectFromSrc already handles cache-busting, no need to add ?t= again
                 const latest = await loadProjectFromSrc(src);
-                console.log(
+                void(
                   "[Load] Loaded latest indiv_audio_map_v2.ncft from server"
                 );
                 return latest;
               } catch (e) {
-                console.warn(
+                void(
                   "[Load] Failed to load latest, trying original:",
                   e
                 );
@@ -473,7 +473,7 @@
             return await loadProjectFromId(projectId);
           }
         } catch (e) {
-          console.warn(
+          void(
             "Failed to load remote project, falling back to default:",
             e
           );
@@ -482,7 +482,7 @@
         try {
           return await loadProjectFromSrc(DEFAULT_PATCH_SRC);
         } catch (e) {
-          console.warn("Failed to load default Falling Waterfalls patch:", e);
+          void("Failed to load default Falling Waterfalls patch:", e);
         }
 
         return defaultProject;
@@ -538,14 +538,14 @@
               audioContextSampleRate: audioView.audioCtx.sampleRate,
             });
 
-            console.log(
+            void(
               "[NoiseCraft] Audio stream ready for spatial processing"
             );
-            console.log(
+            void(
               "[NoiseCraft] MediaStream available at window.noiseCraftMediaStream"
             );
           } catch (err) {
-            console.warn(
+            void(
               "[NoiseCraft] Failed to create MediaStreamDestination:",
               err
             );
@@ -602,7 +602,7 @@
         // force=true allows manual saves even if auto-save is disabled
         if (!filename || (!autoSaveEnabled && !force)) {
           if (!force) {
-            console.warn(
+            void(
               `[Save] Save skipped - filename: ${filename}, autoSaveEnabled: ${autoSaveEnabled}`
             );
           }
@@ -612,7 +612,7 @@
         try {
           const state = model.state;
           if (!state) {
-            console.warn(`[Save] No state available to save ${filename}`);
+            void(`[Save] No state available to save ${filename}`);
             return;
           }
 
@@ -641,15 +641,15 @@
 
               // Log node count for debugging
               const nodeCount = Object.keys(parsed.nodes || {}).length;
-              console.log(`[Save] Serialized state with ${nodeCount} nodes`);
-              console.log(`[Save] Saving to filename: ${filename}`);
+              void(`[Save] Serialized state with ${nodeCount} nodes`);
+              void(`[Save] Saving to filename: ${filename}`);
 
               // Verify the filename matches what we're trying to save
               if (
                 filename !== "indiv_audio_map_v2.ncft" &&
                 filename.endsWith(".ncft")
               ) {
-                console.warn(
+                void(
                   `[Save] Saving to ${filename}, but expected indiv_audio_map_v2.ncft`
                 );
               }
@@ -659,7 +659,7 @@
               formatted = serialized;
             }
 
-            console.log(
+            void(
               `[Save] Sending POST request to /noisecraft/save-ncft/${filename}`
             );
             const response = await fetch(`/noisecraft/save-ncft/${filename}`, {
@@ -669,7 +669,7 @@
               cache: "no-store", // Ensure no caching
             });
 
-            console.log(
+            void(
               `[Save] Response status: ${response.status} ${response.statusText}`
             );
 
@@ -677,10 +677,10 @@
               const result = await response.json();
               const size = result.size || formatted.length;
               const prefix = force ? "[Save]" : "[Auto-save]";
-              console.log(
+              void(
                 `${prefix} ✓ Saved ${filename} to server (${size} bytes)`
               );
-              console.log(`[Save] File path: ${result.path || "unknown"}`);
+              void(`[Save] File path: ${result.path || "unknown"}`);
               notifyParent({
                 type: "noiseCraft:saveStatus",
                 status: "saved",
@@ -732,7 +732,7 @@
             console.error(`[Save] Error saving ${filename}:`, err);
             console.error(`[Save] Error details:`, err.stack || err);
           } else {
-            console.warn(`[Save] Save timeout for ${filename}`);
+            void(`[Save] Save timeout for ${filename}`);
           }
           notifyParent({
             type: "noiseCraft:saveStatus",
@@ -760,7 +760,7 @@
           if (updateCount % 100 === 0) {
             const now = Date.now();
             const elapsed = now - lastUpdateTime;
-            console.log(
+            void(
               `[Model.update] Update #${updateCount}, ${
                 updateCount / (elapsed / 1000)
               } updates/sec, last action: ${actionType}`
@@ -820,7 +820,7 @@
       editor.update = function (newState, action) {
         editorUpdateCount++;
         if (!newState || !newState.nodes) {
-          console.warn(
+          void(
             `[Editor.update] Skipping update #${editorUpdateCount}: invalid state`,
             newState,
             action
@@ -930,7 +930,7 @@
                           const nodeName =
                             model.state.nodes[nodeId]?.name || nodeType;
 
-                          console.log(
+                          void(
                             `Node clicked in browse mode: ${nodeId}, type: ${nodeType}`
                           );
 
@@ -942,7 +942,7 @@
                             editor.selectNodes([nodeIdStr]);
 
                             // Notify parent window about node selection
-                            console.log(
+                            void(
                               `Sending node selection: ${nodeIdStr}, type: ${nodeType}, name: ${nodeName}`
                             );
                             notifyParent({
@@ -952,7 +952,7 @@
                               nodeName: nodeName,
                             });
                           } else {
-                            console.log(
+                            void(
                               `Node type ${nodeType} is not selectable (must be Const or Knob)`
                             );
                           }
@@ -1018,7 +1018,7 @@
                         );
                         edge.moveDst(cx, cy);
                       } catch (err) {
-                        console.warn(
+                        void(
                           "[Editor.update] Error rendering edge:",
                           err
                         );
@@ -1038,7 +1038,7 @@
                             );
                             edge.moveSrc(cx, cy);
                           } catch (err) {
-                            console.warn(
+                            void(
                               "[Editor.update] Error rendering edge:",
                               err
                             );
@@ -1102,7 +1102,7 @@
           try {
             window.parent.postMessage(payload, "*");
           } catch (err) {
-            console.warn("Failed to notify parent window", err);
+            void("Failed to notify parent window", err);
           }
         }
       };
@@ -1128,7 +1128,7 @@
         const hasNodes = !!model?.state?.nodes;
         const nodeCount = hasNodes ? Object.keys(model.state.nodes).length : 0;
         if (!hasState || !hasNodes || nodeCount === 0) {
-          console.warn(
+          void(
             "[Embedded] Refusing to start audio: project not ready",
             {
               hasState,
@@ -1141,7 +1141,7 @@
         }
         // Don't start if already playing
         if (model.playing) {
-          console.log("Already playing, skipping start");
+          void("Already playing, skipping start");
           return;
         }
         try {
@@ -1155,7 +1155,7 @@
             notifyParent({ type: "noiseCraft:audioState", status: "playing" });
           }, 10);
         } catch (err) {
-          console.warn("Failed to start audio automatically", err);
+          void("Failed to start audio automatically", err);
           statusEl.textContent = "Autoplay blocked. Click Start.";
           notifyParent({ type: "noiseCraft:audioState", status: "blocked" });
         }
@@ -1170,8 +1170,8 @@
           autoSaveEnabled = data.enabled !== false;
           autoSaveFilename = data.filename || null;
           if (autoSaveEnabled && autoSaveFilename) {
-            console.log(`[Auto-save] ✓ Enabled for ${autoSaveFilename}`);
-            console.log(
+            void(`[Auto-save] ✓ Enabled for ${autoSaveFilename}`);
+            void(
               `[Auto-save] Editor changes will be automatically saved (debounced: ${SAVE_DEBOUNCE_MS}ms)`
             );
             // Notify parent that auto-save is enabled
@@ -1181,7 +1181,7 @@
               filename: autoSaveFilename,
             });
           } else {
-            console.log(`[Auto-save] Disabled`);
+            void(`[Auto-save] Disabled`);
             notifyParent({
               type: "noiseCraft:autoSaveStatus",
               enabled: false,
@@ -1214,7 +1214,7 @@
           if (!hasModel || !hasState || !hasNodes || nodeCount === 0) {
             // Project not loaded yet, skip parameter updates
             if (!window._projectNotLoadedWarning) {
-              console.warn(
+              void(
                 `[Embedded] Project not fully loaded yet, skipping ${data.params.length} param updates. Model: ${hasModel}, State: ${hasState}, Nodes: ${hasNodes}, Count: ${nodeCount}`
               );
               window._projectNotLoadedWarning = true;
@@ -1232,7 +1232,7 @@
               !window._lastEmbeddedParamLog ||
               Date.now() - window._lastEmbeddedParamLog > 2000
             ) {
-              console.log(
+              void(
                 "[Embedded] received params",
                 data.params.length,
                 "params:",
@@ -1269,15 +1269,15 @@
                   const n = app.model?.state?.nodes?.[nid];
                   return `${nid}(${n?.type || "?"})`;
                 });
-                console.warn(
+                void(
                   `[Embedded] Node ${id} not found in model. Total nodes: ${allNodeIds.length}`
                 );
-                console.warn(
+                void(
                   `[Embedded] Sample node IDs: ${sampleNodes.join(", ")}${
                     allNodeIds.length > 10 ? "..." : ""
                   }`
                 );
-                console.warn(`[Embedded] Model state:`, {
+                void(`[Embedded] Model state:`, {
                   hasModel: !!app.model,
                   hasState: !!app.model?.state,
                   hasNodes: !!app.model?.state?.nodes,
@@ -1306,10 +1306,10 @@
               if (!window._missingParams) window._missingParams = new Set();
               const key = `${id}.${paramName}`;
               if (!window._missingParams.has(key)) {
-                console.warn(
+                void(
                   `[Embedded] Param ${paramName} not found in node ${id} (type: ${node.type})`
                 );
-                console.warn(
+                void(
                   `[Embedded] Available params:`,
                   Object.keys(node.params || {})
                 );
@@ -1330,7 +1330,7 @@
               (!window._lastValueLog ||
                 Date.now() - window._lastValueLog > 1000)
             ) {
-              console.log(
+              void(
                 `[Embedded] Updated ${id}.${paramName}: ${oldValue?.toFixed(
                   3
                 )} → ${param.value.toFixed(3)}`
@@ -1345,7 +1345,7 @@
             Date.now() - window._lastSummaryLog > 3000
           ) {
             if (updatedCount > 0 || skippedCount > 0) {
-              console.log(
+              void(
                 `[Embedded] Params update: ${updatedCount} updated, ${skippedCount} skipped`
               );
             }
@@ -1367,7 +1367,7 @@
                   !window._lastToggleCellWarning ||
                   Date.now() - window._lastToggleCellWarning > 5000
                 ) {
-                  console.warn(
+                  void(
                     `[Embedded] Node ${nodeId} not found for toggleCell`
                   );
                   window._lastToggleCellWarning = Date.now();
@@ -1421,14 +1421,14 @@
                   !window._lastToggleCellPatternWarning ||
                   Date.now() - window._lastToggleCellPatternWarning > 5000
                 ) {
-                  console.warn(
+                  void(
                     `[Embedded] Pattern not found for node ${nodeId}, patIdx ${patIdx}, stepIdx ${stepIdx}`
                   );
                   window._lastToggleCellPatternWarning = Date.now();
                 }
               }
             } catch (e) {
-              console.warn("Failed to toggle cell:", e);
+              void("Failed to toggle cell:", e);
             }
           }
         } else if (data.type === "noiseCraft:play") {
@@ -1436,7 +1436,7 @@
         } else if (data.type === "noiseCraft:stop") {
           // Don't stop if already stopped
           if (!model.playing) {
-            console.log("Already stopped, skipping stop");
+            void("Already stopped, skipping stop");
             syncButtonStates();
             return;
           }
@@ -1489,7 +1489,7 @@
         } else if (data.type === "noiseCraft:redraw") {
           // Force redraw edges and SVG
           if (app.editor) {
-            console.log("Forcing editor redraw");
+            void("Forcing editor redraw");
             app.editor.resize();
           }
         }
@@ -1515,12 +1515,12 @@
           : 0;
 
         if (hasModel && hasState && hasNodes && nodeCount > 0) {
-          console.log(
+          void(
             `[Embedded] Project fully loaded: ${nodeCount} nodes available`
           );
           clearInterval(checkStateReady);
         } else if (stateCheckAttempts >= maxStateCheckAttempts) {
-          console.warn(
+          void(
             `[Embedded] Project state check timeout after ${maxStateCheckAttempts} attempts`
           );
           clearInterval(checkStateReady);
@@ -1534,7 +1534,7 @@
         const match = loadSrc.match(/([^\/]+\.ncft)(?:\?|$)/);
         if (match) {
           autoSaveFilename = match[1];
-          console.log(
+          void(
             `[Save] Set auto-save filename from URL: ${autoSaveFilename}`
           );
         }
@@ -1571,13 +1571,13 @@
           setTimeout(() => {
             const svg = document.getElementById("graph_svg");
             if (svg) {
-              console.log(`SVG contains ${svg.children.length} edge elements`);
+              void(`SVG contains ${svg.children.length} edge elements`);
               // Verify edges have valid path data
               const paths = Array.from(svg.querySelectorAll("path"));
               const validPaths = paths.filter(
                 (p) => p.getAttribute("d") && p.getAttribute("d").length > 0
               );
-              console.log(
+              void(
                 `${validPaths.length} of ${paths.length} edges have valid path data`
               );
             }
@@ -1599,7 +1599,7 @@
       btnStop.onclick = () => {
         // Don't stop if already stopped
         if (!model.playing) {
-          console.log("Already stopped, skipping stop");
+          void("Already stopped, skipping stop");
           syncButtonStates();
           return;
         }
@@ -1672,11 +1672,11 @@
                 app.updateParam(msg.nodeId, msg.paramName, msg.value);
               }
             } catch (e) {
-              console.warn("WS message parse error", e);
+              void("WS message parse error", e);
             }
           });
         } catch (e) {
-          console.warn("Failed to open WebSocket:", e);
+          void("Failed to open WebSocket:", e);
         }
       }
 
@@ -1704,11 +1704,11 @@
                   app.updateParam(msg.nodeId, msg.paramName, msg.value);
                 }
               } catch (e) {
-                console.warn("IO param handler error", e);
+                void("IO param handler error", e);
               }
             });
           } catch (e) {
-            console.warn("Failed to open Socket.IO:", e);
+            void("Failed to open Socket.IO:", e);
           }
         };
         document.head.appendChild(script);
@@ -1762,7 +1762,7 @@
               const match = src.match(/([^\/]+\.ncft)(?:\?|$)/);
               if (match) {
                 filename = match[1];
-                console.log(`[Save] Extracted filename from URL: ${filename}`);
+                void(`[Save] Extracted filename from URL: ${filename}`);
               }
             }
 
@@ -1770,7 +1770,7 @@
             if (!filename) {
               if (autoSaveFilename) {
                 filename = autoSaveFilename;
-                console.log(`[Save] Using auto-save filename: ${filename}`);
+                void(`[Save] Using auto-save filename: ${filename}`);
               } else {
                 // Fallback: try to get from project title or use default
                 const projectTitle = document.getElementById("project_title");
@@ -1782,12 +1782,12 @@
                 } else {
                   filename = "indiv_audio_map_v2.ncft"; // Default for this workspace
                 }
-                console.log(`[Save] Using fallback filename: ${filename}`);
+                void(`[Save] Using fallback filename: ${filename}`);
               }
             }
 
-            console.log(`[Save] Manual save triggered for ${filename}`);
-            console.log(
+            void(`[Save] Manual save triggered for ${filename}`);
+            void(
               `[Save] URL src param: ${src}, extracted filename: ${filename}`
             );
             if (statusEl) statusEl.textContent = "Saving...";
@@ -1795,7 +1795,7 @@
             // Save immediately (no debounce for manual save, force=true bypasses autoSaveEnabled check)
             saveProjectToServer(filename, true)
               .then(() => {
-                console.log(`[Save] Successfully saved to ${filename}`);
+                void(`[Save] Successfully saved to ${filename}`);
                 if (statusEl) statusEl.textContent = `✓ Saved ${filename}`;
                 notifyParent({
                   type: "noiseCraft:saveStatus",
@@ -1826,13 +1826,13 @@
 
           // Ctrl + Z (undo) - also handle Ctrl+Shift+Z for redo on some systems
           if (event.code == "KeyZ" && !event.shiftKey) {
-            console.log("[Undo] Attempting undo...");
+            void("[Undo] Attempting undo...");
             event.preventDefault();
             event.stopPropagation();
             try {
               const hadUndo = model.undoStack && model.undoStack.length > 0;
               model.undo();
-              console.log("[Undo]", hadUndo ? "Undone" : "No undo history");
+              void("[Undo]", hadUndo ? "Undone" : "No undo history");
             } catch (err) {
               console.error("[Undo] Error:", err);
             }
@@ -1842,13 +1842,13 @@
             (event.code == "KeyZ" && event.shiftKey) ||
             event.code == "KeyY"
           ) {
-            console.log("[Redo] Attempting redo...");
+            void("[Redo] Attempting redo...");
             event.preventDefault();
             event.stopPropagation();
             try {
               const hadRedo = model.redoStack && model.redoStack.length > 0;
               model.redo();
-              console.log("[Redo]", hadRedo ? "Redone" : "No redo history");
+              void("[Redo]", hadRedo ? "Redone" : "No redo history");
             } catch (err) {
               console.error("[Redo] Error:", err);
             }
@@ -1861,14 +1861,14 @@
           }
           // Ctrl + G (group nodes) - only on localhost
           else if (event.code == "KeyG" && location.hostname == "localhost") {
-            console.log("group nodes");
+            void("group nodes");
             event.preventDefault();
             event.stopPropagation();
             editor.groupSelected();
           }
           // Ctrl + D (duplicate nodes)
           else if (event.code == "KeyD") {
-            console.log("duplicate nodes");
+            void("duplicate nodes");
             event.preventDefault();
             event.stopPropagation();
             if (editor.selected && editor.selected.length > 0) {
@@ -1893,7 +1893,7 @@
 
         // Delete or backspace key
         if (event.code == "Backspace" || event.code == "Delete") {
-          console.log("delete key");
+          void("delete key");
           event.preventDefault();
           event.stopPropagation();
           editor.deleteSelected();
