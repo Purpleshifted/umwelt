@@ -548,7 +548,7 @@ export function normalizeNode(node)
     {
         if (node.params.minVal > node.params.maxVal)
         {
-            console.log('flipping minVal and maxVal');
+            void('flipping minVal and maxVal');
             let maxVal = node.params.minVal;
             node.params.minVal = node.params.maxVal;
             node.params.maxVal = maxVal;
@@ -568,7 +568,7 @@ export function normalizeNode(node)
         if (param.name in node.params)
             continue;
 
-        //console.log(node.type, param.name);
+        //void(node.type, param.name);
         node.params[param.name] = param.default;
     }
 
@@ -764,7 +764,7 @@ export function validateParams(nodeType, params)
         }
 
         let value = params[param.name];
-        //console.log(param.name, value);
+        //void(param.name, value);
 
         if (typeof param.default == 'number')
         {
@@ -865,7 +865,7 @@ export function resetState(project)
         {
             if (!nodeProps.has(key) && !stateVars.has(key))
             {
-                console.log('deleting', node.type, key);
+                void('deleting', node.type, key);
                 delete node[key];
             }
         }
@@ -1189,7 +1189,7 @@ export class Paste extends Action
 
     update(model)
     {
-        console.log('paste nodes');
+        void('paste nodes');
 
         let nodeIdMap = {};
 
@@ -1455,7 +1455,7 @@ export class GroupNodes extends Action
 
     update(model)
     {
-        console.log('grouping nodes');
+        void('grouping nodes');
 
         // Create a module node
         let module = {
@@ -1542,7 +1542,7 @@ export class GroupNodes extends Action
             }
         }
 
-        console.log(`num module ins: ${module.ins.length}`);
+        void(`num module ins: ${module.ins.length}`);
 
         // List of output ports (tuples) that are connected to outside nodes
         let outPorts = [];
@@ -1580,7 +1580,7 @@ export class GroupNodes extends Action
             }
         }
 
-        console.log(`num module outs: ${module.outNames.length}`);
+        void(`num module outs: ${module.outNames.length}`);
     }
 }
 
@@ -2278,7 +2278,7 @@ export class Model
     // Returns the minimum information required to copy a set of nodes
     copy(nodeIds)
     {
-        console.log('copy nodes');
+        void('copy nodes');
 
         let data = {
             nodes: {}
@@ -2336,7 +2336,7 @@ export class Model
     // Apply an action to the model
     update(action)
     {
-        //console.log('update model', action.constructor.name);
+        //void('update model', action.constructor.name);
 
         assert (!('nodeId' in action) || action.nodeId in this.state.nodes);
 

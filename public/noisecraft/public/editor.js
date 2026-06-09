@@ -71,7 +71,7 @@ export class Editor {
       // Ignore right clicks
       if (evt.button != 0) return;
 
-      console.log("editor mouse down");
+      void("editor mouse down");
 
       let mousePos = this.getMousePos(evt);
       this.startMousePos = mousePos;
@@ -107,7 +107,7 @@ export class Editor {
 
     // Mouse click callback
     function onPointerUp(evt) {
-      console.log("editor click");
+      void("editor click");
 
       if (evt.pointerId) {
         this.editorDiv.releasePointerCapture(evt.pointerId);
@@ -125,7 +125,7 @@ export class Editor {
       // If in the process of connecting an edge, and there's a
       // click anywhere that's not another port, cancel the connection
       if (this.edge) {
-        console.log("abort edge connection");
+        void("abort edge connection");
         this.svg.removeChild(this.edge.line);
         this.edge = null;
         return;
@@ -158,7 +158,7 @@ export class Editor {
 
     // Start playback
     if (action instanceof model.Play) {
-      console.log("start playback");
+      void("start playback");
 
       for (let node of this.nodes.values()) {
         node.startPlayback();
@@ -167,7 +167,7 @@ export class Editor {
 
     // Stop playback
     if (action instanceof model.Stop) {
-      console.log("stop playback");
+      void("stop playback");
 
       for (let node of this.nodes.values()) {
         node.stopPlayback();
@@ -193,7 +193,7 @@ export class Editor {
           } else {
             // Log warning only occasionally to reduce spam
             if (!window._missingNodeForSetValue || Date.now() - window._missingNodeForSetValue > 5000) {
-              console.warn(`[Editor] Node ${action.nodeId} not found for SetParam(value=${action.value})`);
+              void(`[Editor] Node ${action.nodeId} not found for SetParam(value=${action.value})`);
               window._missingNodeForSetValue = Date.now();
             }
           }
@@ -270,7 +270,7 @@ export class Editor {
 
     // Log only occasionally to reduce console spam
     if (!window._lastRecreateLog || Date.now() - window._lastRecreateLog > 5000) {
-      console.log("recreating UI nodes");
+      void("recreating UI nodes");
       window._lastRecreateLog = Date.now();
     }
 
@@ -401,11 +401,11 @@ export class Editor {
     nodeIds = Array.from(nodeIds);
     // Log only occasionally to reduce console spam
     if (!window._lastSelectLog || Date.now() - window._lastSelectLog > 5000) {
-      console.log(`selecting ${nodeIds.length} nodes`);
+      void(`selecting ${nodeIds.length} nodes`);
       window._lastSelectLog = Date.now();
     }
     if (nodeIds.length) {
-      console.log("[NoiseCraft Editor] selected nodeIds:", nodeIds);
+      void("[NoiseCraft Editor] selected nodeIds:", nodeIds);
     }
 
     // Unhighlight the currently selected nodes
@@ -471,7 +471,7 @@ export class Editor {
 
   // Show node creation dialog
   createNodeDialog(mousePos) {
-    console.log("createNodeDialog");
+    void("createNodeDialog");
 
     // Dialog contents
     var dialog = new Dialog("Create Node");
@@ -522,7 +522,7 @@ export class Editor {
     // Can't start a drag if one is already in progress
     if (this.startDragPos) return;
 
-    console.log("starting drag");
+    void("starting drag");
 
     if (shiftKey) {
       let idx = this.selected.indexOf(nodeId);
@@ -550,7 +550,7 @@ export class Editor {
     // Can't stop a drag if none is in progress
     if (!this.startDragPos) return;
 
-    console.log("end drag");
+    void("end drag");
 
     // Compute how much we've moved the nodes
     let dragPos = this.getDragPos();
@@ -886,7 +886,7 @@ class UINode {
 
       evt.stopPropagation();
 
-      console.log("pointerdown on node");
+      void("pointerdown on node");
       
       // Notify parent window for mapping editor
       window.parent.postMessage({ 
@@ -1019,13 +1019,13 @@ class UINode {
     portDiv.className = side == "dst" ? "node_in_port" : "node_out_port";
 
     portDiv.onpointerdown = (evt) => {
-      console.log(`pointer down ${portName} ${side}`);
+      void(`pointer down ${portName} ${side}`);
       evt.stopPropagation();
       portClick.call(this, "down");
     };
 
     portDiv.onpointerup = (evt) => {
-      console.log(`pointer up ${portName} ${side}`);
+      void(`pointer up ${portName} ${side}`);
       evt.stopPropagation();
       portClick.call(this, "up");
     };
@@ -1144,7 +1144,7 @@ class UINode {
       } catch (e) {
         // If model updates fail, we don't close the dialog
         dialog.showError(e.message);
-        console.log(e);
+        void(e);
         return;
       }
 
@@ -1488,14 +1488,14 @@ class MidiIn extends UINode {
     if (vel > 0) {
       if (this.notesOn.has(noteNo)) return;
 
-      console.log("note on:", noteNo);
+      void("note on:", noteNo);
       this.send(new model.NoteOn(this.nodeId, noteNo, vel));
       this.notesOn.add(noteNo);
       this.lightDiv.style.background = "#F00";
     } else {
       if (!this.notesOn.has(noteNo)) return;
 
-      console.log("note off:", noteNo);
+      void("note off:", noteNo);
       this.send(new model.NoteOn(this.nodeId, noteNo, 0));
       this.notesOn.delete(noteNo);
       this.lightDiv.style.background = "#333";
@@ -1819,7 +1819,7 @@ class Sequencer extends UINode {
       cell.onpointerup = (evt) => evt.stopPropagation();
 
       cell.onclick = (evt) => {
-        console.log("clicked " + i + ", " + j);
+        void("clicked " + i + ", " + j);
         this.send(new model.ToggleCell(this.nodeId, patIdx, i, j));
 
         evt.stopPropagation();
@@ -1896,11 +1896,11 @@ class Sequencer extends UINode {
     // If audio is playing, queue the next pattern,
     // otherwise immediately set the next pattern
     if (this.editor.model.playing) {
-      console.log("sending QueuePattern");
+      void("sending QueuePattern");
 
       this.send(new model.QueuePattern(this.nodeId, patIdx));
     } else {
-      console.log("sending SetPattern");
+      void("sending SetPattern");
 
       this.send(new model.SetPattern(this.nodeId, patIdx));
     }
@@ -2271,7 +2271,7 @@ class AI_Seq extends UINode {
       select.appendChild(defaultOpt);
 
       if (window._musicModules) {
-        console.log("[AI_Seq] Updating options with modules:", window._musicModules);
+        void("[AI_Seq] Updating options with modules:", window._musicModules);
         window._musicModules.forEach(mod => {
           let opt = document.createElement("option");
           opt.value = mod.id;

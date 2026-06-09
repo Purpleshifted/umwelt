@@ -249,16 +249,16 @@ export function compile(graph)
     let order = topoSort(graph);
     // Log only occasionally to reduce console spam
     if (!window._lastTopoLog || Date.now() - window._lastTopoLog > 5000) {
-      console.log('num nodes in topo order: ', order.length);
+      void('num nodes in topo order: ', order.length);
       window._lastTopoLog = Date.now();
     }
 
     /*
     for (let node of order)
     {
-        console.log(node.type, node.id);
+        void(node.type, node.id);
     }
-    console.log();
+    void();
     */
 
     // Find the audio output node
@@ -286,7 +286,7 @@ export function compile(graph)
     for (let nodeId of order)
     {
         let node = graph.nodes[nodeId];
-        //console.log(`compiling ${node.type}, nodeId=${nodeId}`);
+        //void(`compiling ${node.type}, nodeId=${nodeId}`);
 
         if (node.type == 'Add')
         {
@@ -605,7 +605,7 @@ export function compile(graph)
         addLine('return [0, 0]');
     }
 
-    //console.log(src);
+    //void(src);
 
     // This will be assembled into an audio processing graph
     // by the audio thread (audioworklet.js)

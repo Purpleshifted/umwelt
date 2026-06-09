@@ -736,7 +736,7 @@ class Sequencer extends AudioNode
      */
     queuePattern(patIdx, patData)
     {
-        console.log(`got queuePattern, patIdx=${patIdx}`);
+        void(`got queuePattern, patIdx=${patIdx}`);
 
         this.state.patterns[patIdx] = patData;
         this.nextPat = patIdx;

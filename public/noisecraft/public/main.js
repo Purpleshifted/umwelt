@@ -104,7 +104,7 @@ document.body.onload = async function ()
     }
     catch (e)
     {
-        console.log(e.stack);
+        void(e.stack);
 
         // If loading failed, we don't want to reload
         // the same data again next time
@@ -159,7 +159,7 @@ window.onkeydown = function (event)
         // Ctrl + Z (undo)
         if (event.code == 'KeyZ')
         {
-            console.log('undo');
+            void('undo');
             event.preventDefault();
             model.undo();
         }
@@ -167,7 +167,7 @@ window.onkeydown = function (event)
         // Ctrl + Y (redo)
         if (event.code == 'KeyY')
         {
-            console.log('redo');
+            void('redo');
             event.preventDefault();
             model.redo();
         }
@@ -182,7 +182,7 @@ window.onkeydown = function (event)
         // Ctrl + G (group nodes)
         if (event.code == 'KeyG' && location.hostname == 'localhost')
         {
-            console.log('group nodes');
+            void('group nodes');
             event.preventDefault();
             editor.groupSelected();
         }
@@ -193,7 +193,7 @@ window.onkeydown = function (event)
     // Delete or backspace key
     if (event.code == 'Backspace' || event.code == 'Delete')
     {
-        console.log('delete key');
+        void('delete key');
         event.preventDefault();
         editor.deleteSelected();
         return;
@@ -243,7 +243,7 @@ document.onpaste = function (evt)
 
     catch (e)
     {
-        console.log(e);
+        void(e);
     }
 }
 
@@ -278,7 +278,7 @@ async function syncCurrentProject(serializedModelData)
     }
     catch (err)
     {
-        console.warn('Failed to sync current project to embed', err);
+        void('Failed to sync current project to embed', err);
     }
 }
 
@@ -620,7 +620,7 @@ function startPlayback()
     if (model.playing)
         return;
 
-    console.log('starting playback');
+    void('starting playback');
 
     // Hide the play button
     btnPlay.style.display = 'none';
@@ -635,7 +635,7 @@ function stopPlayback()
     if (!model.playing)
         return;
 
-    console.log('stopping playback');
+    void('stopping playback');
 
     // Hide the stop button
     btnPlay.style.display = 'inline-flex';
@@ -648,7 +648,7 @@ function stopPlayback()
 // Warn users that NoiseCraft works best in Chrome
 function browserWarning()
 {
-    console.log('browserWarning');
+    void('browserWarning');
 
     let agent = navigator.userAgent;
 

@@ -127,7 +127,7 @@ export class AudioView
 
         // Log only occasionally to reduce console spam
         if (!window._lastRecompileLog || Date.now() - window._lastRecompileLog > 5000) {
-          console.log('recompile unit');
+          void('recompile unit');
           window._lastRecompileLog = Date.now();
         }
 

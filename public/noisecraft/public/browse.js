@@ -119,7 +119,7 @@ function fillChunk(chunkDiv, fromIdx, rows)
 // Populate a div with a chunk of projects to display
 function populate(sectionDiv, fromIdx, queryStr, chunkDiv)
 {
-    console.log('Populating from', fromIdx);
+    void('Populating from', fromIdx);
 
     let xhr = new XMLHttpRequest()
     xhr.open("GET", `list/${fromIdx}${queryStr}`, true);
@@ -151,7 +151,7 @@ function populate(sectionDiv, fromIdx, queryStr, chunkDiv)
 // Create a chunk of project listings to be populated
 function createChunk(sectionDiv, fromIdx, queryStr)
 {
-    //console.log('creating chunk, from', fromIdx);
+    //void('creating chunk, from', fromIdx);
 
     // Create a div for this chunk
     var chunkDiv = document.createElement('div');

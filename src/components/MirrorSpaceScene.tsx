@@ -28,15 +28,7 @@ function mulberry32(seed: number) {
 function PointGrid() {
   const pointsRef = useRef<THREE.Points>(null);
 
-  // Read valence/arousal from harmonic_progressor module
-  const harmonicConfig = useMusicStore(
-    (s) => s.modules.find((m) => m.type === 'harmonic_progressor')?.harmonicProgressorConfig
-  );
-
-  const rawValence = harmonicConfig?.valence ?? 0.5;
-  const rawArousal = harmonicConfig?.arousal ?? 0.5;
-
-  // Smoothed values via refs (lerped each frame)
+  // Smoothed values via refs (lerped each frame) — NO React subscription
   const smoothedRef = useRef({ valence: 0.5, arousal: 0.5 });
 
   // Build the base grid positions (never changes)
@@ -75,6 +67,11 @@ function PointGrid() {
   const tempColor = useMemo(() => new THREE.Color(), []);
 
   useFrame((state) => {
+    // Read directly from store (no React re-render)
+    const hc = useMusicStore.getState().modules.find(m => m.type === 'harmonic_progressor')?.harmonicProgressorConfig;
+    const rawValence = hc?.valence ?? 0.5;
+    const rawArousal = hc?.arousal ?? 0.5;
+
     const LERP = 0.02;
     const sm = smoothedRef.current;
     sm.valence = sm.valence + (rawValence - sm.valence) * LERP;

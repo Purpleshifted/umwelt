@@ -395,7 +395,7 @@ class MusicEngine {
       }
       
       this.updateDynamicParameters();
-    }, 100); // ~10fps — audio precision handled by Tone.Transport
+    }, 300); // ~3fps — audio timing is Tone.Transport's job, not ours
   }
 
   stop() {
