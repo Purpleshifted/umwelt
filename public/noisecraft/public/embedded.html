@@ -164,6 +164,7 @@
         Stop,
         ToggleCell,
         SetSequence,
+        Paste,
       } from "./model.js";
       import { AudioView } from "./audioview.js";
       import { Editor } from "./editor.js";
@@ -1864,6 +1865,27 @@
             event.preventDefault();
             event.stopPropagation();
             editor.groupSelected();
+          }
+          // Ctrl + D (duplicate nodes)
+          else if (event.code == "KeyD") {
+            console.log("duplicate nodes");
+            event.preventDefault();
+            event.stopPropagation();
+            if (editor.selected && editor.selected.length > 0) {
+              try {
+                const copyData = model.copy(editor.selected);
+                let minX = Infinity, minY = Infinity;
+                for (const id in copyData.nodes) {
+                  const node = copyData.nodes[id];
+                  if (node.x < minX) minX = node.x;
+                  if (node.y < minY) minY = node.y;
+                }
+                // Paste slightly offset from original
+                model.update(new Paste(copyData, minX + 20, minY + 20));
+              } catch (e) {
+                console.error("Duplicate failed:", e);
+              }
+            }
           }
 
           return;

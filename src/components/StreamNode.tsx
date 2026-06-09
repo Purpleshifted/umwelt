@@ -1,8 +1,13 @@
 import React from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
-import { useAudioMapStore, VirtualStream, SensorType, MathOperation } from '@/store/audioMapStore';
+import { useAudioMapStore, VirtualStream, SensorType, MathOperation, UIElementType } from '@/store/audioMapStore';
 import styles from './StreamNode.module.css';
 import SignalScope from './SignalScope';
+
+const UI_ELEMENTS: { value: UIElementType; label: string }[] = [
+  { value: 'button', label: 'Button (Momentary)' },
+  { value: 'toggle', label: 'Toggle (On/Off)' },
+];
 
 const SENSOR_TYPES: { value: SensorType; label: string }[] = [
   { value: 'ppg', label: 'PPG' },
@@ -61,7 +66,7 @@ export default function StreamNode({ id, data, selected }: StreamNodeProps) {
   return (
     <>
       <NodeResizer minWidth={160} minHeight={100} isVisible={selected} lineClassName={styles.resizeLine} handleClassName={styles.resizeHandle} />
-      <div className={`${styles.node} ${selected ? styles.selected : ''}`}>
+      <div className={`${styles.node} ${selected ? styles.selected : ''} ${stream.type === 'sectionBox' ? styles.sectionBoxNode : ''}`}>
         <div className={styles.header}>
           <input 
             className={styles.nameInput}
@@ -304,17 +309,105 @@ export default function StreamNode({ id, data, selected }: StreamNodeProps) {
           </div>
         )}
 
-        {stream.type !== 'constant' && (
+        {stream.type === 'monitor' && (
+          <div className={styles.mathBody}>
+            <div style={{ padding: '6px 0', textAlign: 'center', fontSize: '10px', color: '#4ecdc4', fontWeight: 'bold', letterSpacing: '1px' }}>
+              MONITOR OUT
+            </div>
+            <div className={styles.handlesRow}>
+              <div className={styles.handleWrapper}>
+                <span className={styles.handleLabel}>In</span>
+                <Handle type="target" position={Position.Left} id="sourceA" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {stream.type === 'ui' && (
+          <div className={styles.mathBody}>
+            <div className={styles.row}>
+              <label>Element:</label>
+              <select value={stream.uiElement ?? 'toggle'} onChange={(e) => handleChange({ uiElement: e.target.value as UIElementType })} className="nodrag">
+                {UI_ELEMENTS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
+              </select>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
+              {(stream.uiElement ?? 'toggle') === 'toggle' ? (
+                <button
+                  className="nodrag"
+                  onClick={() => handleChange({ constantValue: stream.constantValue ? 0 : 1 })}
+                  style={{
+                    background: stream.constantValue ? '#a78bfa' : 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '4px',
+                    color: 'white',
+                    padding: '6px 20px',
+                    cursor: 'pointer',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    transition: 'background 0.15s',
+                  }}
+                >
+                  {stream.constantValue ? 'ON' : 'OFF'}
+                </button>
+              ) : (
+                <button
+                  className="nodrag"
+                  onMouseDown={() => handleChange({ constantValue: 1 })}
+                  onMouseUp={() => handleChange({ constantValue: 0 })}
+                  onMouseLeave={() => handleChange({ constantValue: 0 })}
+                  style={{
+                    background: stream.constantValue ? '#a78bfa' : 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '4px',
+                    color: 'white',
+                    padding: '6px 20px',
+                    cursor: 'pointer',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    transition: 'background 0.05s',
+                  }}
+                >
+                  PUSH
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {stream.type === 'sectionBox' && (
+          <div style={{ padding: '8px 10px', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>
+            <input
+              className="nodrag"
+              value={stream.sectionLabel ?? ''}
+              placeholder="Section label..."
+              onChange={(e) => handleChange({ sectionLabel: e.target.value })}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                borderBottom: '1px solid rgba(255,255,255,0.15)',
+                color: 'rgba(255,255,255,0.7)',
+                fontSize: '11px',
+                width: '100%',
+                outline: 'none',
+              }}
+            />
+          </div>
+        )}
+
+        {stream.type !== 'constant' && stream.type !== 'sectionBox' && stream.type !== 'ui' && (
           <div className={styles.scopeWrapper}>
             <SignalScope streamId={id} />
           </div>
         )}
       </div>
 
-      <div className={styles.outHandleWrapper}>
-        <span className={styles.handleLabel}>Out</span>
-        <Handle type="source" position={Position.Right} id="out" className={styles.handle} />
-      </div>
+      {stream.type !== 'sectionBox' && (
+        <div className={styles.outHandleWrapper}>
+          <span className={styles.handleLabel}>Out</span>
+          <Handle type="source" position={Position.Right} id="out" className={styles.handle} />
+        </div>
+      )}
     </div>
   </>
 );

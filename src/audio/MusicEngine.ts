@@ -6,6 +6,8 @@ import { useSensorStore } from '@/store/sensorStore';
 import { getNoiseCraftBridge } from './NoiseCraftBridge';
 import { getMoodProgression } from './chord_library';
 import { getSamplerEngine } from './SamplerEngine';
+import { fetchGeminiHarmony, chordsToReadable } from './gemini_harmony';
+import { getNearestMoods } from './mood_keywords';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -15,6 +17,7 @@ interface ModulePlaybackState {
   cursor: number;
   seqLength: number;
   isGenerating: boolean;
+  cycle?: number;
 }
 
 /** Data produced by a chord_progression node. */
@@ -186,13 +189,16 @@ function topologicalSort(modules: MusicModule[], edges: any[]): string[] {
   // which break topological sort. Also ensure we only use data flow handles.
   const dataHandles = new Set([
     'chordData', 'sequence', 'voice_0', 'voice_1', 'voice_2', 'voice_3',
-    'instrument', 'audio_out', 'envelope', 'audio_in', 'trigger_in'
+    'instrument', 'audio_out', 'envelope', 'audio_in', 'trigger_in',
+    'out', 'in',
+    'seqA', 'seqB', 'rhythm', 'voicing', 'density', 'swingAmount', 'temperature',
+    'morphAmount', 'trigger', 'stream_in'
   ]);
 
   for (const e of edges) {
     if (!moduleIds.has(e.source) || !moduleIds.has(e.target)) continue;
-    if (e.targetHandle === 'fx_in') continue; // Break FX loops!
-    if (!dataHandles.has(e.sourceHandle ?? '')) continue;
+    if (e.targetHandle === 'fx_in') continue; // Break FX insert loops!
+    // All other edges contribute to the dependency graph
     adj.get(e.source)!.push(e.target);
     inDeg.set(e.target, (inDeg.get(e.target) ?? 0) + 1);
   }
@@ -279,15 +285,29 @@ class MusicEngine {
       this.rnn = new rnnModule.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
       this.drumRnn = new rnnModule.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/drum_kit_rnn');
       
+      // Initialize MusicVAE for sequence_morpher
+      this.vae = new vaeModule.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_small_q2');
+
       try {
         await Promise.all([
           this.rnn.initialize(),
-          this.drumRnn.initialize()
+          this.drumRnn.initialize(),
+          this.vae.initialize(),
         ]);
         this.initialized = true;
-        console.log('[MusicEngine] Magenta initialized in main thread');
+        console.log('[MusicEngine] Magenta (RNN + VAE) initialized in main thread');
       } catch (err) {
         console.error('[MusicEngine] Magenta initialization failed', err);
+        // Only set initialized if rnn actually finished loading its weights.
+        // Checking isInitialized() avoids the partial-init false-positive.
+        try {
+          if (this.rnn && (this.rnn as any).isInitialized?.()) {
+            this.initialized = true;
+            console.warn('[MusicEngine] Partial init — RNN only (VAE failed)');
+          } else {
+            console.warn('[MusicEngine] Magenta not usable — falling back to procedural throughout');
+          }
+        } catch { /* ignore */ }
       }
     }
     
@@ -375,7 +395,7 @@ class MusicEngine {
       }
       
       this.updateDynamicParameters();
-    }, 1000 / 60);
+    }, 100); // ~10fps — audio precision handled by Tone.Transport
   }
 
   stop() {
@@ -417,7 +437,11 @@ class MusicEngine {
       'filter',
       'adsr_envelope',
       'pedal_fx',
-      'effect_chain'
+      'effect_chain',
+      'null_node',
+      'player_out',
+      'player_node',
+      'reverb'
     ]);
 
     const dagModules = musicState.modules.filter((m) => dagTypes.has(m.type));
@@ -428,7 +452,7 @@ class MusicEngine {
     const dagStateKey = '__dag__';
     let dagState = this.moduleStates.get(dagStateKey);
     if (!dagState) {
-      dagState = { cursor: 0, seqLength: 0, isGenerating: false };
+      dagState = { cursor: 0, seqLength: 0, isGenerating: false, cycle: 0 };
       this.moduleStates.set(dagStateKey, dagState);
     }
 
@@ -440,9 +464,10 @@ class MusicEngine {
       // Prevent drift by subtracting the exact needed pulses, rather than resetting to 0
       dagState.cursor -= dagPulsesNeeded;
       
-      this.evaluateDAG(dagModules, musicState, audioState).then(() => {
+      this.evaluateDAG(dagModules, musicState, audioState, dagState.cycle).then(() => {
         dagState!.seqLength = 16;
         dagState!.isGenerating = false;
+        dagState!.cycle = (dagState!.cycle || 0) + 1;
         
         // Update Tone.Part instances dynamically with the newly generated sequences
         const state = useMusicStore.getState();
@@ -501,9 +526,18 @@ class MusicEngine {
   // DAG evaluation
   // -----------------------------------------------------------------------
 
-  private async evaluateDAG(dagModules: MusicModule[], musicState: any, audioState: any) {
+  private async evaluateDAG(dagModules: MusicModule[], musicState: any, audioState: any, dagCycle: number = 0) {
     const seqLength = 16;
     const results = new Map<string, any>();
+    // Store cycle for melody_gen cache invalidation
+    (this as any)._currentDagCycle = dagCycle;
+
+    // One-time DAG composition log
+    if (dagCycle === 0) {
+      const summary = dagModules.map(m => `${m.type}("${m.name}")`).join(', ');
+      console.log(`[MusicEngine] DAG modules (${dagModules.length}): ${summary}`);
+      console.log(`[MusicEngine] Edges (${musicState.edges.length}):`, musicState.edges.map((e: any) => `${e.source?.slice(-8)}[${e.sourceHandle}]→${e.target?.slice(-8)}[${e.targetHandle}]`).join(', '));
+    }
 
     // Topological order
     const order = topologicalSort(dagModules, musicState.edges);
@@ -585,6 +619,9 @@ class MusicEngine {
         case 'module_output':
           this.evalModuleOutput(mod, musicState, results);
           break;
+        case 'null_node':
+          this.evalNullNode(mod, musicState, results);
+          break;
       }
     }
     
@@ -613,6 +650,28 @@ class MusicEngine {
     results.set(mod.id, chords);
   }
 
+  // ── AI Harmony state (per module) ─────────────────────────────────────────
+  /** Cache: keyword → Gemini-generated ChordData[] */
+  private harmonicAiCache = new Map<string, ChordData[]>();
+  /** Keywords currently being fetched (prevents duplicate calls) */
+  private harmonicAiPending = new Set<string>();
+  /** modId → last keyword that triggered a Gemini call */
+  private harmonicAiLastKeyword = new Map<string, string>();
+  /** modId → timestamp when the keyword last changed (for debounce) */
+  private harmonicAiDebounceTs = new Map<string, number>();
+  /** modId → last deterministic chord names (used as context for Gemini) */
+  private harmonicAiContext = new Map<string, string>();
+
+  // ── Gemini key helper ──────────────────────────────────────────────────────
+  private getGeminiKey(): string | null {
+    // Vite env var (set VITE_GEMINI_API_KEY in .env.local)
+    const key =
+      (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
+      (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_GEMINI_API_KEY) ||
+      null;
+    return key || null;
+  }
+
   // ---- harmonic_progressor -----------------------------------------------
 
   private harmonicProgressorStates = new Map<string, any>();
@@ -626,20 +685,86 @@ class MusicEngine {
   ) {
     const defaultValence = mod.harmonicProgressorConfig?.valence ?? 0.5;
     const defaultArousal = mod.harmonicProgressorConfig?.arousal ?? 0.5;
-    
+
     const valence = this.getParamValue(mod, 'valence', defaultValence, musicState, audioState);
     const arousal = this.getParamValue(mod, 'arousal', defaultArousal, musicState, audioState);
 
+    // ── always compute deterministic fallback ───────────────────────────────
     const currentState = this.harmonicProgressorStates.get(mod.id);
-    const { chords, newState, categoryName } = getMoodProgression(valence, arousal, seqLength, currentState);
-    
+    const { chords: fallbackChords, newState, categoryName } = getMoodProgression(valence, arousal, seqLength, currentState);
     this.harmonicProgressorStates.set(mod.id, newState);
-    results.set(mod.id, chords); // chords is now basically HarmonyContext
 
-    // Save the category name to display in the UI
+    // Update UI category label
     if (mod.harmonicProgressorConfig) {
-        mod.harmonicProgressorConfig.currentCategoryName = categoryName;
+      mod.harmonicProgressorConfig.currentCategoryName = categoryName;
     }
+
+    // ── AI Harmony path ─────────────────────────────────────────────────────
+    const useAi = mod.harmonicProgressorConfig?.useAiHarmony ?? false;
+    const apiKey = this.getGeminiKey();
+
+    if (useAi && apiKey) {
+      // Nearest mood keyword from current v/a position
+      const keyword = getNearestMoods(valence, arousal, 1)[0]?.en ?? 'neutral';
+      const lastKeyword = this.harmonicAiLastKeyword.get(mod.id);
+      const now = Date.now();
+
+      if (keyword !== lastKeyword) {
+        // ── keyword changed: snapshot context & reset debounce timer ─────────
+        const contextLabel = chordsToReadable(fallbackChords);
+        this.harmonicAiContext.set(mod.id, contextLabel);
+        this.harmonicAiLastKeyword.set(mod.id, keyword);
+        this.harmonicAiDebounceTs.set(mod.id, now);
+        // Update UI status
+        if (mod.harmonicProgressorConfig) mod.harmonicProgressorConfig.aiHarmonyStatus = 'idle';
+      } else {
+        const debounceAge = now - (this.harmonicAiDebounceTs.get(mod.id) ?? 0);
+        const cacheHit = this.harmonicAiCache.has(keyword);
+        const isPending = this.harmonicAiPending.has(keyword);
+
+        if (cacheHit) {
+          // ── cached Gemini result available ─────────────────────────────────
+          if (mod.harmonicProgressorConfig) mod.harmonicProgressorConfig.aiHarmonyStatus = 'active';
+          results.set(mod.id, this.harmonicAiCache.get(keyword)!);
+          return;
+        }
+
+        if (!isPending && debounceAge > 1500) {
+          // ── debounce elapsed → fire Gemini call (fire-and-forget) ──────────
+          const contextLabel = this.harmonicAiContext.get(mod.id) ?? chordsToReadable(fallbackChords);
+          this.harmonicAiPending.add(keyword);
+          if (mod.harmonicProgressorConfig) mod.harmonicProgressorConfig.aiHarmonyStatus = 'loading';
+
+          fetchGeminiHarmony(apiKey, contextLabel, keyword, valence, arousal, seqLength)
+            .then((aiChords) => {
+              this.harmonicAiPending.delete(keyword);
+              if (aiChords && aiChords.length > 0) {
+                this.harmonicAiCache.set(keyword, aiChords);
+                // console.log(`[GeminiHarmony] Cached "${keyword}" (${aiChords.length} steps)`);
+              } else {
+                // Gemini returned nothing – mark error so we can retry
+                if (mod.harmonicProgressorConfig) mod.harmonicProgressorConfig.aiHarmonyStatus = 'error';
+              }
+            })
+            .catch((err) => {
+              this.harmonicAiPending.delete(keyword);
+              console.error('[GeminiHarmony] Error:', err);
+              if (mod.harmonicProgressorConfig) mod.harmonicProgressorConfig.aiHarmonyStatus = 'error';
+            });
+        } else if (isPending) {
+          if (mod.harmonicProgressorConfig) mod.harmonicProgressorConfig.aiHarmonyStatus = 'loading';
+        }
+      }
+    } else if (!useAi) {
+      // AI mode off – reset all AI state for this module
+      if (mod.harmonicProgressorConfig) mod.harmonicProgressorConfig.aiHarmonyStatus = 'idle';
+      this.harmonicAiCache.delete(this.harmonicAiLastKeyword.get(mod.id) ?? '');
+      this.harmonicAiLastKeyword.delete(mod.id);
+      this.harmonicAiDebounceTs.delete(mod.id);
+    }
+
+    // ── fallback (deterministic) ─────────────────────────────────────────────
+    results.set(mod.id, fallbackChords);
   }
 
   // ---- melody_gen --------------------------------------------------------
@@ -657,7 +782,7 @@ class MusicEngine {
 
     const temperature = this.getParamValue(mod, 'temperature', 1.1, musicState, audioState);
     const rhythmicComplexity = mod.melodyGenConfig?.rhythmicComplexity ?? 0.5;
-    const density = this.getParamValue(mod, 'density', rhythmicComplexity, musicState, audioState);
+    const density = Math.max(0.2, this.getParamValue(mod, 'density', rhythmicComplexity, musicState, audioState));
     const register: number = mod.melodyGenConfig?.register ?? 0;
     const algorithm = mod.melodyGenConfig?.algorithm ?? 'procedural';
 
@@ -667,47 +792,60 @@ class MusicEngine {
 
     if (algorithm === 'magenta' && this.initialized) {
       const root = baseNote + register;
-      const seedChord = chords[0] || { key: 0, notes: [0, 4, 7] };
-      
+      // Use the first chord's root note as seed for better musical context
+      const seedChord = chords[0] || { key: 0, root: 0, notes: [0, 4, 7] };
+      const seedPitch = Math.max(48, Math.min(84, root + (seedChord.key ?? 0) + (seedChord.root ?? 0)));
+
+      // Seed: 1 quarter note at 120 BPM = 0.5s, quantizes to 4 steps at stepsPerQuarter=4
+      const seedDurationSec = 60 / this.qpm; // exactly 1 quarter note
       const seed: INoteSequence = {
         ticksPerQuarter: 220,
-        totalTime: 1.0,
+        totalTime: seedDurationSec,
         timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
         tempos: [{ time: 0, qpm: this.qpm }],
         notes: [
           {
-            pitch: root + seedChord.key + seedChord.notes[0],
+            pitch: seedPitch,
             startTime: 0.0,
-            endTime: 0.5,
+            endTime: seedDurationSec,
             velocity: 80,
           },
         ],
       };
 
       const qns = this.sequences.quantizeNoteSequence(seed, 4);
-      const cacheKey = JSON.stringify({ algorithm, temperature, rhythmicComplexity, register, chords: chords.map(c => `${c.key}-${c.root}-${c.mode}`) });
-      
-      if (mod.aiCacheKey === cacheKey && mod.aiCacheResult) {
+      // Include DAG cycle in cache key so each cycle generates fresh melodies
+      const dagCycle = (this as any)._currentDagCycle ?? 0;
+      const cacheKey = JSON.stringify({
+        algorithm, temperature, rhythmicComplexity, register, dagCycle,
+        chords: chords.map(c => `${c.key}-${c.root}-${c.mode}-${c.degree ?? 0}`)
+      });
+
+      if (mod.aiCacheKey === cacheKey && mod.aiCacheResult && algorithm === 'magenta') {
+        // Only cache Magenta results (expensive). Procedural always regenerates.
         results.set(mod.id, mod.aiCacheResult);
         return;
       }
-      
+
       try {
-        // Temperature controls randomness; 1.0 is default, higher is more random.
-        
-        // Build chord progression array for chord_pitches_improviser
-        const pitchNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+        // Magenta chord_pitches_improv: provide chord names (any length, auto-mapped to steps)
+        const pitchNames = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+        const STEPS_PER_QUARTER = 4;
+        const numChordBeats = Math.max(1, Math.ceil(seqLength / STEPS_PER_QUARTER));
         const chordProgressionStrings: string[] = [];
-        
-        for (let i = 0; i < seqLength; i++) {
-          const chord = chords[i % chords.length];
-          const rootAbs = (chord.key + chord.root) % 12;
-          const rootName = pitchNames[rootAbs];
-          const thirdInterval = chord.notes[1] - chord.notes[0];
+
+        for (let beat = 0; beat < numChordBeats; beat++) {
+          // Map each quarter-note beat to the corresponding chord in the sequence
+          const stepIdx = beat * STEPS_PER_QUARTER;
+          const chord = chords[stepIdx % chords.length];
+          const rootAbs = ((chord.key ?? 0) + (chord.root ?? 0)) % 12;
+          const rootName = pitchNames[(rootAbs + 12) % 12];
+          // Determine chord quality — keep to Magenta-recognised suffixes only
+          const thirdInterval = (chord.notes[1] ?? 4) - (chord.notes[0] ?? 0);
           let quality = '';
           if (thirdInterval === 3) quality = 'm';
           if (chord.notes.length >= 4) {
-            const seventhInterval = chord.notes[3] - chord.notes[0];
+            const seventhInterval = (chord.notes[3] ?? 11) - (chord.notes[0] ?? 0);
             if (thirdInterval === 3 && seventhInterval === 10) quality = 'm7';
             else if (thirdInterval === 4 && seventhInterval === 10) quality = '7';
             else if (thirdInterval === 4 && seventhInterval === 11) quality = 'maj7';
@@ -715,52 +853,83 @@ class MusicEngine {
           chordProgressionStrings.push(`${rootName}${quality}`);
         }
 
-        const payload = {
+        if (!this.rnn) throw new Error('MusicRNN not loaded');
+        const melodyResult = await this.rnn.continueSequence(
           qns,
-          seqLength,
+          seqLength,      // number of OUTPUT steps (16th-note steps)
           temperature,
           chordProgressionStrings
-        };
+        );
 
-        let melodyResult = null;
-        
-        if (this.rnn) {
-          melodyResult = await this.rnn.continueSequence(qns, seqLength, temperature, chordProgressionStrings);
+        if (!melodyResult || !melodyResult.notes || melodyResult.notes.length === 0) {
+          console.warn('[MusicEngine] Magenta returned empty result, using seed pitch fallback');
+          const fallbackPitches: number[] = [];
+          const fallbackGates: boolean[] = [];
+          for (let i = 0; i < seqLength; i++) {
+            fallbackPitches.push(seedPitch);
+            fallbackGates.push(i % 4 === 0);
+          }
+          return { pitches: fallbackPitches, gates: fallbackGates };
         }
-        
-        if (!melodyResult) throw new Error('Magenta failed to return melody');
 
-        const firstStep = melodyResult.notes && melodyResult.notes.length > 0 
-          ? melodyResult.notes[0].quantizedStartStep ?? 0 
-          : 0;
-
-        let lastPitch = root;
+        // Sort notes by start step for reliable extraction
+        const sortedNotes = [...melodyResult.notes].sort(
+          (a: any, b: any) => (a.quantizedStartStep ?? 0) - (b.quantizedStartStep ?? 0)
+        );
         
+        // Magenta notes begin right after the seed
+        const firstStep = sortedNotes[0].quantizedStartStep ?? 0;
+
+        let lastPitch = seedPitch;
+
         for (let i = 0; i < seqLength; i++) {
           const currentStep = firstStep + i;
-          const note = melodyResult.notes?.find(
-            (n: any) => (n.quantizedStartStep ?? 0) <= currentStep && (n.quantizedEndStep ?? 0) > currentStep
-          );
-
-          // Get pitch
-          let target = lastPitch;
-          if (note) {
-            target = note.pitch ?? root;
-            lastPitch = target;
+          // Find note that covers this step (binary-style: last note with startStep <= currentStep)
+          let note: any = null;
+          for (const n of sortedNotes) {
+            const start = n.quantizedStartStep ?? 0;
+            const end = n.quantizedEndStep ?? start + 1;
+            if (start <= currentStep && end > currentStep) {
+              note = n;
+              break;
+            }
           }
 
-          // Use drum pattern for gate if available, else use original note timing
-          // Only trigger gate if the note starts exactly on this step
-          const isGateOn = note && note.quantizedStartStep === currentStep;
-          
-          pitches.push(target);
+          if (note) {
+            // Clamp to a sensible MIDI range (C3-C6) and track for sustain
+            lastPitch = Math.max(48, Math.min(84, note.pitch ?? lastPitch));
+          }
+
+          // Gate fires only on the note attack step
+          const isGateOn = note != null && (note.quantizedStartStep ?? 0) === currentStep;
+          pitches.push(lastPitch);
           gates.push(isGateOn ? 1 : 0);
         }
+
+        // Accept Magenta output as-is (monotone bass lines are valid musical output)
+
         mod.aiCacheKey = cacheKey;
-        mod.aiCacheResult = { pitches, gates };
+        mod.aiCacheResult = { pitches: [...pitches], gates: [...gates] };
       } catch (e) {
-        console.error('[MusicEngine] Magenta failed, falling back to procedural:', e);
-        for(let i=0; i<seqLength; i++) { pitches.push(root); gates.push(0); }
+        console.error('[MusicEngine] Magenta melody failed, falling back to procedural:', e);
+        // ── Fallback: run the procedural algorithm instead of emitting silence ──
+        const root2 = baseNote + register;
+        let prevPitch = root2;
+        for (let i = 0; i < seqLength; i++) {
+          const chord = chords[i % chords.length];
+          const chordTones = chord.notes.map((n) => root2 + (chord.key ?? 0) + (chord.root ?? 0) + n);
+          if (Math.random() < density) {
+            let target = chordTones[Math.floor(Math.random() * chordTones.length)];
+            target = this.snapToNearestChordTone(target, chordTones);
+            target = Math.max(48, Math.min(84, target));
+            pitches.push(target);
+            gates.push(1);
+            prevPitch = target;
+          } else {
+            pitches.push(prevPitch);
+            gates.push(0);
+          }
+        }
       }
     } else {
       // Algorithmic melody generation biased by current chord
@@ -768,7 +937,7 @@ class MusicEngine {
 
     for (let i = 0; i < seqLength; i++) {
       const chord = chords[i % chords.length];
-      const chordTones = chord.notes.map((n) => baseNote + chord.key + n);
+      const chordTones = chord.notes.map((n) => baseNote + chord.key + chord.root + n);
 
       if (Math.random() < density) {
         // Choose a target from chord tones, with temperature controlling leap probability
@@ -797,7 +966,7 @@ class MusicEngine {
           target = prevPitch + direction * stepSize;
         // Snap to full scale using the new scaleIntervals from HarmonyContext
         if (Math.random() > temperature * 0.3 && chord.scaleIntervals) {
-          const scaleTones = chord.scaleIntervals.map((n) => baseNote + chord.key + n);
+          const scaleTones = chord.scaleIntervals.map((n) => baseNote + chord.key + chord.root + n);
           target = this.snapToNearestChordTone(target, scaleTones);
         } else {
           target = this.snapToNearestChordTone(target, chordTones);
@@ -816,6 +985,17 @@ class MusicEngine {
     }
 
     const mono: MonoSequence = { pitches, gates };
+    
+    // Debug: log once per module
+    const mgDbg = `_mgDebug_${mod.id}`;
+    if (!(this as any)[mgDbg]) {
+      (this as any)[mgDbg] = true;
+      const uniquePitches = new Set(pitches);
+      const gateCount = gates.filter(g => g === 1).length;
+      // console.log(`[melody_gen DEBUG] "${mod.name}" algo=${algorithm} density=${density.toFixed(2)} temp=${temperature.toFixed(2)} register=${register}`);
+      // console.log(`[melody_gen DEBUG] output: ${uniquePitches.size} unique pitches, ${gateCount}/${seqLength} gates on, pitches=[${pitches.slice(0,8).join(',')}...]`);
+    }
+    
     results.set(mod.id, mono);
   }
 
@@ -842,7 +1022,7 @@ class MusicEngine {
 
     for (let i = 0; i < seqLength; i++) {
       const chord = chords[i % chords.length];
-      const rawNotes = chord.notes.map((n) => baseNote + chord.key + n + register);
+      const rawNotes = chord.notes.map((n) => baseNote + chord.key + chord.root + n + register);
 
       // Apply voicing spread: 0 = close voicing, 1 = wide spread across octaves
       const voiced = this.applyVoicing(rawNotes, voicingSpread);
@@ -1229,7 +1409,11 @@ class MusicEngine {
   ) {
     const inputSeq = this.resolveInputData(mod, 'sequence', musicState, results) as
       | PolySequence
+      | MonoSequence
       | null;
+
+    // Also try to resolve chordData for harmonizing mono input into 4 voices
+    const chordDataInput = this.resolveInputData(mod, 'chordData', musicState, results);
 
     // Produce 4 mono voices
     const voices: MonoSequence[] = [];
@@ -1241,12 +1425,35 @@ class MusicEngine {
           const stepPitches = inputSeq.pitches[i];
           const stepGates = inputSeq.gates[i];
           if (Array.isArray(stepPitches)) {
+            // PolySequence: split normally
             pitches.push(stepPitches[v] ?? stepPitches[0] ?? 60);
             gates.push(Array.isArray(stepGates) ? (stepGates[v] ?? 0) : (stepGates as any));
           } else {
-            // Input is actually mono – only voice 0 gets data
-            pitches.push(v === 0 ? (stepPitches as number) : 60);
-            gates.push(v === 0 ? ((stepGates as any) as number) : 0);
+            // MonoSequence: harmonize with chord data if available
+            const melodyPitch = stepPitches as number;
+            const melodyGate = (stepGates as any) as number;
+            
+            if (chordDataInput && Array.isArray(chordDataInput)) {
+              // Use chord tones to create harmony voices
+              const chord = chordDataInput[i % chordDataInput.length] as ChordData;
+              const chordRoot = 48 + (chord.key ?? 0) + (chord.root ?? 0); // C3 base for chords
+              const chordTones = chord.notes.map((n: number) => chordRoot + n);
+              
+              if (v === 0) {
+                // Voice 0: original melody
+                pitches.push(melodyPitch);
+                gates.push(melodyGate);
+              } else {
+                // Voices 1-3: chord tones from the harmony, offset from melody
+                const toneIdx = v % chordTones.length;
+                pitches.push(chordTones[toneIdx] ?? melodyPitch);
+                gates.push(melodyGate); // Same rhythm as melody
+              }
+            } else {
+              // No chord data: only voice 0 gets data
+              pitches.push(v === 0 ? melodyPitch : 60);
+              gates.push(v === 0 ? melodyGate : 0);
+            }
           }
         } else {
           pitches.push(60);
@@ -1331,6 +1538,15 @@ class MusicEngine {
 
     const pitches: number[] = [];
     const gates: number[] = [];
+
+    // Debug: log once
+    const dbgKey = `_rsDebug_${mod.id}`;
+    if (!(this as any)[dbgKey]) {
+      (this as any)[dbgKey] = true;
+      /* console.log(`[register_shifter DEBUG] "${mod.name}" input:`, 
+        inputSeq ? `pitches=[${(inputSeq.pitches as any[]).slice(0,4)}...], gates=[${(inputSeq.gates as any[]).slice(0,4)}...]` : 'NULL',
+        `shift=${shift}`); */
+    }
 
     for (let i = 0; i < seqLength; i++) {
       if (inputSeq && i < inputSeq.pitches.length) {
@@ -1437,13 +1653,86 @@ class MusicEngine {
     results: Map<string, any>,
     seqLength: number,
   ) {
-    const inputSeq = this.resolveInputData(mod, 'sequence', musicState, results) as MonoSequence | PolySequence | null;
-    if (!inputSeq) return;
+    let inputSeq = this.resolveInputData(mod, 'sequence', musicState, results) as MonoSequence | PolySequence | null;
+    
+    // Debug: log edge search on first cycle only
+    const debugKey = `_aiSeqDebug_${mod.id}`;
+    if (!(this as any)[debugKey]) {
+      (this as any)[debugKey] = true;
+      const allEdgesToMe = musicState.edges.filter((e: any) => e.target === mod.id);
+      /* console.log(`[ai_seq_out DEBUG] "${mod.name}" (${mod.id}): edges targeting me:`, 
+        allEdgesToMe.map((e: any) => `src=${e.source?.slice(-12)} srcH=${e.sourceHandle} tgtH=${e.targetHandle}`)); */
+      // console.log(`[ai_seq_out DEBUG] resolveInputData('sequence') returned:`, inputSeq ? 'sequence found' : 'NULL');
+      if (!inputSeq && allEdgesToMe.length > 0) {
+        // Try to resolve with the ACTUAL targetHandle from the edge
+        const firstEdge = allEdgesToMe[0];
+        const altSeq = this.resolveInputData(mod, firstEdge.targetHandle || '', musicState, results);
+        // console.log(`[ai_seq_out DEBUG] Trying with actual targetHandle="${firstEdge.targetHandle}":`, altSeq ? 'FOUND' : 'NULL');
+      }
+    }
+    
+    // Fallback: if 'sequence' didn't work, try ANY incoming edge
+    if (!inputSeq) {
+      const anyEdge = musicState.edges.find((e: any) => e.target === mod.id);
+      if (anyEdge) {
+        inputSeq = this.resolveInputData(mod, anyEdge.targetHandle || '', musicState, results) as MonoSequence | PolySequence | null;
+      }
+    }
 
-    results.set(mod.id, inputSeq); // Set results so UI preview works!
+    // Auto-wire fallback: if no edge connected, find the first available sequence in DAG results
+    if (!inputSeq) {
+      const seqTypes = new Set(['melody_gen', 'chord_gen', 'voice_splitter', 'sequence_adder', 'register_shifter', 'sequence_morpher']);
+      for (const [nodeId, data] of results.entries()) {
+        if (nodeId === mod.id) continue;
+        // Check if this result looks like a sequence (has pitches + gates arrays)
+        if (data && Array.isArray(data.pitches) && Array.isArray(data.gates) && data.pitches.length > 0) {
+          const sourceModule = musicState.modules.find((m: any) => m.id === nodeId);
+          if (sourceModule && seqTypes.has(sourceModule.type)) {
+            inputSeq = data as MonoSequence | PolySequence;
+            break;
+          }
+        }
+      }
+      if (!inputSeq) {
+        // Throttle warning to once per 5 seconds per module
+        const warnKey = `_aiSeqWarn_${mod.id}`;
+        const now = Date.now();
+        if (!(this as any)[warnKey] || now - (this as any)[warnKey] > 5000) {
+          console.warn(`[MusicEngine] ai_seq_out "${mod.name}": no sequence source found (no edge, no fallback generator).`);
+          (this as any)[warnKey] = now;
+        }
+        return;
+      }
+    }
 
-    if (inputSeq.pitches && inputSeq.pitches.length > 0) {
-      this.sendSequenceToAI(mod.id, { pitches: inputSeq.pitches as any[], gates: inputSeq.gates as any[] });
+    // Flatten PolySequence to MonoSequence (extract first voice per step)
+    let monoSeq: MonoSequence;
+    if (inputSeq.pitches.length > 0 && Array.isArray(inputSeq.pitches[0])) {
+      // PolySequence: extract first non-zero voice per step
+      const flatPitches: number[] = [];
+      const flatGates: number[] = [];
+      for (let i = 0; i < inputSeq.pitches.length; i++) {
+        const stepP = inputSeq.pitches[i] as number[];
+        const stepG = inputSeq.gates[i] as number[];
+        flatPitches.push(stepP[0] ?? 60);
+        flatGates.push(Array.isArray(stepG) ? (stepG[0] ?? 0) : (stepG as any));
+      }
+      monoSeq = { pitches: flatPitches, gates: flatGates };
+    } else {
+      monoSeq = inputSeq as MonoSequence;
+    }
+
+    results.set(mod.id, monoSeq); // Set results so UI preview works!
+
+    if (monoSeq.pitches && monoSeq.pitches.length > 0) {
+      // Throttle success log to once per 3 seconds
+      const logKey = `_aiSeqLog_${mod.id}`;
+      const now = Date.now();
+      if (!(this as any)[logKey] || now - (this as any)[logKey] > 3000) {
+        // console.log(`[MusicEngine] ai_seq_out "${mod.name}" → NoiseCraft: ${monoSeq.pitches.length} steps, pitches=[${monoSeq.pitches.slice(0, 4).join(',')}...]`);
+        (this as any)[logKey] = now;
+      }
+      this.sendSequenceToAI(mod.id, { pitches: monoSeq.pitches, gates: monoSeq.gates });
     }
   }
 
@@ -1594,6 +1883,38 @@ class MusicEngine {
     });
   }
 
+  // ---- null_node (pass-through) -------------------------------------------
+
+  private evalNullNode(
+    mod: MusicModule,
+    musicState: any,
+    results: Map<string, any>,
+  ) {
+    // Null node: pass through ANY incoming data transparently
+    // Try 'in' handle first (standard), then any edge targeting this node
+    let data = this.resolveInputData(mod, 'in', musicState, results);
+    if (!data) {
+      // Fallback: try any incoming edge regardless of handle name
+      const anyEdge = musicState.edges.find((e: any) => e.target === mod.id);
+      if (anyEdge) {
+        data = results.get(anyEdge.source) ?? null;
+      }
+    }
+    
+    // Debug: log once
+    const dbgKey = `_nnDebug_${mod.id}`;
+    if (!(this as any)[dbgKey]) {
+      (this as any)[dbgKey] = true;
+      const dataType = data ? (Array.isArray(data.pitches?.[0]) ? 'PolySeq' : data.pitches ? 'MonoSeq' : typeof data) : 'NULL';
+      const preview = data?.pitches ? `[${(data.pitches as any[]).slice(0,3)}...]` : '';
+      // console.log(`[null_node DEBUG] "${mod.name}" pass-through: ${dataType} ${preview}`);
+    }
+    
+    if (data !== null && data !== undefined) {
+      results.set(mod.id, data);
+    }
+  }
+
   // -----------------------------------------------------------------------
   // DAG helpers
   // -----------------------------------------------------------------------
@@ -1670,12 +1991,13 @@ class MusicEngine {
    */
   private fallbackChords(seqLength: number): ChordData[] {
     const chords: ChordData[] = [];
+    // root-relative intervals: [0,4,7] = major triad regardless of root
     const defaults = [
-      { root: 0, notes: [0, 4, 7], key: 0, mode: 'major' },
-      { root: 5, notes: [5, 9, 12], key: 0, mode: 'major' },
+      { root: 0, notes: [0, 4, 7], key: 0, mode: 'major', scaleIntervals: [0,2,4,5,7,9,11] },  // C major (I)
+      { root: 5, notes: [0, 4, 7], key: 0, mode: 'major', scaleIntervals: [0,2,4,5,7,9,11] },  // F major (IV)
     ];
     for (let i = 0; i < seqLength; i++) {
-      chords.push(defaults[Math.floor(i / 8) % defaults.length]);
+      chords.push({ ...defaults[Math.floor(i / 8) % defaults.length] });
     }
     return chords;
   }

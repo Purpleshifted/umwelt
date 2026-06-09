@@ -182,3 +182,9 @@
   border: 1px solid #ff4b4b !important;
   box-shadow: 0 0 0 1px #ff4b4b, 0 4px 12px rgba(0, 0, 0, 0.5) !important;
 }
+
+.sectionBoxNode {
+  background: rgba(167, 139, 250, 0.04);
+  border: 1px dashed rgba(167, 139, 250, 0.35);
+  box-shadow: none;
+}

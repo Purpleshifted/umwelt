@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle, Position } from '@xyflow/react';
+import { Handle, Position, useEdges } from '@xyflow/react';
 import { useMusicStore } from '@/store/musicStore';
 import { MusicModule, MusicModuleType } from '@/store/musicStore';
 import styles from './MusicModuleNode.module.css';
@@ -7,6 +7,7 @@ import { musicEngine } from '@/audio/MusicEngine';
 import { getHandleDataType, getCableColor } from '@/utils/musicNodeTypes';
 import { useAudioMapStore, evaluateStreamValue } from '@/store/audioMapStore';
 import { useSensorStore } from '@/store/sensorStore';
+import { getNearestMoods } from '@/audio/mood_keywords';
 
 // Custom TypedHandle wrapper to automatically apply color based on node type and handle id
 function TypedHandle({ type, position, id, className, style, nodeType }: any) {
@@ -394,50 +395,186 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
         )}
 
         {/* ── Harmonic Progressor Node ── */}
-        {module.type === 'harmonic_progressor' && (
-          <>
-            <div className={styles.configArea}>
-              <div className={styles.paramHandleRow} style={{ marginTop: '4px', marginBottom: '4px' }}>
-                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="valence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
-                <span style={{ fontSize: '10px' }}>Valence (Neg-Pos)</span>
-              </div>
-              <div className={styles.field} style={{ marginBottom: '8px' }}>
-                <input
-                  type="range" min="0" max="1" step="0.01"
-                  value={module.harmonicProgressorConfig?.valence ?? 0.5}
-                  onChange={(e) => updateModule(module.id, {
-                    harmonicProgressorConfig: { ...module.harmonicProgressorConfig!, valence: parseFloat(e.target.value), arousal: module.harmonicProgressorConfig?.arousal ?? 0.5 }
-                  })}
-                  style={{ width: '100%' }} className="nodrag"
-                />
-              </div>
+        {module.type === 'harmonic_progressor' && (() => {
+          const v = module.harmonicProgressorConfig?.valence ?? 0.5;
+          const a = module.harmonicProgressorConfig?.arousal ?? 0.5;
+          const nearestMoods = getNearestMoods(v, a, 3);
+          const useAi = module.harmonicProgressorConfig?.useAiHarmony ?? false;
+          const aiStatus = module.harmonicProgressorConfig?.aiHarmonyStatus ?? 'idle';
 
-              <div className={styles.paramHandleRow} style={{ marginBottom: '4px' }}>
-                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="arousal" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
-                <span style={{ fontSize: '10px' }}>Arousal (Calm-Exc)</span>
-              </div>
-              <div className={styles.field}>
-                <input
-                  type="range" min="0" max="1" step="0.01"
-                  value={module.harmonicProgressorConfig?.arousal ?? 0.5}
-                  onChange={(e) => updateModule(module.id, {
-                    harmonicProgressorConfig: { ...module.harmonicProgressorConfig!, arousal: parseFloat(e.target.value), valence: module.harmonicProgressorConfig?.valence ?? 0.5 }
-                  })}
-                  style={{ width: '100%' }} className="nodrag"
-                />
-                <div style={{ textAlign: 'center', fontSize: '12px', marginTop: '8px', color: '#f59e0b', fontWeight: 'bold' }}>
-                  {module.harmonicProgressorConfig?.currentCategoryName || 'Neutral / Jazzy'}
+          // Detect external connections to valence / arousal handles
+          const edges = useEdges();
+          const valenceLinked = edges.some(
+            (e) => e.target === module.id && e.targetHandle === 'valence'
+          );
+          const arousalLinked = edges.some(
+            (e) => e.target === module.id && e.targetHandle === 'arousal'
+          );
+
+          // Status badge config
+          const statusBadge: Record<string, { label: string; color: string; bg: string }> = {
+            idle:    { label: 'AI Harmony',  color: '#888',    bg: 'rgba(255,255,255,0.06)' },
+            loading: { label: '⟳ Generating…', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+            active:  { label: '✦ AI Active',  color: '#34d399', bg: 'rgba(52,211,153,0.12)' },
+            error:   { label: '✕ Retry next', color: '#f87171', bg: 'rgba(248,113,113,0.12)' },
+          };
+          const badge = statusBadge[aiStatus] ?? statusBadge.idle;
+
+          return (
+            <>
+              <div className={styles.configArea}>
+                <div className={styles.paramHandleRow} style={{ marginTop: '4px', marginBottom: '4px' }}>
+                  <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="valence" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                  <span style={{ fontSize: '10px' }}>Valence (Neg-Pos)</span>
+                  {valenceLinked && (
+                    <span style={{ fontSize: '9px', marginLeft: '4px', color: '#60a5fa', opacity: 0.8 }}>linked</span>
+                  )}
+                </div>
+                <div className={styles.field} style={{ marginBottom: '8px' }}>
+                  <input
+                    type="range" min="0" max="1" step="0.01"
+                    value={v}
+                    disabled={valenceLinked}
+                    onChange={(e) => updateModule(module.id, {
+                      harmonicProgressorConfig: { ...module.harmonicProgressorConfig!, valence: parseFloat(e.target.value), arousal: a }
+                    })}
+                    style={{ width: '100%', opacity: valenceLinked ? 0.35 : 1, cursor: valenceLinked ? 'not-allowed' : 'pointer' }} className="nodrag"
+                  />
+                </div>
+
+                <div className={styles.paramHandleRow} style={{ marginBottom: '4px' }}>
+                  <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="arousal" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+                  <span style={{ fontSize: '10px' }}>Arousal (Calm-Exc)</span>
+                  {arousalLinked && (
+                    <span style={{ fontSize: '9px', marginLeft: '4px', color: '#60a5fa', opacity: 0.8 }}>linked</span>
+                  )}
+                </div>
+                <div className={styles.field}>
+                  <input
+                    type="range" min="0" max="1" step="0.01"
+                    value={a}
+                    disabled={arousalLinked}
+                    onChange={(e) => updateModule(module.id, {
+                      harmonicProgressorConfig: { ...module.harmonicProgressorConfig!, arousal: parseFloat(e.target.value), valence: v }
+                    })}
+                    style={{ width: '100%', opacity: arousalLinked ? 0.35 : 1, cursor: arousalLinked ? 'not-allowed' : 'pointer' }} className="nodrag"
+                  />
+
+                  {/* ── Mood keyword tags (auto from valence/arousal) ── */}
+                  <div style={{
+                    display: 'flex', gap: '4px', flexWrap: 'wrap',
+                    marginTop: '8px', justifyContent: 'center'
+                  }}>
+                    {nearestMoods.map((mood, i) => (
+                      <span key={mood.en} style={{
+                        fontSize: '10px',
+                        padding: '2px 7px',
+                        borderRadius: '10px',
+                        background: i === 0
+                          ? 'rgba(245,158,11,0.25)'
+                          : 'rgba(255,255,255,0.08)',
+                        border: i === 0
+                          ? '1px solid rgba(245,158,11,0.6)'
+                          : '1px solid rgba(255,255,255,0.15)',
+                        color: i === 0 ? '#f59e0b' : '#aaa',
+                        fontWeight: i === 0 ? 600 : 400,
+                        letterSpacing: '0.02em',
+                        transition: 'all 0.2s',
+                      }}>
+                        {mood.en}
+                        <span style={{ marginLeft: '3px', opacity: 0.7, fontSize: '9px' }}>
+                          {mood.ko}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+
+                  <div style={{ textAlign: 'center', fontSize: '11px', marginTop: '6px', color: '#f59e0b', fontWeight: 'bold' }}>
+                    {module.harmonicProgressorConfig?.currentCategoryName || 'Neutral / Jazzy'}
+                  </div>
+
+                  {/* ── AI Harmony toggle ── */}
+                  <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center' }}>
+                    {/* Toggle button */}
+                    <button
+                      className="nodrag"
+                      onClick={() => updateModule(module.id, {
+                        harmonicProgressorConfig: {
+                          ...module.harmonicProgressorConfig!,
+                          useAiHarmony: !useAi,
+                          aiHarmonyStatus: 'idle',
+                        }
+                      })}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '4px 10px',
+                        borderRadius: '8px',
+                        border: useAi
+                          ? '1px solid rgba(52,211,153,0.5)'
+                          : '1px solid rgba(255,255,255,0.15)',
+                        background: useAi
+                          ? 'rgba(52,211,153,0.12)'
+                          : 'rgba(255,255,255,0.05)',
+                        color: useAi ? '#34d399' : '#777',
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        letterSpacing: '0.03em',
+                      }}
+                    >
+                      {/* Toggle pill */}
+                      <span style={{
+                        display: 'inline-block',
+                        width: '22px', height: '12px',
+                        borderRadius: '6px',
+                        background: useAi ? '#34d399' : '#444',
+                        position: 'relative',
+                        transition: 'background 0.2s',
+                        flexShrink: 0,
+                      }}>
+                        <span style={{
+                          position: 'absolute',
+                          top: '2px',
+                          left: useAi ? '12px' : '2px',
+                          width: '8px', height: '8px',
+                          borderRadius: '50%',
+                          background: '#fff',
+                          transition: 'left 0.2s',
+                        }} />
+                      </span>
+                      Gemini AI
+                    </button>
+
+                    {/* Status badge — only visible when AI is on */}
+                    {useAi && (
+                      <span style={{
+                        fontSize: '9px',
+                        padding: '2px 8px',
+                        borderRadius: '8px',
+                        background: badge.bg,
+                        color: badge.color,
+                        border: `1px solid ${badge.color}40`,
+                        letterSpacing: '0.04em',
+                        transition: 'all 0.3s',
+                      }}>
+                        {badge.label}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className={styles.outputs}>
-              <div className={styles.outRow}>
-                <span>Harmony Context</span>
-                <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f59e0b' }} />
+              <div className={styles.outputs}>
+                <div className={styles.outRow}>
+                  <span>Harmony Context</span>
+                  <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="chordData" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', right: '-20px', background: '#f59e0b' }} />
+                </div>
               </div>
-            </div>
-          </>
-        )}
+
+            </>
+          );
+        })()}
+
 
 
         {/* ── Chord Progression Node ── */}
@@ -956,7 +1093,7 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               <label>Gain (Vol):</label>
               <div style={{ position: 'relative', flex: 1 }}>
                 <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ width: '100%' }} value={module.polysynthConfig?.volume ?? 0.8} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, volume: parseFloat(e.target.value) } })} />
-                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="volume" className={styles.handle} style={{ left: '50%' }} />
+                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="volume" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
               </div>
             </div>
             <button

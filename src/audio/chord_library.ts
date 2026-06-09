@@ -64,16 +64,16 @@ const MINOR_MARKOV = [
   [2, 0, 4]     // 6 (VII) -> III, i, v
 ];
 
-function getNextDegree(currentDegree: number, isMajor: boolean, arousal: number): number {
+function getNextDegree(currentDegree: number, isMajor: boolean, arousal: number, rand: () => number): number {
   const matrix = isMajor ? MAJOR_MARKOV : MINOR_MARKOV;
   const transitions = matrix[currentDegree];
   
   // Chaos factor: high arousal increases chance to jump to a random degree outside the typical Markov chain
-  if (arousal > 0.8 && Math.random() < 0.3) {
-    return Math.floor(Math.random() * 7);
+  if (arousal > 0.8 && rand() < 0.3) {
+    return Math.floor(rand() * 7);
   }
   
-  const nextIdx = Math.floor(Math.random() * transitions.length);
+  const nextIdx = Math.floor(rand() * transitions.length);
   return transitions[nextIdx];
 }
 
@@ -88,6 +88,22 @@ function buildDiatonicChord(rootDegree: number, intervals: number[], complexity:
   return chord;
 }
 
+// Circle of Fifths keys (semitone offsets from C).
+// arousal 0 → C (tonic center), arousal 1 → sharper/brighter keys via the circle.
+// We use 7 positions (one per mode bracket) so the key never drifts more than a tritone.
+const CIRCLE_OF_FIFTHS = [0, 7, 2, 9, 4, 11, 5, 10, 3, 8, 1, 6]; // C G D A E B F Bb Eb Ab Db Gb
+
+/**
+ * Pick a deterministic key from the Circle of Fifths based on arousal and valence.
+ * - Low valence, low arousal  → flat keys (more somber)
+ * - High valence, high arousal → sharp keys (brighter, more energetic)
+ */
+function getKey(valence: number, arousal: number): number {
+  // Use the same seeded-PRNG input to get a stable index
+  const idx = Math.floor(valence * 6 + arousal * 6) % CIRCLE_OF_FIFTHS.length;
+  return CIRCLE_OF_FIFTHS[idx];
+}
+
 export function getMoodProgression(
   valence: number, 
   arousal: number,
@@ -98,25 +114,34 @@ export function getMoodProgression(
   const v = Math.max(0.0, Math.min(1.0, valence));
   const a = Math.max(0.0, Math.min(1.0, arousal));
 
+  // Seed pseudo-random generator with valence, arousal, and cycle for variation
+  const cycle = state?.currentDegree !== undefined ? (state as any).cycle ?? 0 : 0;
+  let s = Math.floor(v * 1000) * 1000 + Math.floor(a * 1000) + cycle * 7919 + 1;
+  const rand = (): number => {
+    s ^= s << 13; s ^= s >> 17; s ^= s << 5;
+    return Math.abs((s >>> 0) / 4294967296);
+  };
+
   const mode = getMode(v);
   const complexity = getChordComplexity(a);
   const chordsPerBar = getChordsPerBar(a);
-  
-  let currentDegree = state?.currentDegree ?? 0; // Default to tonic (0)
+  // Derive key deterministically from valence+arousal (stable loop unless sliders move)
+  const key = getKey(v, a);
   
   const generatedChords: ChordData[] = [];
   const stepsPerChord = Math.floor(seqLength / chordsPerBar);
   
-  let currentDegreeForCycle = currentDegree;
+  // Continue from previous cycle's last degree (creates real harmonic progression over time)
+  let currentDegreeForCycle = state?.currentDegree ?? 0;
   const progressionDegrees: number[] = [];
   
-  // Generate the progression for this bar
+  // Generate progression continuing from the previous cycle
   for (let c = 0; c < chordsPerBar; c++) {
-    // Determine next degree
-    if (c === 0 && !state) {
-      // First time ever, keep it Tonic
+    if (c === 0 && currentDegreeForCycle === 0) {
+      // First cycle starts at tonic
+      currentDegreeForCycle = 0;
     } else {
-      currentDegreeForCycle = getNextDegree(currentDegreeForCycle, mode.base === 'major', a);
+      currentDegreeForCycle = getNextDegree(currentDegreeForCycle, mode.base === 'major', a, rand);
     }
     progressionDegrees.push(currentDegreeForCycle);
   }
@@ -126,18 +151,17 @@ export function getMoodProgression(
     const chordIndex = Math.min(Math.floor(i / stepsPerChord), chordsPerBar - 1);
     const degree = progressionDegrees[chordIndex];
     
-    // Build diatonic chord relative to C (0)
+    // Build diatonic chord relative to the mode root (key-relative)
     const rawChordNotes = buildDiatonicChord(degree, mode.intervals, complexity);
     
-    // In Locrian/Phrygian, pitch it down an octave if it gets too high, or just normalize
-    const normalizedNotes = rawChordNotes.map(n => n - mode.intervals[degree]);
+    // Normalize notes so they are relative to the chord root (not key root)
     const rootRelative = mode.intervals[degree];
-    const absoluteNotes = normalizedNotes.map(n => n + rootRelative);
+    const normalizedNotes = rawChordNotes.map(n => n - rootRelative);
 
     generatedChords.push({
-      root: 0,
-      notes: absoluteNotes,
-      key: 0,
+      root: rootRelative % 12,
+      notes: normalizedNotes,
+      key,              // actual key offset (0-11, circle of fifths)
       mode: mode.base,
       scaleIntervals: mode.intervals,
       degree: degree
@@ -145,11 +169,13 @@ export function getMoodProgression(
   }
 
   const newState: MoodProgressionState = {
-    currentDegree: currentDegreeForCycle
-  };
+    currentDegree: currentDegreeForCycle,
+    cycle: cycle + 1
+  } as any;
 
+  const KEY_NAMES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
   const complexityName = complexity === 3 ? 'Triads' : complexity === 4 ? '7ths' : complexity === 5 ? '9ths' : '11ths';
-  const categoryName = `${mode.name} ${complexityName}`;
+  const categoryName = `${KEY_NAMES[key]} ${mode.name} ${complexityName}`;
 
   return { chords: generatedChords, newState, categoryName };
 }

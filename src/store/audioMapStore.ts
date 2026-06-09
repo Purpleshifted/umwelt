@@ -3,7 +3,8 @@ import { persist } from 'zustand/middleware';
 
 export type SensorType = 'ppg' | 'emg' | 'ecg' | 'gsr' | 'mouseX' | 'mouseY';
 export type MathOperation = 'add' | 'subtract' | 'multiply' | 'divide' | 'log' | 'exp' | 'abs' | 'normalize' | 'smooth' | 'slope' | 'curve' | 'floor' | 'clamp' | 'step' | 'inRange' | 'min' | 'max' | 'compare' | 'power' | 'sqrt' | 'interpolate' | 'moving_average' | 'envelope' | 'count' | 'bpm';
-export type VirtualStreamType = 'sensor' | 'math' | 'constant' | 'out';
+export type UIElementType = 'button' | 'toggle';
+export type VirtualStreamType = 'sensor' | 'math' | 'constant' | 'out' | 'monitor' | 'ui' | 'sectionBox';
 
 export interface VirtualStream {
   id: string;
@@ -28,6 +29,12 @@ export interface VirtualStream {
   // For 'constant'
   constantValue?: number;
 
+  // For 'ui'
+  uiElement?: UIElementType;
+
+  // For 'sectionBox'
+  sectionLabel?: string;
+
   // React Flow UI state
   position?: { x: number; y: number };
 }
@@ -46,6 +53,10 @@ interface AudioMapState {
   mappings: NodeMapping[];
   history: { streams: VirtualStream[]; mappings: NodeMapping[] }[];
   historyIndex: number;
+  
+  // Monitor: stream IDs exposed to GlobalInspectorPanel
+  monitoredStreamIds: string[];
+  toggleMonitorStream: (id: string) => void;
   
   // Actions
   addStream: (stream: VirtualStream) => void;
@@ -82,6 +93,18 @@ export const useAudioMapStore = create<AudioMapState>()(
       }],
       historyIndex: 0,
       sequences: {},
+      monitoredStreamIds: [],
+
+  toggleMonitorStream: (id: string) => {
+    set((state) => {
+      const exists = state.monitoredStreamIds.includes(id);
+      return {
+        monitoredStreamIds: exists
+          ? state.monitoredStreamIds.filter(s => s !== id)
+          : [...state.monitoredStreamIds, id]
+      };
+    });
+  },
 
   setSequence: (channel: string, seqData: any) => {
     set((state) => ({
@@ -214,11 +237,21 @@ export function evaluateStreamValue(streamId: string, streams: VirtualStream[], 
     return stream.constantValue || 0;
   }
   
-  if (stream.type === 'out') {
+  if (stream.type === 'out' || stream.type === 'monitor') {
     if (!stream.sourceA) return 0;
     const val = evaluateStreamValue(stream.sourceA, streams, sensorValues, cache);
     cache.set(streamId, val);
     return val;
+  }
+
+  if (stream.type === 'ui') {
+    const val = stream.constantValue ?? 0;
+    cache.set(streamId, val);
+    return val;
+  }
+
+  if (stream.type === 'sectionBox') {
+    return 0;
   }
   
   if (stream.type === 'sensor' && stream.sensor) {

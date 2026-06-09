@@ -9,7 +9,6 @@ import MacroPatcher from './MacroPatcher';
 import NoiseCraftPatchManager from './NoiseCraftPatchManager';
 import styles from './AudioEditorScene.module.css';
 
-import GlobalInspectorPanel from './GlobalInspectorPanel';
 
 export default function AudioEditorScene() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -90,7 +89,6 @@ export default function AudioEditorScene() {
       
       <div className={styles.hideOnMobile} style={{ display: 'flex', height: '100%' }}>
         <NodeMappingPanel activeContext="macro" />
-        <GlobalInspectorPanel />
       </div>
     </div>
   );

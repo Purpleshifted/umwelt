@@ -174,6 +174,24 @@ function Flow() {
     setMenu(null);
   };
 
+  const handleAddMonitor = () => {
+    if (!menu) return;
+    addStream({ id: Date.now().toString(), name: `Monitor ${streams.length + 1}`, type: 'monitor', position: { x: menu.x, y: menu.y } });
+    setMenu(null);
+  };
+
+  const handleAddUI = () => {
+    if (!menu) return;
+    addStream({ id: Date.now().toString(), name: `UI ${streams.length + 1}`, type: 'ui', uiElement: 'toggle', constantValue: 0, position: { x: menu.x, y: menu.y } });
+    setMenu(null);
+  };
+
+  const handleAddSectionBox = () => {
+    if (!menu) return;
+    addStream({ id: Date.now().toString(), name: `Section ${streams.length + 1}`, type: 'sectionBox', sectionLabel: '', position: { x: menu.x, y: menu.y } });
+    setMenu(null);
+  };
+
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   
   useOnSelectionChange({
@@ -257,6 +275,10 @@ function Flow() {
             <button onClick={handleAddConstant}># Constant</button>
             <button onClick={handleAddMath}>∑ Math / Filter</button>
             <button onClick={handleAddOut}>➡️ Stream Out</button>
+            <button onClick={handleAddMonitor}>👁 Monitor Out</button>
+            <div className={styles.menuHeader}>UI / LAYOUT</div>
+            <button onClick={handleAddUI}>🎛 UI Element</button>
+            <button onClick={handleAddSectionBox}>▢ Section Box</button>
           </div>
         )}
       </div>

@@ -518,15 +518,27 @@ export class Editor {
   }
 
   // Start dragging/moving nodes
-  startDrag(nodeId, mousePos) {
+  startDrag(nodeId, mousePos, shiftKey) {
     // Can't start a drag if one is already in progress
     if (this.startDragPos) return;
 
     console.log("starting drag");
 
-    // If the node that was clicked is not already selected
-    if (this.selected.indexOf(nodeId) == -1) {
-      this.selectNodes([nodeId]);
+    if (shiftKey) {
+      let idx = this.selected.indexOf(nodeId);
+      if (idx !== -1) {
+        let newSel = [...this.selected];
+        newSel.splice(idx, 1);
+        this.selectNodes(newSel);
+        return; // Stop drag if we deselected
+      } else {
+        this.selectNodes([...this.selected, nodeId]);
+      }
+    } else {
+      // If the node that was clicked is not already selected
+      if (this.selected.indexOf(nodeId) == -1) {
+        this.selectNodes([nodeId]);
+      }
     }
 
     this.startDragPos = this.getDragPos();
@@ -888,7 +900,7 @@ class UINode {
       }
 
       let mousePos = this.editor.getMousePos(evt);
-      this.editor.startDrag(this.nodeId, mousePos);
+      this.editor.startDrag(this.nodeId, mousePos, evt.shiftKey);
 
       this.nodeDiv.setPointerCapture(evt.pointerId);
     }

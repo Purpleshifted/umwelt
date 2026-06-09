@@ -1,84 +1,184 @@
 'use client';
 
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { useControls } from 'leva';
 import { musicEngine } from '@/audio/MusicEngine';
 import { useAudioGraphStore } from '@/store/audioGraphStore';
 import { getNoiseCraftBridge } from '@/audio/NoiseCraftBridge';
+import { useMusicStore } from '@/store/musicStore';
+
+// Hardcoded defaults (replaces leva controls)
+const GRID_SIZE = 5;
+const SPACING = 0.9;
+const POINT_SIZE = 0.05;
+const MAX_DISPLACEMENT = 0.3 * SPACING;
+
+// Simple seeded pseudo-random for deterministic per-point noise
+function mulberry32(seed: number) {
+  return () => {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 function PointGrid() {
   const pointsRef = useRef<THREE.Points>(null);
 
-  // Leva controls for the point grid exploration
-  const { 
-    gridSize, 
-    spacing, 
-    pointSize,
-    colorA,
-    colorB,
-    animationSpeed
-  } = useControls('Mirror Space (Infinite Grid)', {
-    gridSize: { value: 10, min: 2, max: 20, step: 1 },
-    spacing: { value: 1.0, min: 0.2, max: 3.0, step: 0.1 },
-    pointSize: { value: 0.05, min: 0.01, max: 0.2, step: 0.01 },
-    colorA: '#a78bfa',
-    colorB: '#4ecdc4',
-    animationSpeed: { value: 1.0, min: 0, max: 5, step: 0.1 }
-  });
+  // Read valence/arousal from harmonic_progressor module
+  const harmonicConfig = useMusicStore(
+    (s) => s.modules.find((m) => m.type === 'harmonic_progressor')?.harmonicProgressorConfig
+  );
 
-  const { positions, colors } = useMemo(() => {
-    // Total points = (gridSize * 2 + 1)^3
-    const side = gridSize * 2 + 1;
-    const count = side * side * side;
-    
+  const rawValence = harmonicConfig?.valence ?? 0.5;
+  const rawArousal = harmonicConfig?.arousal ?? 0.5;
+
+  // Smoothed values via refs (lerped each frame)
+  const smoothedRef = useRef({ valence: 0.5, arousal: 0.5 });
+
+  // Build the base grid positions (never changes)
+  const side = GRID_SIZE * 2 + 1;
+  const count = side * side * side;
+
+  const { basePositions, perPointSeeds } = useMemo(() => {
     const pos = new Float32Array(count * 3);
-    const col = new Float32Array(count * 3);
-    
-    const cA = new THREE.Color(colorA);
-    const cB = new THREE.Color(colorB);
-    const tempColor = new THREE.Color();
-    
+    const seeds = new Float32Array(count); // random seed per point for Brownian
+    const rng = mulberry32(42);
+
     let i = 0;
-    for (let x = -gridSize; x <= gridSize; x++) {
-      for (let y = -gridSize; y <= gridSize; y++) {
-        for (let z = -gridSize; z <= gridSize; z++) {
-          pos[i * 3] = x * spacing;
-          pos[i * 3 + 1] = y * spacing;
-          pos[i * 3 + 2] = z * spacing;
-          
-          // Distance from center controls color mix
-          const dist = Math.sqrt(x*x + y*y + z*z) / gridSize;
-          tempColor.lerpColors(cA, cB, Math.min(1, dist));
-          
-          col[i * 3] = tempColor.r;
-          col[i * 3 + 1] = tempColor.g;
-          col[i * 3 + 2] = tempColor.b;
-          
+    for (let x = -GRID_SIZE; x <= GRID_SIZE; x++) {
+      for (let y = -GRID_SIZE; y <= GRID_SIZE; y++) {
+        for (let z = -GRID_SIZE; z <= GRID_SIZE; z++) {
+          pos[i * 3] = x * SPACING;
+          pos[i * 3 + 1] = y * SPACING;
+          pos[i * 3 + 2] = z * SPACING;
+          seeds[i] = rng() * 1000; // phase offset for each point
           i++;
         }
       }
     }
-    
-    return { positions: pos, colors: col };
-  }, [gridSize, spacing, colorA, colorB]);
+
+    return { basePositions: pos, perPointSeeds: seeds };
+  }, [count]);
+
+  // Mutable position buffer that gets updated every frame
+  const livePositions = useMemo(() => new Float32Array(basePositions), [basePositions]);
+  // Per-point Brownian offsets (accumulated)
+  const offsets = useMemo(() => new Float32Array(count * 3), [count]);
+  // Color buffer
+  const colors = useMemo(() => new Float32Array(count * 3), [count]);
+
+  // Temp color for HSL computation
+  const tempColor = useMemo(() => new THREE.Color(), []);
 
   useFrame((state) => {
+    const LERP = 0.02;
+    const sm = smoothedRef.current;
+    sm.valence = sm.valence + (rawValence - sm.valence) * LERP;
+    sm.arousal = sm.arousal + (rawArousal - sm.arousal) * LERP;
+
+    const valence = sm.valence;
+    const arousal = sm.arousal;
+    const time = state.clock.elapsedTime;
+    const dt = state.clock.getDelta() || 1 / 60;
+
+    // --- COLOR: driven by valence ---
+    // valence > 0.5 → warm (hue 0-60°), valence < 0.5 → cool (hue 180-280°), valence=0.5 → white
+    // Saturation diminishes near 0.5 for neutral white/silver
+    const distFromNeutral = Math.abs(valence - 0.5) * 2; // 0..1
+    const saturation = distFromNeutral * 0.85;
+    const lightness = 0.55 + (1 - distFromNeutral) * 0.3; // brighter when neutral
+
+    // --- MOTION parameters ---
+    // arousal controls overall speed factor
+    // arousal < 0.5 → slow/frozen, arousal > 0.5 → rhythmic/pulsing
+    const speedFactor = Math.pow(arousal, 2) * 4; // 0 to ~4
+    const brownianStrength = speedFactor * 0.008;
+
+    // Pulsing factor: strong when arousal > 0.5
+    const pulsePhase = time * (2 + arousal * 6); // faster pulse at high arousal
+    const pulseAmplitude = Math.max(0, (arousal - 0.5) * 2) * 0.15; // 0 when arousal<=0.5, up to 0.15
+
+    // Coherence: high valence + high arousal = synchronized; low valence + high arousal = chaotic
+    const coherence = valence; // 0..1, higher = more synchronized
+
+    for (let i = 0; i < count; i++) {
+      const seed = perPointSeeds[i];
+      const i3 = i * 3;
+
+      // --- Per-point color ---
+      let hue: number;
+      if (valence >= 0.5) {
+        // Warm: hue 0° to 60° (red to orange/yellow)
+        const t = (valence - 0.5) * 2; // 0..1
+        hue = 60 * (1 - t) / 360; // near 0.5 → 60°, near 1.0 → 0° (red)
+      } else {
+        // Cool: hue 180° to 280° (cyan to purple)
+        const t = (0.5 - valence) * 2; // 0..1
+        hue = (180 + t * 100) / 360; // near 0.5 → 180° (cyan), near 0 → 280° (purple)
+      }
+      // Add slight per-point hue variation for richness
+      const hueVar = (Math.sin(seed * 1.7) * 0.03);
+      tempColor.setHSL(hue + hueVar, saturation, lightness);
+
+      colors[i3] = tempColor.r;
+      colors[i3 + 1] = tempColor.g;
+      colors[i3 + 2] = tempColor.b;
+
+      // --- Per-point motion ---
+      // Brownian drift: accumulate small random offsets
+      // Use sin/cos of time*seed for pseudo-random continuous noise
+      const noiseX = Math.sin(time * 0.7 + seed) * Math.cos(time * 1.3 + seed * 0.5);
+      const noiseY = Math.sin(time * 0.9 + seed * 1.1) * Math.cos(time * 0.6 + seed * 0.8);
+      const noiseZ = Math.sin(time * 1.1 + seed * 0.7) * Math.cos(time * 0.8 + seed * 1.3);
+
+      // Brownian: accumulate with damping (spring back toward 0)
+      const damping = 0.98;
+      offsets[i3] = offsets[i3] * damping + noiseX * brownianStrength;
+      offsets[i3 + 1] = offsets[i3 + 1] * damping + noiseY * brownianStrength;
+      offsets[i3 + 2] = offsets[i3 + 2] * damping + noiseZ * brownianStrength;
+
+      // Pulsing: radial push/pull synchronized by coherence
+      // Synchronized pulse uses same phase for all points
+      // Chaotic uses per-point phase
+      const pointPhase = coherence * pulsePhase + (1 - coherence) * (pulsePhase + seed * 3.0);
+      const pulse = Math.sin(pointPhase) * pulseAmplitude;
+
+      // Pulse direction: radial from center
+      const bx = basePositions[i3];
+      const by = basePositions[i3 + 1];
+      const bz = basePositions[i3 + 2];
+      const dist = Math.sqrt(bx * bx + by * by + bz * bz) || 1;
+      const nx = bx / dist;
+      const ny = by / dist;
+      const nz = bz / dist;
+
+      // Final position = base + clamped(brownian offset + radial pulse)
+      const dx = offsets[i3] + nx * pulse;
+      const dy = offsets[i3 + 1] + ny * pulse;
+      const dz = offsets[i3 + 2] + nz * pulse;
+      livePositions[i3] = bx + Math.max(-MAX_DISPLACEMENT, Math.min(MAX_DISPLACEMENT, dx));
+      livePositions[i3 + 1] = by + Math.max(-MAX_DISPLACEMENT, Math.min(MAX_DISPLACEMENT, dy));
+      livePositions[i3 + 2] = bz + Math.max(-MAX_DISPLACEMENT, Math.min(MAX_DISPLACEMENT, dz));
+    }
+
+    // Upload to GPU
     if (pointsRef.current) {
-      const time = state.clock.elapsedTime * animationSpeed;
-      // Gentle breathing scale and rotation
-      const scale = 1.0 + Math.sin(time * 0.5) * 0.05;
-      pointsRef.current.scale.set(scale, scale, scale);
+      const geom = pointsRef.current.geometry;
+      const posAttr = geom.getAttribute('position') as THREE.BufferAttribute;
+      posAttr.array = livePositions;
+      posAttr.needsUpdate = true;
+
+      const colAttr = geom.getAttribute('color') as THREE.BufferAttribute;
+      colAttr.array = colors;
+      colAttr.needsUpdate = true;
+
+      // Gentle global rotation
       pointsRef.current.rotation.y = time * 0.05;
       pointsRef.current.rotation.z = Math.sin(time * 0.02) * 0.1;
-      
-      // Update material size if changed
-      const mat = pointsRef.current.material as THREE.PointsMaterial;
-      if (mat.size !== pointSize) {
-        mat.size = pointSize;
-      }
     }
   });
 
@@ -87,7 +187,7 @@ function PointGrid() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          args={[positions, 3]}
+          args={[livePositions, 3]}
         />
         <bufferAttribute
           attach="attributes-color"
@@ -95,7 +195,7 @@ function PointGrid() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={pointSize}
+        size={POINT_SIZE}
         vertexColors
         transparent
         opacity={0.8}
@@ -109,22 +209,29 @@ function PointGrid() {
 
 export default function MirrorSpaceScene() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const hiddenContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Start the global MusicEngine so sequence generation works
-    import('@/audio/MusicEngine').then(({ musicEngine }) => {
-      // Just initialize
-    });
+    // Create a hidden NoiseCraft iframe so audio can play
+    if (hiddenContainerRef.current) {
+      const bridge = getNoiseCraftBridge();
+      bridge.createIframe(hiddenContainerRef.current, false);
+    }
   }, []);
 
-  const handlePlayToggle = () => {
+  const handlePlayToggle = async () => {
     if (!isPlaying) {
       setIsPlaying(true);
-      musicEngine.start();
-      musicEngine.playTracks();
-      
+
+      // Initialize and resume audio contexts
+      await musicEngine.initialize();
+      await musicEngine.resumeAudioContext();
+
       const ctx = useAudioGraphStore.getState().audioContext;
-      if (ctx && ctx.state === 'suspended') ctx.resume();
+      if (ctx && ctx.state === 'suspended') await ctx.resume();
+
+      musicEngine.start();
+      await musicEngine.playTracks();
 
       getNoiseCraftBridge().startAudio();
     } else {
@@ -171,6 +278,8 @@ export default function MirrorSpaceScene() {
           autoRotateSpeed={0.2} 
         />
       </Canvas>
+      {/* Hidden container for NoiseCraft audio iframe */}
+      <div ref={hiddenContainerRef} style={{ display: 'none' }} />
     </div>
   );
 }

@@ -519,8 +519,12 @@ function Flow() {
           const targetNode = nodes.find(n => n.id === connection.target);
           if (!sourceNode || !targetNode) return false;
           
-          const sourceType = getHandleDataType(sourceNode.type as string, connection.sourceHandle || '', true);
-          const targetType = getHandleDataType(targetNode.type as string, connection.targetHandle || '', false);
+          // Use the actual module type, not the React Flow node type ('musicModule')
+          const sourceModType = (sourceNode.data as any)?.module?.type || sourceNode.type;
+          const targetModType = (targetNode.data as any)?.module?.type || targetNode.type;
+          
+          const sourceType = getHandleDataType(sourceModType as string, connection.sourceHandle || '', true);
+          const targetType = getHandleDataType(targetModType as string, connection.targetHandle || '', false);
           
           if (sourceType === 'any' || targetType === 'any') return true;
           return sourceType === targetType;
@@ -612,6 +616,7 @@ function Flow() {
             <div style={{ padding: '4px 8px', fontSize: '11px', color: '#9ca3af', borderBottom: '1px solid #444', marginBottom: '4px', marginTop: '8px' }}>Utilities (UTIL)</div>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('null_node', contextMenu.x, contextMenu.y)}>Null (Pass-through)</button>
             <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('section_box', contextMenu.x, contextMenu.y)}>Section Box</button>
+            <button className={styles.btn} style={{ display: 'block', width: '100%', textAlign: 'left', marginBottom: '2px' }} onClick={() => handleAddModule('global_ui_out', contextMenu.x, contextMenu.y)}>Global UI Out</button>
           </div>
         </div>
         )}

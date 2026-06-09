@@ -7,18 +7,16 @@ import { getNoiseCraftBridge } from '@/audio/NoiseCraftBridge';
 import { useAudioGraphStore } from '@/store/audioGraphStore';
 
 export default function VirtualBiosignalSimulator() {
-  const requestRef = useRef<number>(0);
-  
-  // Need to get refs to state to use inside requestAnimationFrame loop without re-binding
   const timeRef = useRef(0);
   const gsrBaseline = useRef(0.2);
 
   useEffect(() => {
     let lastTime = performance.now();
 
-    const animate = (time: number) => {
-      const dt = (time - lastTime) / 1000;
-      lastTime = time;
+    const tick = () => {
+      const now = performance.now();
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
       
       const sensorState = useSensorStore.getState();
       
@@ -203,14 +201,10 @@ export default function VirtualBiosignalSimulator() {
           }
         });
       });
-
-      requestRef.current = requestAnimationFrame(animate);
     };
 
-    requestRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
+    const id = setInterval(tick, 33); // ~30fps, won't starve Three.js rAF
+    return () => clearInterval(id);
   }, []);
 
   return null; // Invisible logical component

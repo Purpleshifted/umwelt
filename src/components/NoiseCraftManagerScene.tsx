@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getNoiseCraftBridge } from '@/audio/NoiseCraftBridge';
 import NoiseCraftPatchManager from './NoiseCraftPatchManager';
+import NodeMappingPanel from './NodeMappingPanel';
 import styles from './AudioEditorScene.module.css';
 
 export default function NoiseCraftManagerScene() {
@@ -37,7 +38,6 @@ export default function NoiseCraftManagerScene() {
       setMounted(true);
 
       return () => {
-        // Cleanup when unmounting or changing patch
         if (iframe && iframe.parentNode) {
           iframe.parentNode.removeChild(iframe);
         }
@@ -48,7 +48,6 @@ export default function NoiseCraftManagerScene() {
   }, [selectedPatch]);
 
   useEffect(() => {
-    // Force a resize event in the iframe to fix SVG connection lines rendering
     if (mounted) {
       setTimeout(() => {
         const iframe = document.getElementById('noisecraft-iframe') as HTMLIFrameElement;
@@ -69,17 +68,22 @@ export default function NoiseCraftManagerScene() {
 
   return (
     <div className={styles.container} style={{ height: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', minHeight: 0 }}>
         {selectedPatch ? (
-          <>
-            <div style={{ background: '#1a1a2e', padding: '8px 16px', display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <div style={{ background: '#1a1a2e', padding: '8px 16px', display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}>
               <button onClick={handleBackToManager} style={{ background: 'none', border: 'none', color: '#4ecdc4', cursor: 'pointer', fontSize: '12px', marginRight: '16px' }}>
                 ← Back to Patches
               </button>
               <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Editing: <strong>{selectedPatch}</strong></span>
             </div>
-            <div ref={containerRef} className={styles.iframeContainer} style={{ flex: 1, position: 'relative' }} />
-          </>
+            <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+              <div ref={containerRef} className={styles.iframeContainer} style={{ flex: 1, position: 'relative' }} />
+              <div style={{ width: '300px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                <NodeMappingPanel activeContext={selectedPatch} />
+              </div>
+            </div>
+          </div>
         ) : (
           <NoiseCraftPatchManager onSelectPatch={handleSelectPatch} />
         )}

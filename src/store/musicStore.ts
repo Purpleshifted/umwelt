@@ -61,6 +61,9 @@ export interface HarmonicProgressorConfig {
   valence: number; // 0.0 to 1.0 (Negative to Positive)
   arousal: number; // 0.0 to 1.0 (Calm to Energetic)
   currentCategoryName?: string;
+  useAiHarmony?: boolean;
+  /** 'idle' | 'loading' | 'active' | 'error' */
+  aiHarmonyStatus?: string;
 }
 
 export interface MelodyGenConfig {
@@ -242,6 +245,7 @@ export interface MusicModule {
 interface MusicState {
   modules: MusicModule[];
   edges: Edge[];
+  bpm: number;
   nodeOutputs: Record<string, any>; // Stores the latest evaluation results from MusicEngine
   addModule: (module: MusicModule) => void;
   updateModule: (id: string, updates: Partial<MusicModule>) => void;
@@ -249,7 +253,8 @@ interface MusicState {
   removeModule: (id: string) => void;
   setEdges: (edges: Edge[] | ((eds: Edge[]) => Edge[])) => void;
   setNodeOutputs: (outputs: Record<string, any>) => void;
-  getExposedUINodes: () => MusicModule[];
+  setBpm: (bpm: number) => void;
+  getExposedUINodes: () => { sectionName: string; sectionId: string; modules: MusicModule[] }[];
 }
 
 import defaultMusicLibraryState from '@/constants/music_library_state.json';
@@ -259,6 +264,7 @@ export const useMusicStore = create<MusicState>()(
     (set, get) => ({
       modules: defaultMusicLibraryState.state.modules as any[],
       edges: defaultMusicLibraryState.state.edges as any[],
+      bpm: 120,
       nodeOutputs: {},
       addModule: (module) =>
         set((state) => ({ modules: [...state.modules, module] })),
@@ -287,37 +293,45 @@ export const useMusicStore = create<MusicState>()(
           edges: typeof edgesOrUpdater === 'function' ? edgesOrUpdater(state.edges) : edgesOrUpdater
         })),
       setNodeOutputs: (outputs) => set({ nodeOutputs: outputs }),
+      setBpm: (bpm) => set({ bpm }),
       getExposedUINodes: () => {
         const state = get();
-        const exposedNodes: MusicModule[] = [];
+        type Group = { sectionName: string; sectionId: string; modules: MusicModule[] };
         
-        // Find all global_ui_out nodes
-        const globalUiOuts = state.modules.filter(m => m.type === 'global_ui_out');
-        const targetIds = new Set(globalUiOuts.map(m => m.id));
+        const configurableTypes = new Set(['slider', 'knob', 'melody_gen', 'chord_gen',
+          'harmonic_progressor', 'register_shifter', 'voice_splitter', 'sequence_adder',
+          'ai_seq_out', 'seq_out', 'score_out']);
         
-        // Find edges connected to them
-        const exposedSourceIds = state.edges
-          .filter(e => targetIds.has(e.target))
-          .map(e => e.source);
-          
-        const uiTypes = ['slider', 'knob'];
+        // All section boxes
+        const allBoxes = state.modules.filter(m => m.type === 'section_box');
+        const boxMap = new Map<string, MusicModule[]>();
+        allBoxes.forEach(box => boxMap.set(box.id, []));
         
-        exposedSourceIds.forEach(sourceId => {
-          const sourceNode = state.modules.find(m => m.id === sourceId);
-          if (!sourceNode) return;
-          
-          if (sourceNode.type === 'section_box') {
-            // Find all children
-            const children = state.modules.filter(m => m.parentId === sourceNode.id && uiTypes.includes(m.type));
-            exposedNodes.push(...children);
-          } else if (uiTypes.includes(sourceNode.type)) {
-            // Directly connected UI node
-            exposedNodes.push(sourceNode);
+        const configModules = state.modules.filter(m => configurableTypes.has(m.type));
+        const ungrouped: MusicModule[] = [];
+        
+        
+        
+        for (const mod of configModules) {
+          if (mod.parentId && boxMap.has(mod.parentId)) {
+            boxMap.get(mod.parentId)!.push(mod);
+          } else {
+            ungrouped.push(mod);
           }
-        });
+        }
         
-        // Remove duplicates if any
-        return Array.from(new Set(exposedNodes));
+        const groups: Group[] = [];
+        for (const box of allBoxes) {
+          const kids = boxMap.get(box.id) || [];
+          if (kids.length > 0) {
+            groups.push({ sectionName: box.name || 'Section', sectionId: box.id, modules: kids });
+          }
+        }
+        if (ungrouped.length > 0) {
+          groups.push({ sectionName: 'Other', sectionId: '__ungrouped__', modules: ungrouped });
+        }
+        
+        return groups;
       },
     }),
     {
