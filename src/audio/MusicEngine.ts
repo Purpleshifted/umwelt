@@ -237,6 +237,7 @@ class MusicEngine {
   public Tone: typeof import('tone') | null = null;
   private activeToneNodes: any[] = [];
   private activeToneParts: any[] = [];
+  private activeTonePartsMap = new Map<string, any>();
   private previewActiveNodes: any[] = [];
   private previewIntervals: any[] = [];
   private activeNodesMap = new Map<string, any>();
@@ -246,8 +247,6 @@ class MusicEngine {
   private audioCtx: AudioContext | null = null;
   
   // Magenta imports
-  private MusicRNN: any;
-  private MusicVAE: any;
   private sequences: any;
 
   // State per generator module
@@ -275,47 +274,25 @@ class MusicEngine {
       const audioCtx = useAudioGraphStore.getState().audioContext || useAudioGraphStore.getState().initAudioContext();
       this.Tone.setContext(audioCtx);
 
-      this.MusicRNN = rnnModule.MusicRNN;
-      this.MusicVAE = vaeModule.MusicVAE;
       this.sequences = coreModule.sequences;
+      
+      this.rnn = new rnnModule.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
+      this.drumRnn = new rnnModule.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/drum_kit_rnn');
+      
+      try {
+        await Promise.all([
+          this.rnn.initialize(),
+          this.drumRnn.initialize()
+        ]);
+        this.initialized = true;
+        console.log('[MusicEngine] Magenta initialized in main thread');
+      } catch (err) {
+        console.error('[MusicEngine] Magenta initialization failed', err);
+      }
     }
-
-    // Basic drum RNN
-    this.drumRnn = new this.MusicRNN(
-      'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/drum_kit_rnn'
-    );
-    // Basic melody RNN
-    this.rnn = new this.MusicRNN(
-      'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn'
-    );
-    // Basic VAE for melody interpolation/generation
-    this.vae = new this.MusicVAE(
-      'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_small_q2'
-    );
     
     // Lazily create AudioContext if needed
     this.getAudioContext();
-    
-    // Start Magenta initialization in the background
-    this.rnn = new this.MusicRNN(
-      'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improviser',
-    );
-    this.drumRnn = new this.MusicRNN(
-      'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/drum_kit_rnn'
-    );
-    this.vae = new this.MusicVAE(
-      'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small'
-    );
-    Promise.all([
-      this.rnn.initialize(),
-      this.drumRnn.initialize(),
-      this.vae.initialize()
-    ]).then(() => {
-      this.initialized = true;
-      console.log('[MusicEngine] All Magenta models loaded successfully');
-    }).catch((err) => {
-      console.warn('Failed to load some Magenta models', err);
-    });
   }
 
   public getAudioContext(): AudioContext {
@@ -340,13 +317,17 @@ class MusicEngine {
   // -----------------------------------------------------------------------
   // Start / Stop
   // -----------------------------------------------------------------------
-
   start() {
     if (this.isRunning) return;
     this.isRunning = true;
 
+    if (!this.initialized) {
+      this.initialize();
+    }
+
     const bridge = getNoiseCraftBridge();
 
+    let lastSyncedModules = '';
     const syncModules = () => {
       const state = useMusicStore.getState();
       const outModules = state.modules
@@ -355,7 +336,12 @@ class MusicEngine {
           id: m.id, 
           name: m.type === 'seq_out' ? `Channel ${m.seqOutConfig?.channel || '?'}` : m.name 
         }));
-      bridge.postMessage({ type: 'noiseCraft:updateModules', modules: outModules });
+      
+      const newStr = JSON.stringify(outModules);
+      if (newStr !== lastSyncedModules) {
+        lastSyncedModules = newStr;
+        bridge.postMessage({ type: 'noiseCraft:updateModules', modules: outModules });
+      }
     };
     syncModules();
     useMusicStore.subscribe(syncModules);
@@ -368,34 +354,20 @@ class MusicEngine {
       this.tickAllModules();
     };
 
-    let wasBridgeRunning = false;
-
     this.updateTimer = setInterval(() => {
       if (!this.isRunning) return;
-
-      const bridge = getNoiseCraftBridge();
-      const isBridgeRunning = bridge.running;
-      
-      const state = useMusicStore.getState();
-      const isPreviewPlaying = state.modules.some(m => m.type === 'score_out' && m.scoreOutConfig?.isPlaying);
-
-      if (!isBridgeRunning && !isPreviewPlaying) {
-        if (wasBridgeRunning) {
-          // Just stopped
-          wasBridgeRunning = false;
-        }
-        lastTick = performance.now();
-        return;
-      }
-      wasBridgeRunning = true;
-
+      // Engine always runs to keep sequences fresh
       const now = performance.now();
       const dt = (now - lastTick) / 1000;
       lastTick = now;
 
-      const bpm = 120;
-      const pulsesPerSec = (bpm / 60) * 24;
-      accumulatedPulses += dt * pulsesPerSec;
+      // Sync with Tone.js Transport if available
+      if (this.Tone && this.Tone.Transport.state === 'started') {
+        accumulatedPulses += (dt * (this.Tone.Transport.bpm.value / 60) * 24);
+      } else {
+        const bpm = useMusicStore.getState().bpm || 120;
+        accumulatedPulses += (dt * (bpm / 60) * 24);
+      }
 
       while (accumulatedPulses >= 1) {
         accumulatedPulses -= 1;
@@ -465,10 +437,59 @@ class MusicEngine {
 
     if (dagState.cursor >= dagPulsesNeeded && !dagState.isGenerating) {
       dagState.isGenerating = true;
+      // Prevent drift by subtracting the exact needed pulses, rather than resetting to 0
+      dagState.cursor -= dagPulsesNeeded;
+      
       this.evaluateDAG(dagModules, musicState, audioState).then(() => {
         dagState!.seqLength = 16;
-        dagState!.cursor = 0;
         dagState!.isGenerating = false;
+        
+        // Update Tone.Part instances dynamically with the newly generated sequences
+        const state = useMusicStore.getState();
+        const results = state.nodeOutputs;
+        
+        for (const [nodeId, part] of this.activeTonePartsMap.entries()) {
+           const config = results[nodeId];
+           if (config && config.sequence) {
+             const seq = config.sequence as MonoSequence | PolySequence;
+             const beatDuration = 60 / this.qpm;
+             const stepDuration = beatDuration / 4;
+             const seqLength = Array.isArray(seq.pitches[0]) ? seq.pitches.length : seq.pitches.length;
+             
+             const events: any[] = [];
+             for (let i = 0; i < seqLength; i++) {
+               const time = i * stepDuration;
+               let isGateOn = false;
+               let notesToPlay: number[] = [];
+
+               if (Array.isArray(seq.pitches[0])) {
+                 const poly = seq as PolySequence;
+                 for (let j = 0; j < (poly.gates[i] || []).length; j++) {
+                   if (poly.gates[i][j]) {
+                     isGateOn = true;
+                     notesToPlay.push(poly.pitches[i][j]);
+                   }
+                 }
+               } else {
+                 const mono = seq as MonoSequence;
+                 if (mono.gates[i]) {
+                   isGateOn = true;
+                   notesToPlay.push(mono.pitches[i]);
+                 }
+               }
+
+               if (isGateOn && notesToPlay.length > 0) {
+                 events.push({ time, notes: notesToPlay });
+               }
+             }
+             
+             part.clear();
+             events.forEach(ev => {
+               part.add(ev.time, ev);
+             });
+           }
+        }
+        
       }).catch((e) => {
         console.error('DAG evaluation failed:', e);
         dagState!.isGenerating = false;
@@ -634,7 +655,7 @@ class MusicEngine {
     const chordDataInput = this.resolveInputData(mod, 'chordData', musicState, results);
     const chords: ChordData[] = chordDataInput ?? this.fallbackChords(seqLength);
 
-    const temperature = this.getParamValue(mod, 'temperature', 0.5, musicState, audioState);
+    const temperature = this.getParamValue(mod, 'temperature', 1.1, musicState, audioState);
     const rhythmicComplexity = mod.melodyGenConfig?.rhythmicComplexity ?? 0.5;
     const density = this.getParamValue(mod, 'density', rhythmicComplexity, musicState, audioState);
     const register: number = mod.melodyGenConfig?.register ?? 0;
@@ -644,7 +665,7 @@ class MusicEngine {
     const gates: number[] = [];
     const baseNote = 60; // C4
 
-    if (algorithm === 'magenta' && this.rnn && this.initialized) {
+    if (algorithm === 'magenta' && this.initialized) {
       const root = baseNote + register;
       const seedChord = chords[0] || { key: 0, notes: [0, 4, 7] };
       
@@ -694,72 +715,43 @@ class MusicEngine {
           chordProgressionStrings.push(`${rootName}${quality}`);
         }
 
-        const result = await this.rnn.continueSequence(qns, seqLength, temperature, chordProgressionStrings);
-        const unquantized = this.sequences.unquantizeSequence(result, this.qpm);
+        const payload = {
+          qns,
+          seqLength,
+          temperature,
+          chordProgressionStrings
+        };
 
-        let drumPattern: boolean[] | null = null;
-        try {
-          if (this.drumRnn && this.initialized) {
-            const drumSeed: INoteSequence = {
-              ticksPerQuarter: 220,
-              totalTime: 1.0,
-              timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
-              tempos: [{ time: 0, qpm: this.qpm }],
-              notes: [{ pitch: 36, startTime: 0, endTime: 0.5, velocity: 80 }]
-            };
-            const drumQns = this.sequences.quantizeNoteSequence(drumSeed, 4);
-            // Higher rhythmic complexity -> higher temperature for drums
-            const drumTemp = 0.5 + (rhythmicComplexity * 1.5);
-            const drumRes = await this.drumRnn.continueSequence(drumQns, seqLength, drumTemp);
-            const drumUnq = this.sequences.unquantizeSequence(drumRes, this.qpm);
-            
-            drumPattern = [];
-            const stepTime = 60 / this.qpm / 4;
-            for (let i = 0; i < seqLength; i++) {
-              const stepStart = i * stepTime;
-              const hit = drumUnq.notes?.some((n: any) => (n.startTime ?? 0) <= stepStart + 0.01 && (n.endTime ?? 0) > stepStart);
-              drumPattern.push(!!hit);
-            }
-          }
-        } catch (e) {
-          console.warn('[MusicEngine] DrumRNN failed', e);
-        }
-
-        const stepTime = 60 / this.qpm / 4;
-        let lastPitch = root;
+        let melodyResult = null;
         
-        // Find the actual start time of the generated sequence to offset our search
-        const firstNoteTime = unquantized.notes && unquantized.notes.length > 0 
-          ? unquantized.notes[0].startTime ?? 0 
+        if (this.rnn) {
+          melodyResult = await this.rnn.continueSequence(qns, seqLength, temperature, chordProgressionStrings);
+        }
+        
+        if (!melodyResult) throw new Error('Magenta failed to return melody');
+
+        const firstStep = melodyResult.notes && melodyResult.notes.length > 0 
+          ? melodyResult.notes[0].quantizedStartStep ?? 0 
           : 0;
 
+        let lastPitch = root;
+        
         for (let i = 0; i < seqLength; i++) {
-          const stepStart = firstNoteTime + i * stepTime;
-          const note = unquantized.notes?.find(
-            (n: any) => (n.startTime ?? 0) <= stepStart + 0.01 && (n.endTime ?? 0) > stepStart,
+          const currentStep = firstStep + i;
+          const note = melodyResult.notes?.find(
+            (n: any) => (n.quantizedStartStep ?? 0) <= currentStep && (n.quantizedEndStep ?? 0) > currentStep
           );
 
           // Get pitch
           let target = lastPitch;
           if (note) {
             target = note.pitch ?? root;
-            const chord = chords[i % chords.length];
-            if (chord) {
-              if (chord.scaleIntervals) {
-                const scaleTones = chord.scaleIntervals.map((n) => baseNote + chord.key + n);
-                if (Math.random() > 0.15) {
-                  target = this.snapToNearestChordTone(target, scaleTones);
-                }
-              } else {
-                const keyDiff = chord.key - seedChord.key;
-                target += keyDiff;
-              }
-            }
             lastPitch = target;
           }
 
           // Use drum pattern for gate if available, else use original note timing
-          const isGateOn = drumPattern ? drumPattern[i] : !!note;
+          // Only trigger gate if the note starts exactly on this step
+          const isGateOn = note && note.quantizedStartStep === currentStep;
           
           pitches.push(target);
           gates.push(isGateOn ? 1 : 0);
@@ -1448,6 +1440,8 @@ class MusicEngine {
     const inputSeq = this.resolveInputData(mod, 'sequence', musicState, results) as MonoSequence | PolySequence | null;
     if (!inputSeq) return;
 
+    results.set(mod.id, inputSeq); // Set results so UI preview works!
+
     if (inputSeq.pitches && inputSeq.pitches.length > 0) {
       this.sendSequenceToAI(mod.id, { pitches: inputSeq.pitches as any[], gates: inputSeq.gates as any[] });
     }
@@ -1813,6 +1807,57 @@ class MusicEngine {
           node.Q.rampTo(q, 0.05);
         } catch (e) {}
       }
+
+      if (module.type === 'pedal_fx' && node && !node.isEffectChain) {
+        const fxType = module.pedalFxConfig?.effectType ?? 'chorus';
+        try {
+          if (fxType === 'chorus') {
+            node.frequency.rampTo(Math.max(0.01, module.pedalFxConfig?.param1 ?? 4), 0.05);
+            node.depth = module.pedalFxConfig?.param2 ?? 0.5;
+            node.wet.rampTo(Math.max(0, module.pedalFxConfig?.mix ?? 0.5), 0.05);
+          } else if (fxType === 'distort') {
+            node.distortion = module.pedalFxConfig?.param1 ?? 0.4;
+            node.wet.rampTo(Math.max(0, module.pedalFxConfig?.mix ?? 0.5), 0.05);
+          } else if (fxType === 'reverb') {
+            node.decay = Math.max(0.1, (module.pedalFxConfig?.param1 ?? 0.2) * 10);
+            node.wet.rampTo(Math.max(0, module.pedalFxConfig?.mix ?? 0.5), 0.05);
+          }
+        } catch (e) {}
+      }
+
+      if (module.type === 'effect_chain' && node && node.isEffectChain) {
+        const effectsConfig = module.effectChainConfig?.effects ?? [];
+        const enabledConfigs = effectsConfig.filter((f: any) => f.enabled !== false);
+        // The array of nodes was built from end to start (index N-1 to 0).
+        // Let's match them up.
+        if (enabledConfigs.length === node.nodes.length) {
+          for (let i = 0; i < enabledConfigs.length; i++) {
+            // Because we built it backwards in buildInstrumentChain:
+            // nodes[j] corresponds to enabledConfigs[enabledConfigs.length - 1 - j]
+            const fx = enabledConfigs[enabledConfigs.length - 1 - i];
+            const toneNode = node.nodes[i];
+            
+            try {
+              if (fx.type === 'chorus') {
+                toneNode.frequency.rampTo(Math.max(0.01, fx.param1), 0.05);
+                toneNode.depth = fx.param2; // no rampTo for depth in Tone.Chorus
+                toneNode.wet.rampTo(Math.max(0, fx.mix), 0.05);
+              } else if (fx.type === 'distortion') {
+                toneNode.distortion = fx.param1; // no rampTo
+                toneNode.wet.rampTo(Math.max(0, fx.mix), 0.05);
+              } else if (fx.type === 'delay') {
+                toneNode.delayTime.rampTo(Math.max(0.01, fx.param1), 0.05);
+                toneNode.feedback.rampTo(Math.max(0, fx.param2), 0.05);
+                toneNode.wet.rampTo(Math.max(0, fx.mix), 0.05);
+              } else if (fx.type === 'reverb') {
+                toneNode.decay = Math.max(0.1, fx.param1 * 10); // Reverb decay must be re-generated, no rampTo
+                toneNode.preDelay = Math.max(0, fx.param2 * 0.1);
+                toneNode.wet.rampTo(Math.max(0, fx.mix), 0.05);
+              }
+            } catch (e) {}
+          }
+        }
+      }
     }
   }
 
@@ -1972,6 +2017,7 @@ class MusicEngine {
       part.loopEnd = seqLength * stepDuration;
       part.start(0);
       this.activeToneParts.push(part);
+      this.activeTonePartsMap.set(outNode.id, part);
     }
 
     this.Tone.Transport.start();
@@ -1985,6 +2031,7 @@ class MusicEngine {
     for (const part of this.activeToneParts) {
       part.dispose();
     }
+    this.activeTonePartsMap.clear();
     this.activeToneParts = [];
 
     this.activeToneNodes = [];
@@ -2493,6 +2540,7 @@ class MusicEngine {
         } else {
             effectNode = new this.Tone.Gain(1);
         }
+        this.activeNodesMap.set(nodeId, effectNode);
         break;
       }
       case 'effect_chain': {
@@ -2525,6 +2573,8 @@ class MusicEngine {
                 this.activeToneNodes.push(toneNode);
             }
         }
+
+        this.activeNodesMap.set(nodeId, { isEffectChain: true, nodes });
 
         if (nodes.length === 0) {
             effectNode = new this.Tone.Gain(1);
