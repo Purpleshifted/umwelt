@@ -15,6 +15,7 @@ export type AudioNodeType =
   | 'vst_instrument'
   | 'score_in'
   | 'track_in'
+  | 'broadcast_receiver'
   | 'destination';
 
 export interface AudioGraphNode {
@@ -85,6 +86,7 @@ export const DEFAULT_PARAMS: Record<AudioNodeType, Record<string, number | strin
   noisecraft_source: { patchFile: 'nc_noise_patch.ncft', gain: 1.0 },
   score_in: { channel: 'A' },
   track_in: { channel: 'A' },
+  broadcast_receiver: { channel: 'A', gain: 1.0, muted: false },
   gain: { gain: 1.0 },
   biquad_filter: { type: 'lowpass', frequency: 1000, Q: 1, gain: 0 },
   delay: { delayTime: 0.3, feedback: 0.4, wet: 0.5 },
@@ -110,6 +112,7 @@ export const NODE_LABELS: Record<AudioNodeType, string> = {
   vst_instrument: 'VST Instrument',
   score_in: 'Score In',
   track_in: 'Track In',
+  broadcast_receiver: 'Broadcast Receiver',
   destination: 'Speaker Out',
 };
 
@@ -322,6 +325,21 @@ export const useAudioGraphStore = create<AudioGraphState>()(
           
           audioNode = gain;
           newLiveNodes.set(gNode.id + '_trackin', gain);
+          break;
+        }
+        case 'broadcast_receiver': {
+          // Receives audio from Music Library broadcast buses and outputs to graph
+          const brChannel = (gNode.params.channel as string) || 'A';
+          const brBus = getTrackBus(audioContext, brChannel);
+          
+          const brGain = audioContext.createGain();
+          const isMuted = gNode.params.muted as boolean;
+          brGain.gain.value = isMuted ? 0 : ((gNode.params.gain as number) ?? 1.0);
+          
+          brBus.connect(brGain);
+          
+          audioNode = brGain;
+          newLiveNodes.set(gNode.id + '_brecv', brGain);
           break;
         }
         case 'gain': {

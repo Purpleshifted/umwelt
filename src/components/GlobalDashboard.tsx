@@ -37,20 +37,47 @@ export default function GlobalDashboard() {
   }, [isOpen, activeTab]);
 
   const handleGlobalPlay = () => {
-    // Start Web Audio if suspended
-    // Start Sequencer
-    if (!isPlaying) {
-      setIsPlaying(true);
-      musicEngine.start();
-      musicEngine.playTracks();
+    // Resume ALL AudioContexts SYNCHRONOUSLY in the click handler.
+    // AudioContext.resume() must be called in the synchronous call stack
+    // of a user gesture. Even a single preceding await can break this.
+    
+    // 1. Resume Tone.js context (both raw and wrapped)
+    if (musicEngine.Tone) {
+      musicEngine.Tone.start(); // fire-and-forget, no await
+      // Also directly resume the raw context as a fallback
+      try {
+        const rawCtx = (musicEngine.Tone.context as any).rawContext 
+                     || (musicEngine.Tone.context as any)._context;
+        if (rawCtx?.state === 'suspended') rawCtx.resume();
+      } catch(e) {}
     }
     
-    // Resume Audio Editor Context
+    // 2. Resume our separate AudioContext (for audio graph editor)
     const ctx = useAudioGraphStore.getState().audioContext;
     if (ctx && ctx.state === 'suspended') ctx.resume();
+    
+    // 3. Resume MusicEngine's AudioContext
+    const engineCtx = musicEngine.getAudioContext();
+    if (engineCtx.state === 'suspended') engineCtx.resume();
 
-    // Start NoiseCraft Bridges
-    getNoiseCraftBridge().startAudio();
+    // Give the browser a moment to actually process the resume,
+    // then start playback.
+    setTimeout(() => {
+      if (musicEngine.Tone) {
+        if (musicEngine.Tone.Transport.state !== 'started') {
+          musicEngine.Tone.Transport.start();
+        }
+      }
+      
+      if (!isPlaying) {
+        setIsPlaying(true);
+        musicEngine.start();
+        musicEngine.playTracks();
+      }
+      
+      // Start NoiseCraft Bridges
+      getNoiseCraftBridge().startAudio();
+    }, 150);
   };
 
   const handleGlobalStop = () => {

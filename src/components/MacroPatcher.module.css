@@ -173,7 +173,12 @@
 .nodeAccent_reverb { border-top: 2px solid #ec4899; }
 .nodeAccent_panner { border-top: 2px solid #06b6d4; }
 .nodeAccent_analyser { border-top: 2px solid #8b5cf6; }
+.nodeAccent_broadcast { border-top: 2px solid #10b981; }
 .nodeAccent_destination { border-top: 2px solid #4ecdc4; }
+
+.broadcastReceiverNode {
+  background: linear-gradient(135deg, #0a1f14 0%, #1a1a2e 100%);
+}
 
 /* Handle styles */
 .handleIn, .handleOut {

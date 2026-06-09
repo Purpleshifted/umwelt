@@ -181,14 +181,17 @@ function topologicalSort(modules: MusicModule[], edges: any[]): string[] {
     inDeg.set(id, 0);
   }
 
-  // Only count edges where BOTH ends are modules in our set and the edge
-  // carries music data (not slider/knob control edges – those are read inline).
+  // Only count edges where BOTH ends are modules in our set.
+  // Ignore 'fx_in' target handles because they create insert loops (cycles)
+  // which break topological sort. Also ensure we only use data flow handles.
   const dataHandles = new Set([
     'chordData', 'sequence', 'voice_0', 'voice_1', 'voice_2', 'voice_3',
+    'instrument', 'audio_out', 'envelope', 'audio_in', 'trigger_in'
   ]);
 
   for (const e of edges) {
     if (!moduleIds.has(e.source) || !moduleIds.has(e.target)) continue;
+    if (e.targetHandle === 'fx_in') continue; // Break FX loops!
     if (!dataHandles.has(e.sourceHandle ?? '')) continue;
     adj.get(e.source)!.push(e.target);
     inDeg.set(e.target, (inDeg.get(e.target) ?? 0) + 1);
@@ -236,6 +239,7 @@ class MusicEngine {
   private activeToneParts: any[] = [];
   private previewActiveNodes: any[] = [];
   private previewIntervals: any[] = [];
+  private activeNodesMap = new Map<string, any>();
   private qpm = 120;
   private updateTimer: NodeJS.Timeout | null = null;
   private globalStepCount = 0;
@@ -397,6 +401,8 @@ class MusicEngine {
         accumulatedPulses -= 1;
         tickPulses();
       }
+      
+      this.updateDynamicParameters();
     }, 1000 / 60);
   }
 
@@ -437,7 +443,9 @@ class MusicEngine {
       'mix_node',
       'seq_to_freq',
       'filter',
-      'adsr_envelope'
+      'adsr_envelope',
+      'pedal_fx',
+      'effect_chain'
     ]);
 
     const dagModules = musicState.modules.filter((m) => dagTypes.has(m.type));
@@ -537,6 +545,12 @@ class MusicEngine {
           break;
         case 'reverb':
           this.evalReverb(mod, musicState, results);
+          break;
+        case 'pedal_fx':
+          this.evalPedalFx(mod, musicState, results);
+          break;
+        case 'effect_chain':
+          this.evalEffectChain(mod, musicState, results);
           break;
         case 'mix_node':
           this.evalMixNode(mod, musicState, results);
@@ -1018,6 +1032,10 @@ class MusicEngine {
       const edge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === handleId);
       if (edge) {
         const val = results.get(edge.source);
+        if (val?.type === 'adsr_envelope') {
+          if (handleId === 'envelope' || edge.sourceHandle === 'envelope') return val.config;
+          return val.config?.[edge.sourceHandle as string];
+        }
         if (typeof val?.value === 'number') return val.value;
         if (typeof val === 'number') return val;
       }
@@ -1029,10 +1047,18 @@ class MusicEngine {
       return min + clamped * (max - min);
     };
 
-    const a = getEdgeVal('attack'); if (a !== null) config.attack = mapVal(a, 0.001, 2.0);
-    const d = getEdgeVal('decay'); if (d !== null) config.decay = mapVal(d, 0.001, 2.0);
-    const s = getEdgeVal('sustain'); if (s !== null) config.sustain = mapVal(s, 0.0, 1.0);
-    const r = getEdgeVal('release'); if (r !== null) config.release = mapVal(r, 0.001, 4.0);
+    const envVal = getEdgeVal('envelope');
+    if (envVal && typeof envVal === 'object') {
+       config.attack = envVal.attack;
+       config.decay = envVal.decay;
+       config.sustain = envVal.sustain;
+       config.release = envVal.release;
+    } else {
+      const a = getEdgeVal('attack'); if (a !== null) config.attack = mapVal(a, 0.001, 2.0);
+      const d = getEdgeVal('decay'); if (d !== null) config.decay = mapVal(d, 0.001, 2.0);
+      const s = getEdgeVal('sustain'); if (s !== null) config.sustain = mapVal(s, 0.0, 1.0);
+      const r = getEdgeVal('release'); if (r !== null) config.release = mapVal(r, 0.001, 4.0);
+    }
     
     // PolySynth Tone.js requires it structured as envelope
     config.envelope = {
@@ -1042,16 +1068,24 @@ class MusicEngine {
       release: config.release ?? 1.0,
     };
 
+    const sequence = this.resolveInputData(mod, 'sequence', musicState, results);
+    const fxInEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'fx_in');
+    const fxSourceId = fxInEdge ? fxInEdge.source : null;
+
     results.set(mod.id, {
       type: 'polysynth',
-      config
+      config,
+      sequence,
+      fxSourceId
     });
   }
 
   private evalOscillator(mod: MusicModule, musicState: any, results: Map<string, any>) {
+    const sequence = this.resolveInputData(mod, 'sequence', musicState, results);
     results.set(mod.id, {
       type: 'oscillator',
-      config: mod.oscillatorConfig
+      config: mod.oscillatorConfig,
+      sequence
     });
   }
 
@@ -1062,6 +1096,9 @@ class MusicEngine {
       const edge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === handleId);
       if (edge) {
         const val = results.get(edge.source);
+        if (val?.type === 'adsr_envelope') {
+          return val.config?.[edge.sourceHandle as string];
+        }
         if (typeof val?.value === 'number') return val.value;
         if (typeof val === 'number') return val;
       }
@@ -1119,22 +1156,62 @@ class MusicEngine {
     const qRaw = getEdgeVal('q');
     if (typeof qRaw === 'number') q = 0.1 + qRaw * (20 - 0.1);
 
+    const sourceId = inputEdge ? inputEdge.source : null;
+    let sequence = null;
+    if (sourceId && results.has(sourceId)) {
+        sequence = results.get(sourceId).sequence;
+    }
+
     results.set(mod.id, {
       type: 'filter',
       config: mod.filterConfig,
-      sourceId: inputEdge ? inputEdge.source : null,
+      sourceId,
       freq,
       q,
-      freqSeq
+      freqSeq,
+      sequence
     });
   }
 
   private evalReverb(mod: MusicModule, musicState: any, results: Map<string, any>) {
     const inputEdge = musicState.edges.find((e: any) => e.target === mod.id && (e.targetHandle === 'source' || e.targetHandle === 'in_instrument'));
+    const sourceId = inputEdge ? inputEdge.source : null;
+    let sequence = null;
+    if (sourceId && results.has(sourceId)) {
+        sequence = results.get(sourceId).sequence;
+    }
     results.set(mod.id, {
       type: 'reverb',
       config: mod.reverbConfig,
-      sourceId: inputEdge ? inputEdge.source : null
+      sourceId,
+      sequence
+    });
+  }
+
+  private evalPedalFx(mod: MusicModule, musicState: any, results: Map<string, any>) {
+    const inputEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'audio_in');
+    const sourceId = inputEdge ? inputEdge.source : null;
+    let sequence = null;
+    if (sourceId && results.has(sourceId)) {
+        sequence = results.get(sourceId).sequence;
+    }
+    results.set(mod.id, {
+      type: 'pedal_fx',
+      config: mod.pedalFxConfig,
+      sourceId,
+      sequence
+    });
+  }
+
+  private evalEffectChain(mod: MusicModule, musicState: any, results: Map<string, any>) {
+    // Only difference from pedal_fx is the config, but we pass sequence through similarly.
+    // However, it has NO targetHandle='audio_in'. It's only attached to fx_in!
+    // Wait, since it's only attached to fx_in, the sourceId of effect_chain is NULL.
+    // Because effect_chain doesn't have an audio_in! It receives signal from PolySynth!
+    // Wait, PolySynth uses the effect_chain. So effect_chain doesn't need to know its source.
+    results.set(mod.id, {
+      type: 'effect_chain',
+      config: mod.effectChainConfig
     });
   }
 
@@ -1508,15 +1585,19 @@ class MusicEngine {
     musicState: any,
     results: Map<string, any>,
   ) {
-    // Find what's connected to this module_output's input
-    const inputSeq = this.resolveInputData(mod, 'sequence', musicState, results);
-    if (!inputSeq) return;
-
-    // Also check voice_0..3 handles (from voice_splitter)
-    const seq = inputSeq as MonoSequence | PolySequence;
-    if (seq.pitches && seq.pitches.length > 0) {
-      this.sendSequenceToAI(mod.id, { pitches: seq.pitches as any[], gates: seq.gates as any[] });
+    const audioEdge = musicState.edges.find((e: any) => e.target === mod.id && e.targetHandle === 'audio_in');
+    const sourceId = audioEdge ? audioEdge.source : null;
+    
+    let sequence = this.resolveInputData(mod, 'trigger_in', musicState, results);
+    if (!sequence && sourceId && results.has(sourceId)) {
+        sequence = results.get(sourceId).sequence;
     }
+
+    results.set(mod.id, {
+      type: 'module_output',
+      sourceId,
+      sequence
+    });
   }
 
   // -----------------------------------------------------------------------
@@ -1642,6 +1723,100 @@ class MusicEngine {
   }
 
   // -----------------------------------------------------------------------
+  // Dynamic Parameter Updates (Runs at 60fps)
+  // -----------------------------------------------------------------------
+
+  private updateDynamicParameters() {
+    if (!this.Tone) return;
+    const { useMusicStore } = require('@/store/musicStore');
+    const { useAudioMapStore } = require('@/store/audioMapStore');
+    const musicState = useMusicStore.getState();
+    const audioState = useAudioMapStore.getState();
+
+    for (const [nodeId, node] of this.activeNodesMap.entries()) {
+      const module = musicState.modules.find((m: any) => m.id === nodeId);
+      if (!module) continue;
+
+      const getEdgeVal = (handleId: string) => {
+        const edge = musicState.edges.find((e: any) => e.target === module.id && e.targetHandle === handleId);
+        if (edge) {
+          const srcMod = musicState.modules.find((m: any) => m.id === edge.source);
+          if (srcMod) {
+             if (srcMod.type === 'slider') return srcMod.sliderConfig?.value;
+             if (srcMod.type === 'knob') return srcMod.knobConfig?.value;
+             if (srcMod.type === 'adsr_envelope') {
+                 if (handleId === 'envelope' || edge.sourceHandle === 'envelope') return srcMod.adsrEnvelopeConfig;
+                 return srcMod.adsrEnvelopeConfig?.[edge.sourceHandle as string];
+             }
+             if (srcMod.type === 'virtual_stream' && srcMod.inputStreamId) {
+                const sensors = require('@/store/sensorStore').useSensorStore.getState();
+                const sensorValues = { ppg: sensors.ppg, emg: sensors.emg, ecg: sensors.ecg, gsr: sensors.gsr, mouseX: sensors.mouseX, mouseY: sensors.mouseY };
+                return evaluateStreamValue(srcMod.inputStreamId, audioState.streams, sensorValues);
+             }
+          }
+        }
+        return null;
+      };
+
+      if (module.type === 'polysynth') {
+        const config = module.polysynthConfig || {};
+        const mapVal = (val: number, min: number, max: number) => {
+          const clamped = Math.max(0, Math.min(1, val));
+          return min + clamped * (max - min);
+        };
+        
+        const envVal = getEdgeVal('envelope');
+        if (envVal && typeof envVal === 'object') {
+           config.attack = envVal.attack;
+           config.decay = envVal.decay;
+           config.sustain = envVal.sustain;
+           config.release = envVal.release;
+        } else {
+           const a = getEdgeVal('attack'); if (a !== null) config.attack = mapVal(a, 0.001, 2.0);
+           const d = getEdgeVal('decay'); if (d !== null) config.decay = mapVal(d, 0.001, 2.0);
+           const s = getEdgeVal('sustain'); if (s !== null) config.sustain = mapVal(s, 0.0, 1.0);
+           const r = getEdgeVal('release'); if (r !== null) config.release = mapVal(r, 0.001, 4.0);
+        }
+        
+        try {
+          const currentEnv = node.get().envelope;
+          const newEnv: any = {};
+          if (config.attack !== undefined && Math.abs(config.attack - currentEnv.attack) > 0.001) newEnv.attack = config.attack;
+          if (config.decay !== undefined && Math.abs(config.decay - currentEnv.decay) > 0.001) newEnv.decay = config.decay;
+          if (config.sustain !== undefined && Math.abs(config.sustain - currentEnv.sustain) > 0.001) newEnv.sustain = config.sustain;
+          if (config.release !== undefined && Math.abs(config.release - currentEnv.release) > 0.001) newEnv.release = config.release;
+          
+          if (Object.keys(newEnv).length > 0) {
+            node.set({ envelope: newEnv });
+          }
+          
+          const vol = getEdgeVal('volume');
+          if (vol !== null) {
+            node.volume.rampTo(this.Tone.gainToDb(Math.max(0.0001, vol)), 0.05);
+          }
+        } catch (e) {}
+      }
+
+      if (module.type === 'filter') {
+        let freq = module.filterConfig?.frequency ?? 1000;
+        const freqRaw = getEdgeVal('frequency');
+        if (freqRaw !== null && typeof freqRaw === 'number') {
+           freq = 20 + freqRaw * (20000 - 20);
+        }
+        let q = module.filterConfig?.Q ?? 1;
+        const qRaw = getEdgeVal('q');
+        if (qRaw !== null && typeof qRaw === 'number') {
+           q = 0.1 + qRaw * (20 - 0.1);
+        }
+        try {
+          node.frequency.rampTo(freq, 0.05);
+          node.Q.rampTo(q, 0.05);
+        } catch (e) {}
+      }
+    }
+  }
+
+  // -----------------------------------------------------------------------
   // Tone.js Playback Engine
   // -----------------------------------------------------------------------
 
@@ -1671,28 +1846,37 @@ class MusicEngine {
     await this.Tone.start();
     this.Tone.Transport.bpm.value = this.qpm;
 
-    const playouts = state.modules.filter(m => m.type === 'track_out' || m.type === 'player_out' || m.type === 'score_out');
+    const playouts = state.modules.filter(m => m.type === 'track_out' || m.type === 'player_out' || m.type === 'score_out' || m.type === 'module_output');
     for (const outNode of playouts) {
       const config = results[outNode.id];
       if (!config) continue;
 
       let triggerNode: any = null;
       
-      // 1. Raw Audio Routing for track_out
-      if (outNode.type === 'track_out') {
+      // 1. Raw Audio Routing for track_out and module_output
+      if (outNode.type === 'track_out' || outNode.type === 'module_output') {
+        if (outNode.type === 'module_output' && outNode.outConfig?.muted) continue;
+
         if (config.sourceId) {
           const chain = this.buildInstrumentChain(config.sourceId, results);
           if (chain && chain.outputNode) {
-            const trackName = outNode.trackOutConfig?.trackName || 'Track 1';
-            const { useAudioGraphStore, getTrackBus } = await import('@/store/audioGraphStore');
-            const audioCtx = useAudioGraphStore.getState().audioContext;
-            if (audioCtx) {
-               const bus = getTrackBus(audioCtx, trackName);
-               this.Tone.connect(chain.outputNode, bus);
+            if (outNode.type === 'track_out') {
+              const trackName = outNode.trackOutConfig?.trackName || 'Track 1';
+              const { useAudioGraphStore, getTrackBus } = await import('@/store/audioGraphStore');
+              const audioCtx = useAudioGraphStore.getState().audioContext;
+              if (audioCtx) {
+                 const bus = getTrackBus(audioCtx, trackName);
+                 this.Tone.connect(chain.outputNode, bus);
+              } else {
+                 chain.outputNode.toDestination();
+              }
             } else {
-               chain.outputNode.toDestination();
+              chain.outputNode.toDestination();
             }
-            if (chain.triggerNode) {
+            
+            triggerNode = chain.triggerNode;
+            
+            if (!config.sequence && chain.triggerNode) {
               if (chain.triggerNode.triggerAttack) {
                 chain.triggerNode.triggerAttack(this.Tone!.Frequency("C4").toFrequency(), this.Tone!.now());
                 this.activeToneNodes.push(chain.triggerNode);
@@ -1703,7 +1887,6 @@ class MusicEngine {
             }
           }
         }
-        continue;
       }
 
       // 2. Sequenced Player output
@@ -1805,6 +1988,7 @@ class MusicEngine {
     this.activeToneParts = [];
 
     this.activeToneNodes = [];
+    this.activeNodesMap.clear();
   }
 
   public stopPreviewSynths() {
@@ -1818,6 +2002,60 @@ class MusicEngine {
     this.previewActiveNodes = [];
     this.previewIntervals.forEach(clearInterval);
     this.previewIntervals = [];
+  }
+
+  private previewSynthRef: any = null;
+
+  public async previewInstrument(moduleId: string, playing: boolean, note: number = 60) {
+    if (!this.Tone) return;
+
+    if (!playing) {
+       if (this.previewSynthRef) {
+          if (this.previewSynthRef.triggerRelease) {
+             this.previewSynthRef.triggerRelease(this.Tone.now());
+          } else if (this.previewSynthRef.stop) {
+             this.previewSynthRef.stop(this.Tone.now());
+          }
+       }
+       return;
+    }
+
+    this.stopPreviewSynths();
+    if (this.Tone.context.state !== 'running') {
+      await this.Tone.start();
+    }
+
+    const { useMusicStore } = await import('@/store/musicStore');
+    const state = useMusicStore.getState();
+    const results = state.nodeOutputs;
+    
+    if (!results[moduleId]) {
+      const mod = state.modules.find(m => m.id === moduleId);
+      if (mod) {
+        const tempMap = new Map<string, any>(Object.entries(results));
+        if (mod.type === 'polysynth') this.evalPolysynth(mod, state, tempMap);
+        if (mod.type === 'oscillator') this.evalOscillator(mod, state, tempMap);
+        
+        // merge back
+        for (const [k, v] of tempMap.entries()) {
+          results[k] = v;
+        }
+      }
+    }
+
+    const chain = this.buildInstrumentChain(moduleId, results);
+    if (!chain || !chain.triggerNode || !chain.outputNode) return;
+
+    chain.outputNode.toDestination();
+    this.previewActiveNodes.push(chain.triggerNode, chain.outputNode);
+    this.previewSynthRef = chain.triggerNode;
+
+    const freq = this.Tone.Frequency(note, "midi").toFrequency();
+    if (chain.triggerNode.triggerAttack) {
+      chain.triggerNode.triggerAttack(freq, this.Tone.now());
+    } else if (chain.triggerNode.start) {
+      chain.triggerNode.start(this.Tone.now());
+    }
   }
 
   public async toggleUniversalPreview(previewNodeId: string, playing: boolean) {
@@ -2151,8 +2389,23 @@ class MusicEngine {
           oscillator: oscOpts,
           envelope: adsr
         });
+        if (config.config?.volume !== undefined) {
+           poly.volume.value = this.Tone.gainToDb(Math.max(0.0001, config.config.volume));
+        }
+        this.activeNodesMap.set(nodeId, poly);
         triggerNode = poly;
-        outputNode = poly;
+        
+        if (config.fxSourceId) {
+            const fxChain = this.buildInstrumentChain(config.fxSourceId, results);
+            if (fxChain && fxChain.outputNode) {
+               poly.connect(fxChain.triggerNode);
+               outputNode = fxChain.outputNode;
+            } else {
+               outputNode = poly;
+            }
+        } else {
+            outputNode = poly;
+        }
         break;
       }
       case 'oscillator': {
@@ -2179,6 +2432,7 @@ class MusicEngine {
           frequency: config.freq ?? config.config?.frequency ?? 1000,
           Q: config.q ?? config.config?.Q ?? 1
         });
+        this.activeNodesMap.set(nodeId, effectNode);
         if (config.freqSeq) {
           const seq = config.freqSeq;
           const beatDuration = 60 / this.qpm;
@@ -2214,6 +2468,82 @@ class MusicEngine {
           decay: config.config?.decay ?? 2,
           preDelay: config.config?.preDelay ?? 0.01
         });
+        if (effectNode.generate) effectNode.generate();
+        break;
+      }
+      case 'pedal_fx': {
+        const fxType = config.config?.effectType ?? 'chorus';
+        if (fxType === 'chorus') {
+            effectNode = new this.Tone.Chorus({
+               frequency: config.config?.param1 ?? 4,
+               depth: config.config?.param2 ?? 0.5,
+               wet: config.config?.mix ?? 0.5
+            }).start();
+        } else if (fxType === 'distort') {
+            effectNode = new this.Tone.Distortion({
+               distortion: config.config?.param1 ?? 0.4,
+               wet: config.config?.mix ?? 0.5
+            });
+        } else if (fxType === 'reverb') {
+            effectNode = new this.Tone.Reverb({
+               decay: config.config?.param1 ? (config.config.param1 * 10) : 2,
+               wet: config.config?.mix ?? 0.5
+            });
+            if (effectNode.generate) effectNode.generate();
+        } else {
+            effectNode = new this.Tone.Gain(1);
+        }
+        break;
+      }
+      case 'effect_chain': {
+        const effectsConfig = config.config?.effects ?? [];
+        if (effectsConfig.length === 0) {
+            effectNode = new this.Tone.Gain(1);
+            break;
+        }
+
+        const nodes: any[] = [];
+        // Loop backwards: Top in UI (index 0) is applied LAST!
+        // So signal goes from index N-1 to 0
+        for (let i = effectsConfig.length - 1; i >= 0; i--) {
+            const fx = effectsConfig[i];
+            if (fx.enabled === false) continue;
+            
+            let toneNode = null;
+            if (fx.type === 'chorus') {
+                toneNode = new this.Tone.Chorus({ frequency: fx.param1, depth: fx.param2, wet: fx.mix }).start();
+            } else if (fx.type === 'distortion') {
+                toneNode = new this.Tone.Distortion({ distortion: fx.param1, wet: fx.mix });
+            } else if (fx.type === 'delay') {
+                toneNode = new this.Tone.FeedbackDelay({ delayTime: fx.param1, feedback: fx.param2, wet: fx.mix });
+            } else if (fx.type === 'reverb') {
+                toneNode = new this.Tone.Reverb({ decay: fx.param1 * 10, preDelay: fx.param2 * 0.1, wet: fx.mix });
+                if (toneNode.generate) toneNode.generate();
+            }
+            if (toneNode) {
+                nodes.push(toneNode);
+                this.activeToneNodes.push(toneNode);
+            }
+        }
+
+        if (nodes.length === 0) {
+            effectNode = new this.Tone.Gain(1);
+        } else if (nodes.length === 1) {
+            effectNode = nodes[0];
+        } else {
+            // Chain them: nodes[0] -> nodes[1] -> ... -> nodes[last]
+            // nodes[0] is the FIRST effect applied (which was index N-1 in UI)
+            // nodes[last] is the LAST effect applied (which was index 0 in UI)
+            for (let i = 0; i < nodes.length - 1; i++) {
+                nodes[i].connect(nodes[i + 1]);
+            }
+            // Return a wrapper object that exposes input on first and output on last
+            // buildInstrumentChain will connect TO triggerNode (which is input) and FROM outputNode (which is output)
+            // Wait, for effectNode, the caller uses effectNode directly.
+            // If effectNode is an array of chained nodes, we need to create a dummy Gain for input/output?
+            // Actually, we can return `{ triggerNode: nodes[0], outputNode: nodes[nodes.length - 1] }` directly.
+            return { triggerNode: nodes[0], outputNode: nodes[nodes.length - 1] };
+        }
         break;
       }
       case 'mix_node': {

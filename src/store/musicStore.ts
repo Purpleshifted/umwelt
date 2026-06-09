@@ -2,8 +2,27 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Edge } from '@xyflow/react';
 
-export type MusicModuleType = 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output' | 'chord_progression' | 'harmonic_progressor' | 'melody_gen' | 'chord_gen' | 'voice_splitter' | 'sequence_adder' | 'register_shifter' | 'sequence_morpher' | 'piano_genie' | 'coconet_harmonizer' | 'score_out' | 'ai_seq_out' | 'seq_out' | 'virtual_instrument' | 'track_out' | 'player_out' | 'polysynth' | 'oscillator' | 'adsr_envelope' | 'filter' | 'reverb' | 'mix_node' | 'seq_to_freq' | 'preview_util' | 'universal_preview';
+export type MusicModuleType = 'noise' | 'sine' | 'virtual_stream' | 'slider' | 'knob' | 'module_output' | 'chord_progression' | 'harmonic_progressor' | 'melody_gen' | 'chord_gen' | 'voice_splitter' | 'sequence_adder' | 'register_shifter' | 'sequence_morpher' | 'piano_genie' | 'coconet_harmonizer' | 'score_out' | 'ai_seq_out' | 'seq_out' | 'virtual_instrument' | 'track_out' | 'player_out' | 'polysynth' | 'oscillator' | 'adsr_envelope' | 'filter' | 'reverb' | 'mix_node' | 'seq_to_freq' | 'preview_util' | 'universal_preview' | 'lfo' | 'section_box' | 'trigger_node' | 'player_node' | 'out_node' | 'broadcast_node' | 'global_ui_out' | 'null_node' | 'pedal_fx' | 'math_node' | 'effect_chain';
 
+export interface LFOConfig {
+  rate: number; // Hz, e.g., 0.1 to 20
+  waveform: 'sine' | 'triangle' | 'square' | 'sawtooth';
+}
+
+export interface TriggerConfig {
+  mode: 'pulse' | 'toggle' | 'broadcasted';
+  pitch: number; // default 69 (A4 = 440Hz)
+  isDown?: boolean; // For tracking the current state visually
+  threshold?: number; // For broadcasted mode
+}
+
+export interface OutConfig {
+  muted: boolean;
+}
+
+export interface BroadcastConfig {
+  channel: string;
+}
 
 export interface SineConfig {
   frequency: number;
@@ -98,11 +117,13 @@ export interface AiSeqOutConfig {
 
 export interface TrackOutConfig {
   trackName: string;
+  volume?: number;
 }
 
 export interface PlayerOutConfig {
   isPlaying: boolean;
   trackName: string;
+  volume?: number;
 }
 
 export interface PolysynthConfig {
@@ -116,6 +137,7 @@ export interface PolysynthConfig {
   decay: number;
   sustain: number;
   release: number;
+  waveforms?: Array<{ type: string; gain: number }>;
 }
 
 export interface OscillatorConfig {
@@ -125,6 +147,7 @@ export interface OscillatorConfig {
   partialsCount?: number;
   fatCount?: number;
   fatSpread?: number;
+  frequency?: number;
 }
 
 export interface AdsrEnvelopeConfig {
@@ -149,6 +172,24 @@ export interface ReverbConfig {
 export interface MixNodeConfig {
   volA: number; // 0.0 to 1.0
   volB: number; // 0.0 to 1.0
+}
+
+export interface PedalFxConfig {
+  effectType: 'reverb' | 'delay' | 'distortion' | 'chorus';
+  mix: number;
+  param1: number; // e.g. decay for reverb, time for delay, distortion amount
+  param2: number; // e.g. preDelay for reverb, feedback for delay
+}
+
+export interface EffectChainConfig {
+  effects: Array<{
+    id: string; // Unique ID for reordering tracking
+    type: 'reverb' | 'delay' | 'distortion' | 'chorus';
+    enabled?: boolean;
+    mix: number;
+    param1: number; // decay, time, distortion amount, freq
+    param2: number; // preDelay, feedback, depth
+  }>;
 }
 
 export interface MusicModule {
@@ -180,10 +221,18 @@ export interface MusicModule {
   adsrEnvelopeConfig?: AdsrEnvelopeConfig;
   filterConfig?: FilterConfig;
   reverbConfig?: ReverbConfig;
+  pedalFxConfig?: PedalFxConfig;
+  effectChainConfig?: EffectChainConfig;
   previewUtilConfig?: PreviewUtilConfig;
   universalPreviewConfig?: UniversalPreviewConfig;
   mixNodeConfig?: MixNodeConfig;
+  lfoConfig?: LFOConfig;
+  triggerConfig?: TriggerConfig;
+  outConfig?: OutConfig;
+  broadcastConfig?: BroadcastConfig;
+  sectionBoxConfig?: { width: number; height: number };
   position: { x: number; y: number };
+  parentId?: string;
   pianoGenieConfig?: {};
   coconetHarmonizerConfig?: {};
   aiCacheKey?: string;
@@ -200,13 +249,14 @@ interface MusicState {
   removeModule: (id: string) => void;
   setEdges: (edges: Edge[] | ((eds: Edge[]) => Edge[])) => void;
   setNodeOutputs: (outputs: Record<string, any>) => void;
+  getExposedUINodes: () => MusicModule[];
 }
 
 import defaultMusicLibraryState from '@/constants/music_library_state.json';
 
 export const useMusicStore = create<MusicState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       modules: defaultMusicLibraryState.state.modules as any[],
       edges: defaultMusicLibraryState.state.edges as any[],
       nodeOutputs: {},
@@ -229,7 +279,7 @@ export const useMusicStore = create<MusicState>()(
         }),
       removeModule: (id) =>
         set((state) => ({
-          modules: state.modules.filter((m) => m.id !== id),
+          modules: state.modules.filter((m) => m.id !== id).map(m => m.parentId === id ? { ...m, parentId: undefined } : m),
           edges: state.edges.filter((e) => e.source !== id && e.target !== id),
         })),
       setEdges: (edgesOrUpdater) =>
@@ -237,9 +287,44 @@ export const useMusicStore = create<MusicState>()(
           edges: typeof edgesOrUpdater === 'function' ? edgesOrUpdater(state.edges) : edgesOrUpdater
         })),
       setNodeOutputs: (outputs) => set({ nodeOutputs: outputs }),
+      getExposedUINodes: () => {
+        const state = get();
+        const exposedNodes: MusicModule[] = [];
+        
+        // Find all global_ui_out nodes
+        const globalUiOuts = state.modules.filter(m => m.type === 'global_ui_out');
+        const targetIds = new Set(globalUiOuts.map(m => m.id));
+        
+        // Find edges connected to them
+        const exposedSourceIds = state.edges
+          .filter(e => targetIds.has(e.target))
+          .map(e => e.source);
+          
+        const uiTypes = ['slider', 'knob'];
+        
+        exposedSourceIds.forEach(sourceId => {
+          const sourceNode = state.modules.find(m => m.id === sourceId);
+          if (!sourceNode) return;
+          
+          if (sourceNode.type === 'section_box') {
+            // Find all children
+            const children = state.modules.filter(m => m.parentId === sourceNode.id && uiTypes.includes(m.type));
+            exposedNodes.push(...children);
+          } else if (uiTypes.includes(sourceNode.type)) {
+            // Directly connected UI node
+            exposedNodes.push(sourceNode);
+          }
+        });
+        
+        // Remove duplicates if any
+        return Array.from(new Set(exposedNodes));
+      },
     }),
     {
       name: 'umwelt-music-storage',
+      partialize: (state) => Object.fromEntries(
+        Object.entries(state).filter(([key]) => !['nodeOutputs'].includes(key))
+      ),
     }
   )
 );

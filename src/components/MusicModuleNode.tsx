@@ -5,7 +5,8 @@ import { MusicModule, MusicModuleType } from '@/store/musicStore';
 import styles from './MusicModuleNode.module.css';
 import { musicEngine } from '@/audio/MusicEngine';
 import { getHandleDataType, getCableColor } from '@/utils/musicNodeTypes';
-import { useAudioMapStore } from '@/store/audioMapStore';
+import { useAudioMapStore, evaluateStreamValue } from '@/store/audioMapStore';
+import { useSensorStore } from '@/store/sensorStore';
 
 // Custom TypedHandle wrapper to automatically apply color based on node type and handle id
 function TypedHandle({ type, position, id, className, style, nodeType }: any) {
@@ -25,6 +26,117 @@ function TypedHandle({ type, position, id, className, style, nodeType }: any) {
   );
 }
 
+const InteractiveADSR = ({ cfg, onChange }: { cfg: any, onChange: (c: any) => void }) => {
+  const svgRef = React.useRef<SVGSVGElement>(null);
+  const [dragging, setDragging] = React.useState<'A' | 'D' | 'S' | 'R' | null>(null);
+  const [localCfg, setLocalCfg] = React.useState(cfg);
+
+  // Sync local state if external cfg changes (and not dragging)
+  React.useEffect(() => {
+    if (!dragging) setLocalCfg(cfg);
+  }, [cfg, dragging]);
+
+  const W = 200;
+  const H = 80;
+  const MAX_TIME = 9.0;
+  const pxPerSec = W / MAX_TIME;
+  
+  const aX = localCfg.attack * pxPerSec;
+  const dX = aX + localCfg.decay * pxPerSec;
+  const sY = H - (localCfg.sustain * H);
+  const sustainWidth = 2 * pxPerSec;
+  const sX = dX + sustainWidth;
+  const rX = Math.min(W, sX + localCfg.release * pxPerSec);
+
+  const handlePointerDown = (e: React.PointerEvent, pt: 'A' | 'D' | 'S' | 'R') => {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDragging(pt);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!dragging || !svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    const scaleY = H / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    let newCfg = { ...localCfg };
+    if (dragging === 'A') {
+      newCfg.attack = Math.max(0.01, Math.min(x / pxPerSec, 2.0));
+    } else if (dragging === 'D') {
+      newCfg.decay = Math.max(0.01, Math.min((x - aX) / pxPerSec, 2.0));
+      newCfg.sustain = Math.max(0, Math.min(1.0 - (y / H), 1.0));
+    } else if (dragging === 'S') {
+      newCfg.sustain = Math.max(0, Math.min(1.0 - (y / H), 1.0));
+    } else if (dragging === 'R') {
+      newCfg.release = Math.max(0.01, Math.min((x - sX) / pxPerSec, 5.0));
+    }
+    setLocalCfg(newCfg);
+    onChange(newCfg);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    setDragging(null);
+    onChange(localCfg);
+  };
+
+  return (
+    <svg 
+      ref={svgRef}
+      width="100%" 
+      height={H} 
+      viewBox={`0 0 ${W} ${H}`}
+      className="nodrag"
+      style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%)', borderRadius: '6px', cursor: dragging ? 'grabbing' : 'crosshair', touchAction: 'none', border: '1px solid #333' }}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerUp}
+    >
+      <defs>
+        <linearGradient id="adsrGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.0" />
+        </linearGradient>
+      </defs>
+      
+      {/* Filled Area */}
+      <polygon 
+        points={`0,${H} ${aX},0 ${dX},${sY} ${sX},${sY} ${rX},${H}`}
+        fill="url(#adsrGrad)"
+      />
+      {/* Line */}
+      <polyline 
+        points={`0,${H} ${aX},0 ${dX},${sY} ${sX},${sY} ${rX},${H}`}
+        fill="none" stroke="#a78bfa" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+      />
+      
+      {/* Interactive Points - Invisible large hit areas + elegant small dots */}
+      <g style={{ cursor: dragging === 'A' ? 'grabbing' : 'grab' }} onPointerDown={(e) => handlePointerDown(e, 'A')}>
+        <circle cx={aX} cy={0} r={16} fill="transparent" />
+        <circle cx={aX} cy={0} r={4} fill="#fff" stroke="#ec4899" strokeWidth="2" />
+      </g>
+
+      <g style={{ cursor: dragging === 'D' ? 'grabbing' : 'grab' }} onPointerDown={(e) => handlePointerDown(e, 'D')}>
+        <circle cx={dX} cy={sY} r={16} fill="transparent" />
+        <circle cx={dX} cy={sY} r={4} fill="#fff" stroke="#f59e0b" strokeWidth="2" />
+      </g>
+
+      <g style={{ cursor: dragging === 'S' ? 'ns-resize' : 'ns-resize' }} onPointerDown={(e) => handlePointerDown(e, 'S')}>
+        <circle cx={sX} cy={sY} r={16} fill="transparent" />
+        <circle cx={sX} cy={sY} r={4} fill="#fff" stroke="#10b981" strokeWidth="2" />
+      </g>
+
+      <g style={{ cursor: dragging === 'R' ? 'grabbing' : 'grab' }} onPointerDown={(e) => handlePointerDown(e, 'R')}>
+        <circle cx={rX} cy={H} r={16} fill="transparent" />
+        <circle cx={rX} cy={H} r={4} fill="#fff" stroke="#3b82f6" strokeWidth="2" />
+      </g>
+    </svg>
+  );
+}
+
 interface MusicModuleNodeProps {
   data: {
     module: MusicModule;
@@ -39,6 +151,10 @@ const BORDER_COLORS: Record<string, string> = {
   voice_splitter: '#f472b6',
   sequence_adder: '#34d399',
   register_shift: '#a78bfa',
+  trigger_node: '#ec4899', // Pink
+  player_node: '#10b981', // Green
+  out_node: '#10b981', // Green
+  broadcast_node: '#10b981', // Green
 };
 
 function getBorderClass(type: string): string {
@@ -55,6 +171,58 @@ export default function MusicModuleNode({ data, selected }: MusicModuleNodeProps
   const { module } = data;
   const { updateModule, removeModule } = useMusicStore();
   const { streams } = useAudioMapStore();
+  const [selectedFxId, setSelectedFxId] = React.useState<string | null>(null);
+
+  const freqRef = React.useRef<HTMLSpanElement>(null);
+  const qRef = React.useRef<HTMLSpanElement>(null);
+
+  React.useEffect(() => {
+    if (module.type !== 'filter') return;
+    
+    let req: number;
+    const loop = () => {
+      const state = useMusicStore.getState();
+      const streamsState = useAudioMapStore.getState().streams;
+      const sensors = useSensorStore.getState();
+      const sensorValues = { ppg: sensors.ppg, emg: sensors.emg, ecg: sensors.ecg, gsr: sensors.gsr, mouseX: sensors.mouseX, mouseY: sensors.mouseY };
+
+      // Evaluate Freq
+      const freqEdge = state.edges.find(e => e.target === module.id && e.targetHandle === 'frequency');
+      if (freqEdge && freqRef.current) {
+        const srcMod = state.modules.find(m => m.id === freqEdge.source);
+        let rawVal = 0.5; // default center
+        if (srcMod) {
+          if (srcMod.type === 'slider') rawVal = srcMod.sliderConfig?.value ?? 0.5;
+          else if (srcMod.type === 'virtual_stream' && srcMod.inputStreamId) rawVal = evaluateStreamValue(srcMod.inputStreamId, streamsState, sensorValues);
+        }
+        const normalized = Math.max(0, Math.min(1, rawVal));
+        const hz = 20 * Math.pow(1000, normalized);
+        freqRef.current.innerText = `${hz.toFixed(1)}Hz`;
+      } else if (freqRef.current) {
+        freqRef.current.innerText = '1000.0Hz';
+      }
+
+      // Evaluate Q
+      const qEdge = state.edges.find(e => e.target === module.id && e.targetHandle === 'q');
+      if (qEdge && qRef.current) {
+        const srcMod = state.modules.find(m => m.id === qEdge.source);
+        let rawVal = 0.5; // default center
+        if (srcMod) {
+          if (srcMod.type === 'slider') rawVal = srcMod.sliderConfig?.value ?? 0.5;
+          else if (srcMod.type === 'virtual_stream' && srcMod.inputStreamId) rawVal = evaluateStreamValue(srcMod.inputStreamId, streamsState, sensorValues);
+        }
+        const normalized = Math.max(0, Math.min(1, rawVal));
+        const qVal = 0.1 + normalized * (20 - 0.1);
+        qRef.current.innerText = qVal.toFixed(2);
+      } else if (qRef.current) {
+        qRef.current.innerText = '1.00';
+      }
+
+      req = requestAnimationFrame(loop);
+    };
+    req = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(req);
+  }, [module.id, module.type]);
 
 const PITCH_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
@@ -144,26 +312,6 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
           </div>
         )}
 
-        {module.type === 'preview_util' && (
-          <div className={styles.configArea}>
-            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
-            <div className={styles.field} style={{ textAlign: 'center', marginTop: '10px' }}>
-              <button 
-                style={{ 
-                  background: module.previewUtilConfig?.playing ? '#ff4757' : '#4cd137', 
-                  color: 'white', border: 'none', borderRadius: '4px', padding: '6px 16px', cursor: 'pointer', fontWeight: 'bold' 
-                }}
-                onClick={() => {
-                  const isPlaying = module.previewUtilConfig?.playing;
-                  updateModule(module.id, { previewUtilConfig: { playing: !isPlaying } });
-                  musicEngine.togglePreviewUtil(module.id, !isPlaying);
-                }}
-              >
-                {module.previewUtilConfig?.playing ? 'STOP' : 'PREVIEW'}
-              </button>
-            </div>
-          </div>
-        )}
 
         {module.type === 'seq_to_freq' && (
           <div className={styles.configArea}>
@@ -209,7 +357,41 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
           </div>
         )}
 
-
+        {module.type === 'lfo' && (
+          <div className={styles.configArea}>
+            <div className={styles.paramHandleRow} style={{ marginBottom: '4px' }}>
+              <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="rate" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none', left: '-20px' }} />
+              <span style={{ fontSize: '10px' }}>Rate In (Hz)</span>
+            </div>
+            <div className={styles.field} style={{ marginBottom: '8px' }}>
+              <label style={{ fontSize: '10px' }}>Rate (Hz): {module.lfoConfig?.rate?.toFixed(2) ?? '1.00'}</label>
+              <input 
+                type="range" min="0.1" max="20.0" step="0.1"
+                className="nodrag"
+                value={module.lfoConfig?.rate ?? 1.0}
+                onChange={(e) => updateModule(module.id, { 
+                  lfoConfig: { ...module.lfoConfig!, rate: parseFloat(e.target.value), waveform: module.lfoConfig?.waveform ?? 'sine' } 
+                })}
+              />
+            </div>
+            <div className={styles.field}>
+              <select
+                className="nodrag"
+                value={module.lfoConfig?.waveform ?? 'sine'}
+                onChange={(e) => updateModule(module.id, {
+                  lfoConfig: { ...module.lfoConfig!, waveform: e.target.value as any, rate: module.lfoConfig?.rate ?? 1.0 }
+                })}
+                style={{ width: '100%', fontSize: '10px' }}
+              >
+                <option value="sine">Sine</option>
+                <option value="triangle">Triangle</option>
+                <option value="square">Square</option>
+                <option value="sawtooth">Sawtooth</option>
+              </select>
+            </div>
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="val" className={styles.handle} style={{ top: '50%' }} />
+          </div>
+        )}
 
         {/* ── Harmonic Progressor Node ── */}
         {module.type === 'harmonic_progressor' && (
@@ -678,6 +860,11 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
         {/* ── Virtual Instrument Node ── */}
         {module.type === 'virtual_instrument' && (
           <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Top} id="sequence" className={styles.handle} style={{ left: '50%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', top: '-15px', left: '45%', color: '#ec4899' }}>Seq</span>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="fx_in" className={styles.handle} style={{ left: '50%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', bottom: '-15px', left: '38%', color: '#3b82f6' }}>Effect In</span>
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="audio_out" className={styles.handle} style={{ top: '50%' }} />
             <select
               className="nodrag"
               value={module.virtualInstrumentConfig?.instrument ?? 'acoustic_grand_piano'}
@@ -703,13 +890,28 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
             <span style={{ fontSize: '10px', color: '#888' }}>Volume</span>
             <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="volume" className={styles.handle} style={{ top: '80%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-40px', top: '75%' }}>Volume</span>
+            <button
+              className="nodrag"
+              onMouseDown={() => (window as any).umweltMusicEngine?.previewInstrument(module.id, true, 60)}
+              onMouseUp={() => (window as any).umweltMusicEngine?.previewInstrument(module.id, false, 60)}
+              onMouseLeave={() => (window as any).umweltMusicEngine?.previewInstrument(module.id, false, 60)}
+              style={{ fontSize: '9px', padding: '2px 4px', background: '#333', border: '1px solid #555', color: '#ccc', borderRadius: '4px', cursor: 'pointer', marginTop: '4px', textAlign: 'center', width: '100%' }}
+            >
+              ▶ Preview
+            </button>
             <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: 'auto', bottom: 'auto', position: 'relative', transform: 'none' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', right: '-15px', top: '50%', color: '#10b981' }}>Inst</span>
           </div>
         )}
 
         {/* ── PolySynth Node ── */}
         {module.type === 'polysynth' && (
           <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Top} id="sequence" className={styles.handle} style={{ left: '50%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', top: '-15px', left: '45%', color: '#ec4899' }}>Seq</span>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="fx_in" className={styles.handle} style={{ left: '50%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', bottom: '-15px', left: '38%', color: '#3b82f6' }}>Effect In</span>
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="audio_out" className={styles.handle} style={{ top: '50%' }} />
             <div style={{ display: 'flex', gap: '4px' }}>
               <select
                 className="nodrag"
@@ -748,24 +950,8 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 <input type="number" className="nodrag" min="0" max="100" style={{ width: '40px' }} value={module.polysynthConfig?.fatSpread ?? 30} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, fatSpread: parseInt(e.target.value, 10) || 30 } })} />
               </div>
             )}
-            <div style={{ display: 'flex', gap: '4px', fontSize: '9px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                <input type="range" className="nodrag" min="0.01" max="2" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.attack ?? 0.1} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, attack: parseFloat(e.target.value) } })} /> A
-                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="attack" className={styles.handle} style={{ left: '50%' }} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                <input type="range" className="nodrag" min="0.01" max="2" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.decay ?? 0.2} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, decay: parseFloat(e.target.value) } })} /> D
-                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="decay" className={styles.handle} style={{ left: '50%' }} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.sustain ?? 0.5} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, sustain: parseFloat(e.target.value) } })} /> S
-                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="sustain" className={styles.handle} style={{ left: '50%' }} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                <input type="range" className="nodrag" min="0.01" max="5" step="0.01" style={{ width: '30px' }} value={module.polysynthConfig?.release ?? 1.0} onChange={(e) => updateModule(module.id, { polysynthConfig: { ...module.polysynthConfig!, release: parseFloat(e.target.value) } })} /> R
-                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="release" className={styles.handle} style={{ left: '50%' }} />
-              </div>
-            </div>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="envelope" className={styles.handle} style={{ top: '70%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', left: '-18px', top: '70%', transform: 'translateY(-50%)', color: '#a78bfa', fontWeight: 'bold' }}>Env</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px', marginTop: '4px' }}>
               <label>Gain (Vol):</label>
               <div style={{ position: 'relative', flex: 1 }}>
@@ -773,7 +959,17 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
                 <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="volume" className={styles.handle} style={{ left: '50%' }} />
               </div>
             </div>
+            <button
+              className="nodrag"
+              onMouseDown={() => (window as any).umweltMusicEngine?.previewInstrument(module.id, true, 60)}
+              onMouseUp={() => (window as any).umweltMusicEngine?.previewInstrument(module.id, false, 60)}
+              onMouseLeave={() => (window as any).umweltMusicEngine?.previewInstrument(module.id, false, 60)}
+              style={{ fontSize: '9px', padding: '2px 4px', background: '#333', border: '1px solid #555', color: '#ccc', borderRadius: '4px', cursor: 'pointer', marginTop: '4px', textAlign: 'center' }}
+            >
+              ▶ Preview
+            </button>
             <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', right: '-15px', top: '45%', color: '#10b981' }}>Inst</span>
           </div>
         )}
 
@@ -836,26 +1032,23 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
         )}
 
         {/* ── ADSR Envelope Node ── */}
-        {module.type === 'adsr_envelope' && (
-          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-            <div style={{ display: 'flex', gap: '4px', fontSize: '9px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <input type="range" className="nodrag" min="0.01" max="2" step="0.01" style={{ width: '30px' }} value={module.adsrEnvelopeConfig?.attack ?? 0.1} onChange={(e) => updateModule(module.id, { adsrEnvelopeConfig: { ...module.adsrEnvelopeConfig!, attack: parseFloat(e.target.value) } })} /> A
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <input type="range" className="nodrag" min="0.01" max="2" step="0.01" style={{ width: '30px' }} value={module.adsrEnvelopeConfig?.decay ?? 0.2} onChange={(e) => updateModule(module.id, { adsrEnvelopeConfig: { ...module.adsrEnvelopeConfig!, decay: parseFloat(e.target.value) } })} /> D
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ width: '30px' }} value={module.adsrEnvelopeConfig?.sustain ?? 0.5} onChange={(e) => updateModule(module.id, { adsrEnvelopeConfig: { ...module.adsrEnvelopeConfig!, sustain: parseFloat(e.target.value) } })} /> S
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <input type="range" className="nodrag" min="0.01" max="5" step="0.01" style={{ width: '30px' }} value={module.adsrEnvelopeConfig?.release ?? 1.0} onChange={(e) => updateModule(module.id, { adsrEnvelopeConfig: { ...module.adsrEnvelopeConfig!, release: parseFloat(e.target.value) } })} /> R
-              </div>
+        {module.type === 'adsr_envelope' && (() => {
+          const cfg = module.adsrEnvelopeConfig || { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1.0 };
+          
+          return (
+            <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+              
+              {/* Interactive SVG Visualizer */}
+              <InteractiveADSR 
+                cfg={cfg} 
+                onChange={(newCfg: any) => updateModule(module.id, { adsrEnvelopeConfig: newCfg })} 
+              />
+
+              <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="envelope" className={styles.handle} style={{ top: '50%' }} />
+              <div className="nodrag" style={{ position: 'absolute', right: '-18px', top: '50%', transform: 'translateY(-50%)', fontSize: '9px', color: '#a78bfa', fontWeight: 'bold' }}>Env</div>
             </div>
-            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_instrument" className={styles.handle} style={{ top: '50%' }} />
-            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="instrument" className={styles.handle} style={{ top: '50%' }} />
-          </div>
-        )}
+          );
+        })()}
 
         {/* ── Filter Node ── */}
         {module.type === 'filter' && (
@@ -873,14 +1066,14 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
               <option value="bandpass">Bandpass</option>
               <option value="notch">Notch</option>
             </select>
-            <div style={{ position: 'relative' }}>
-              <label style={{ fontSize: '9px' }}>Freq: {module.filterConfig?.frequency ?? 1000}Hz</label>
-              <input type="range" className="nodrag" min="20" max="20000" step="1" style={{ width: '100%' }} value={module.filterConfig?.frequency ?? 1000} onChange={(e) => updateModule(module.id, { filterConfig: { ...module.filterConfig!, frequency: parseFloat(e.target.value) } })} />
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+              <label style={{ fontSize: '9px' }}>Freq:</label>
+              <span ref={freqRef} style={{ fontSize: '9px', fontWeight: 'bold' }}>1000.0Hz</span>
               <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="frequency" className={styles.handle} style={{ left: '50%' }} />
             </div>
-            <div style={{ position: 'relative' }}>
-              <label style={{ fontSize: '9px' }}>Q: {module.filterConfig?.Q ?? 1}</label>
-              <input type="range" className="nodrag" min="0.1" max="20" step="0.1" style={{ width: '100%' }} value={module.filterConfig?.Q ?? 1} onChange={(e) => updateModule(module.id, { filterConfig: { ...module.filterConfig!, Q: parseFloat(e.target.value) } })} />
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+              <label style={{ fontSize: '9px' }}>Q:</label>
+              <span ref={qRef} style={{ fontSize: '9px', fontWeight: 'bold' }}>1.00</span>
               <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="q" className={styles.handle} style={{ left: '50%' }} />
             </div>
             
@@ -904,11 +1097,17 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
 
         {/* ── Mix Node ── */}
         {module.type === 'mix_node' && (
-          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-            <label style={{ fontSize: '9px' }}>Vol A: {module.mixNodeConfig?.volA ?? 1.0}</label>
-            <input type="range" className="nodrag" min="0" max="1" step="0.01" value={module.mixNodeConfig?.volA ?? 1.0} onChange={(e) => updateModule(module.id, { mixNodeConfig: { ...module.mixNodeConfig!, volA: parseFloat(e.target.value) } })} />
-            <label style={{ fontSize: '9px' }}>Vol B: {module.mixNodeConfig?.volB ?? 1.0}</label>
-            <input type="range" className="nodrag" min="0" max="1" step="0.01" value={module.mixNodeConfig?.volB ?? 1.0} onChange={(e) => updateModule(module.id, { mixNodeConfig: { ...module.mixNodeConfig!, volB: parseFloat(e.target.value) } })} />
+          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '16px', fontSize: '10px', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+                Vol A
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="volA" className={styles.handle} style={{ left: '50%' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+                Vol B
+                <TypedHandle nodeType={module.type} type="target" position={Position.Bottom} id="volB" className={styles.handle} style={{ left: '50%' }} />
+              </div>
+            </div>
             
             <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_instrument_a" className={styles.handle} style={{ top: '30%' }} />
             <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '25%' }}>A</span>
@@ -918,48 +1117,261 @@ function NodeVisualizer({ moduleId, type }: { moduleId: string; type: string }) 
           </div>
         )}
 
-        {/* ── Universal Preview Node ── */}
-        {module.type === 'universal_preview' && (
-          (() => {
-            const edges = useMusicStore.getState().edges;
-            const hasAudio = edges.some(e => e.target === module.id && e.targetHandle === 'audio_in');
-            const hasSeq = edges.some(e => e.target === module.id && e.targetHandle === 'seq_in');
-            const hasCtrl = edges.some(e => e.target === module.id && e.targetHandle === 'control_in');
-            
-            return (
-              <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-                <div style={{ padding: '8px', background: '#222', borderRadius: '4px', textAlign: 'center', fontSize: '10px' }}>
-                  {hasAudio && <span style={{ color: '#f43f5e' }}>[Audio Detected]</span>}
-                  {hasSeq && !hasAudio && <span style={{ color: '#818cf8' }}>[Sequence Detected]</span>}
-                  {hasCtrl && !hasAudio && !hasSeq && <span style={{ color: '#34d399' }}>[Control Detected]</span>}
-                  {!hasAudio && !hasSeq && !hasCtrl && <span style={{ color: '#9ca3af' }}>[Awaiting Connection]</span>}
-                </div>
-                
-                <button
-                  className={styles.btn}
-                  style={{
-                    background: module.universalPreviewConfig?.playing ? '#ff6b6b' : '#333',
-                    color: 'white'
-                  }}
-                  onClick={() => {
-                    const isPlaying = !module.universalPreviewConfig?.playing;
-                    updateModule(module.id, { universalPreviewConfig: { ...module.universalPreviewConfig!, playing: isPlaying } });
-                    musicEngine.toggleUniversalPreview(module.id, isPlaying);
-                  }}
-                >
-                  {module.universalPreviewConfig?.playing ? 'Stop Preview' : 'Play / Test'}
-                </button>
-                
-                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '30%' }} />
-                <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '25%', color: '#f43f5e' }}>Aud</span>
-                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="seq_in" className={styles.handle} style={{ top: '50%' }} />
-                <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '45%', color: '#818cf8' }}>Seq</span>
-                <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="control_in" className={styles.handle} style={{ top: '70%' }} />
-                <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '65%', color: '#34d399' }}>Ctrl</span>
-              </div>
-            );
-          })()
+
+        {module.type === 'player_node' && (
+          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+            <div style={{ fontSize: '10px', color: '#888', textAlign: 'center' }}>Combines Sequence & Instrument</div>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="sequence" className={styles.handle} style={{ top: '30%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '25%', color: '#ec4899' }}>Seq</span>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="instrument" className={styles.handle} style={{ top: '70%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '65%', color: '#10b981' }}>Inst</span>
+            <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="audio_out" className={styles.handle} style={{ top: '50%' }} />
+          </div>
         )}
+
+        {module.type === 'out_node' && (
+          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+            <button 
+              className="nodrag"
+              onClick={() => {
+                const isMuted = !module.outConfig?.muted;
+                updateModule(module.id, { outConfig: { ...module.outConfig!, muted: isMuted } });
+                // We'll handle muting in Tone.js via MusicEngine
+              }}
+              style={{
+                background: module.outConfig?.muted ? '#333' : '#10b981',
+                color: 'white',
+                padding: '8px',
+                borderRadius: '4px',
+                border: '1px solid #10b981',
+                cursor: 'pointer'
+              }}
+            >
+              {module.outConfig?.muted ? 'MUTED' : 'SPEAKER ON'}
+            </button>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '30%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '25%', color: '#10b981' }}>Aud</span>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="trigger_in" className={styles.handle} style={{ top: '70%' }} />
+            <span style={{ fontSize: '9px', position: 'absolute', left: '-15px', top: '65%', color: '#ec4899' }}>Gate</span>
+          </div>
+        )}
+
+        {module.type === 'broadcast_node' && (
+          <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px' }}>
+              <label>Channel:</label>
+              <input 
+                type="text" className="nodrag" style={{ width: '40px' }} 
+                value={module.broadcastConfig?.channel ?? 'A'} 
+                onChange={(e) => updateModule(module.id, { broadcastConfig: { ...module.broadcastConfig!, channel: e.target.value } })} 
+              />
+            </div>
+            <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
+          </div>
+        )}
+
+        {/* ── Effect Chain Node ── */}
+        {module.type === 'effect_chain' && (() => {
+          const cfg = module.effectChainConfig || { effects: [] };
+          const effects = cfg.effects;
+          
+          const addEffect = (type: 'chorus'|'distortion'|'delay'|'reverb') => {
+             const newFx = { id: Math.random().toString(36).substr(2,9), type, mix: 0.5, param1: 0.5, param2: 0.5, enabled: true };
+             updateModule(module.id, { effectChainConfig: { ...cfg, effects: [...effects, newFx] } });
+          };
+          const updateEffect = (id: string, updates: any) => {
+             const newEffects = effects.map(fx => fx.id === id ? { ...fx, ...updates } : fx);
+             updateModule(module.id, { effectChainConfig: { ...cfg, effects: newEffects } });
+          };
+          const removeEffect = (id: string) => {
+             const newEffects = effects.filter(fx => fx.id !== id);
+             updateModule(module.id, { effectChainConfig: { ...cfg, effects: newEffects } });
+             if (selectedFxId === id) setSelectedFxId(null);
+          };
+          const moveEffect = (idx: number, dir: -1 | 1) => {
+             if (idx + dir < 0 || idx + dir >= effects.length) return;
+             const newEffects = [...effects];
+             const temp = newEffects[idx];
+             newEffects[idx] = newEffects[idx + dir];
+             newEffects[idx + dir] = temp;
+             updateModule(module.id, { effectChainConfig: { ...cfg, effects: newEffects } });
+          };
+
+          return (
+            <div 
+              className={styles.outRow} 
+              style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', minWidth: '150px' }}
+              onClick={() => setSelectedFxId(null)}
+            >
+              <div style={{ fontSize: '10px', color: '#888', textAlign: 'center', marginBottom: '4px' }}>
+                <span style={{ color: '#10b981' }}>Top: Last</span> / <span style={{ color: '#ec4899' }}>Bottom: First</span>
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {effects.map((fx, idx) => {
+                  const isSelected = selectedFxId === fx.id;
+                  const isEnabled = fx.enabled !== false;
+                  
+                  let p1Label = 'P1';
+                  let p2Label = 'P2';
+                  if (fx.type === 'chorus') { p1Label = 'Rate'; p2Label = 'Depth'; }
+                  if (fx.type === 'distortion') { p1Label = 'Amount'; p2Label = 'Tone'; }
+                  if (fx.type === 'delay') { p1Label = 'Time'; p2Label = 'Feedback'; }
+                  if (fx.type === 'reverb') { p1Label = 'Decay'; p2Label = 'PreDelay'; }
+
+                  return (
+                    <div 
+                      key={fx.id}
+                      onClick={(e) => { e.stopPropagation(); setSelectedFxId(fx.id); }}
+                      style={{ 
+                        background: isSelected ? '#2a2a2a' : '#1a1a1a', 
+                        border: `1px solid ${isSelected ? '#3b82f6' : '#333'}`, 
+                        borderRadius: '4px', 
+                        padding: '6px',
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: '4px',
+                        opacity: isEnabled ? 1 : 0.5,
+                        position: 'relative'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                           <button 
+                             className="nodrag" 
+                             onClick={(e) => { e.stopPropagation(); updateEffect(fx.id, { enabled: !isEnabled }); }} 
+                             style={{ 
+                               background: isEnabled ? '#10b981' : '#4b5563', 
+                               border: 'none', borderRadius: '50%', width: '12px', height: '12px', cursor: 'pointer' 
+                             }} 
+                             title={isEnabled ? "Disable" : "Enable"}
+                           />
+                           <span style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'capitalize', color: isEnabled ? '#fff' : '#888' }}>{fx.type}</span>
+                         </div>
+                         <div style={{ display: 'flex', gap: '4px' }}>
+                           {isSelected && (
+                             <>
+                               <button className="nodrag" onClick={(e) => { e.stopPropagation(); moveEffect(idx, -1); }} disabled={idx === 0} style={{ background: '#444', color: 'white', border: 'none', borderRadius: '2px', cursor: idx === 0 ? 'not-allowed' : 'pointer', fontSize: '9px', padding: '0 4px' }}>▲</button>
+                               <button className="nodrag" onClick={(e) => { e.stopPropagation(); moveEffect(idx, 1); }} disabled={idx === effects.length - 1} style={{ background: '#444', color: 'white', border: 'none', borderRadius: '2px', cursor: idx === effects.length - 1 ? 'not-allowed' : 'pointer', fontSize: '9px', padding: '0 4px' }}>▼</button>
+                             </>
+                           )}
+                           <button className="nodrag" onClick={(e) => { e.stopPropagation(); removeEffect(fx.id); }} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '10px' }}>✕</button>
+                         </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '8px' }}>
+                        <label style={{ width: '35px' }}>Mix</label>
+                        <input type="range" className="nodrag" min="0" max="1" step="0.01" value={fx.mix} onChange={(e) => updateEffect(fx.id, { mix: parseFloat(e.target.value) })} style={{ flex: 1 }} />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '8px' }}>
+                        <label style={{ width: '35px' }}>{p1Label}</label>
+                        <input type="range" className="nodrag" min="0" max="1" step="0.01" value={fx.param1} onChange={(e) => updateEffect(fx.id, { param1: parseFloat(e.target.value) })} style={{ flex: 1 }} />
+                      </div>
+                      {fx.type !== 'distortion' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '8px' }}>
+                          <label style={{ width: '35px' }}>{p2Label}</label>
+                          <input type="range" className="nodrag" min="0" max="1" step="0.01" value={fx.param2} onChange={(e) => updateEffect(fx.id, { param2: parseFloat(e.target.value) })} style={{ flex: 1 }} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                <select id={`add-fx-${module.id}`} className="nodrag" style={{ flex: 1, fontSize: '10px', padding: '2px' }}>
+                  <option value="chorus">Chorus</option>
+                  <option value="distortion">Distort</option>
+                  <option value="delay">Delay</option>
+                  <option value="reverb">Reverb</option>
+                </select>
+                <button 
+                  className="nodrag" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const sel = document.getElementById(`add-fx-${module.id}`) as HTMLSelectElement;
+                    if (sel) addEffect(sel.value as any);
+                  }}
+                  style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '2px 8px', fontSize: '10px' }}
+                >
+                  + Add
+                </button>
+              </div>
+
+              <TypedHandle nodeType={module.type} type="source" position={Position.Top} id="fx_out" className={styles.handle} style={{ left: '50%' }} />
+              <span style={{ fontSize: '9px', position: 'absolute', top: '-15px', left: '42%', color: '#3b82f6' }}>To FX In</span>
+            </div>
+          );
+        })()}
+
+        {module.type === 'pedal_fx' && (() => {
+          const fxType = module.pedalFxConfig?.effectType ?? 'reverb';
+          let param1Label = 'Param 1';
+          let param2Label = 'Param 2';
+          
+          if (fxType === 'reverb') { param1Label = 'Decay'; param2Label = 'Pre-Delay'; }
+          else if (fxType === 'delay') { param1Label = 'Time'; param2Label = 'Feedback'; }
+          else if (fxType === 'distortion') { param1Label = 'Amount'; param2Label = 'Tone'; }
+          else if (fxType === 'chorus') { param1Label = 'Rate'; param2Label = 'Depth'; }
+
+          return (
+            <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+              <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="audio_in" className={styles.handle} style={{ top: '50%' }} />
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <select
+                  className="nodrag"
+                  value={fxType}
+                  onChange={(e) => updateModule(module.id, { pedalFxConfig: { ...module.pedalFxConfig!, effectType: e.target.value as any } })}
+                  style={{ flex: 1 }}
+                >
+                  <option value="reverb">Reverb</option>
+                  <option value="delay">Delay</option>
+                  <option value="distortion">Distort</option>
+                  <option value="chorus">Chorus</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px' }}>
+                <label>Mix (Wet):</label>
+                <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ flex: 1 }} value={module.pedalFxConfig?.mix ?? 0.5} onChange={(e) => updateModule(module.id, { pedalFxConfig: { ...module.pedalFxConfig!, mix: parseFloat(e.target.value) } })} />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px' }}>
+                <label>{param1Label}:</label>
+                <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ flex: 1 }} value={module.pedalFxConfig?.param1 ?? 0.5} onChange={(e) => updateModule(module.id, { pedalFxConfig: { ...module.pedalFxConfig!, param1: parseFloat(e.target.value) } })} />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '9px' }}>
+                <label>{param2Label}:</label>
+                <input type="range" className="nodrag" min="0" max="1" step="0.01" style={{ flex: 1 }} value={module.pedalFxConfig?.param2 ?? 0.5} onChange={(e) => updateModule(module.id, { pedalFxConfig: { ...module.pedalFxConfig!, param2: parseFloat(e.target.value) } })} />
+              </div>
+              <TypedHandle nodeType={module.type} type="source" position={Position.Right} id="audio_out" className={styles.handle} style={{ top: '50%' }} />
+              <span style={{ fontSize: '9px', position: 'absolute', top: '40%', right: '-35px', color: '#10b981' }}>Out</span>
+            </div>
+          );
+        })()}
+
+        {/* ── Math / VCA Node ── */}
+        {module.type === 'math_node' && (() => {
+          const cfg = (module as any).mathConfig || { opType: 'multiply' };
+          return (
+            <div className={styles.outRow} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', minWidth: '100px', alignItems: 'center' }}>
+              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ec4899', margin: '4px 0' }}>
+                {cfg.opType === 'multiply' ? '×' : '+'}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '10px' }}>
+                <div style={{ position: 'relative', width: '30px', textAlign: 'center' }}>
+                  IN 1
+                  <TypedHandle nodeType={module.type} type="target" position={Position.Left} id="in_1" className={styles.handle} style={{ top: '100%' }} />
+                </div>
+                <div style={{ position: 'relative', width: '30px', textAlign: 'center' }}>
+                  IN 2
+                  <TypedHandle nodeType={module.type} type="target" position={Position.Right} id="in_2" className={styles.handle} style={{ top: '100%' }} />
+                </div>
+              </div>
+              <div style={{ position: 'relative', marginTop: '12px', textAlign: 'center', fontSize: '10px', color: '#10b981' }}>
+                OUT
+                <TypedHandle nodeType={module.type} type="source" position={Position.Bottom} id="out" className={styles.handle} style={{ left: '50%' }} />
+              </div>
+            </div>
+          );
+        })()}
 
       </div>
     </div>

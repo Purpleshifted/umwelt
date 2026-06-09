@@ -57,7 +57,7 @@ export class NoiseCraftBridge {
 
   noisecraftUrl(filename = 'nc_noise_patch.ncft'): string {
     // Load from /public/examples/ so we load the autosaved version instead of the static public version
-    return `/noisecraft/public/embedded.html?src=/noisecraft/public/examples/${filename}&ui=full`;
+    return `/noisecraft/public/embedded.html?src=/noisecraft/public/examples/${encodeURIComponent(filename)}&ui=full`;
   }
 
   createIframe(container: HTMLElement, visible = false, filename?: string): HTMLIFrameElement {

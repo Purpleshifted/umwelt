@@ -43,6 +43,7 @@ const NODE_ICONS: Record<AudioNodeType, string> = {
   vst_instrument: '🎹',
   score_in: '🎼',
   track_in: '📡',
+  broadcast_receiver: '📻',
   destination: '🔈',
 };
 
@@ -59,6 +60,7 @@ const ACCENT_CLASSES: Record<AudioNodeType, string> = {
   vst_instrument: styles.nodeAccent_oscillator,
   score_in: styles.nodeAccent_oscillator,
   track_in: styles.nodeAccent_oscillator,
+  broadcast_receiver: styles.nodeAccent_broadcast,
   destination: styles.nodeAccent_destination,
 };
 
@@ -83,10 +85,10 @@ function AudioNodeComponent({ id, data, selected }: { id: string; data: any; sel
     <div
       className={`${styles.audioNode} ${ACCENT_CLASSES[nodeType] || ''} ${selected ? styles.selected : ''} ${
         isDestination ? styles.destinationNode : ''
-      } ${nodeType === 'noisecraft_source' ? styles.noisecraftNode : ''}`}
+      } ${nodeType === 'noisecraft_source' ? styles.noisecraftNode : ''} ${nodeType === 'broadcast_receiver' ? styles.broadcastReceiverNode : ''}`}
     >
       {/* Input handle */}
-      {nodeType !== 'noisecraft_source' && (
+      {nodeType !== 'noisecraft_source' && nodeType !== 'broadcast_receiver' && (
         <Handle type="target" position={Position.Left} id="in" className={styles.handleIn} />
       )}
 
@@ -226,6 +228,54 @@ function AudioNodeComponent({ id, data, selected }: { id: string; data: any; sel
           );
         })()}
 
+        {nodeType === 'broadcast_receiver' && (() => {
+          const musicModules = useMusicStore((state) => state.modules);
+          // Collect channel names from broadcast_node, score_out, track_out modules
+          const channelSet = new Set<string>();
+          musicModules.forEach(m => {
+            if (m.type === 'broadcast_node' && m.broadcastConfig?.channel) channelSet.add(m.broadcastConfig.channel);
+            if (m.type === 'score_out' && m.scoreOutConfig?.channel) channelSet.add(m.scoreOutConfig.channel);
+            if (m.type === 'track_out' && m.trackOutConfig?.trackName) channelSet.add(m.trackOutConfig.trackName);
+          });
+          const channels = channelSet.size > 0 ? Array.from(channelSet) : ['A', 'B', 'C', 'D'];
+          if (!channels.includes(String(graphNode.params.channel || 'A'))) {
+            channels.push(String(graphNode.params.channel || 'A'));
+          }
+          const isMuted = graphNode.params.muted as boolean;
+          return (
+            <>
+              <ParamSelect
+                label="Bus"
+                value={String(graphNode.params.channel || 'A')}
+                options={channels}
+                onChange={(v) => handleParamChange('channel', v)}
+                nodeId={id}
+                paramName="channel"
+              />
+              <ParamSlider label="Gain" value={graphNode.params.gain as number} min={0} max={2} step={0.01} onChange={(v) => handleParamChange('gain', v)} nodeId={id} paramName="gain" />
+              <div className={`${styles.paramRow} nodrag`}>
+                <span className={styles.paramLabel}>Monitor</span>
+                <button
+                  style={{
+                    flex: 1,
+                    padding: '3px 8px',
+                    fontSize: '10px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    background: isMuted ? 'rgba(255,107,107,0.2)' : 'rgba(78,205,196,0.2)',
+                    color: isMuted ? '#ff6b6b' : '#4ecdc4',
+                  }}
+                  onClick={() => handleParamChange('muted', isMuted ? 0 : 1)}
+                >
+                  {isMuted ? '🔇 Muted' : '🔊 Live'}
+                </button>
+              </div>
+            </>
+          );
+        })()}
+
         {nodeType === 'destination' && (
           <div style={{ fontSize: '10px', color: 'rgba(78, 205, 196, 0.6)', textAlign: 'center', padding: '4px 0' }}>
             Audio Output
@@ -303,6 +353,7 @@ const NODE_MENU_ITEMS: { type: AudioNodeType; label: string; icon: string }[] = 
   { type: 'noisecraft_source', label: 'NoiseCraft Source', icon: '🎹' },
   { type: 'score_in', label: 'Score In (Sequence)', icon: '🎼' },
   { type: 'track_in', label: 'Track In (Broadcast)', icon: '📡' },
+  { type: 'broadcast_receiver', label: 'Broadcast Receiver', icon: '📻' },
   { type: 'gain', label: 'Gain', icon: '🔊' },
   { type: 'biquad_filter', label: 'Filter (Biquad)', icon: '🎚️' },
   { type: 'delay', label: 'Delay', icon: '⏱️' },
@@ -423,7 +474,15 @@ export default function MacroPatcher() {
 
   // Sync from store → React Flow
   useEffect(() => {
-    setRfNodes(graphNodes.map(toRfNode));
+    setRfNodes((currentNodes) => {
+      return graphNodes.map((gNode) => {
+        const existing = currentNodes.find(n => n.id === gNode.id);
+        return {
+          ...(existing || {}),
+          ...toRfNode(gNode)
+        };
+      });
+    });
   }, [graphNodes, setRfNodes]);
 
   useEffect(() => {
@@ -558,6 +617,8 @@ export default function MacroPatcher() {
         onPaneClick={onPaneClick}
         onInit={(instance: any) => { reactFlowInstance.current = instance; }}
         nodeTypes={nodeTypes}
+        snapToGrid={true}
+        snapGrid={[20, 20]}
         fitView
         deleteKeyCode={['Backspace', 'Delete']}
         selectionKeyCode="Shift"
